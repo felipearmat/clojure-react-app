@@ -1,0 +1,35 @@
+version: "3.5"
+
+volumes:
+  postgresdata:
+
+networks:
+  default:
+    name: appnetwork
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:11.5-alpine
+    hostname: postgres
+    environment:
+      POSTGRES_USER: "my-app-user"
+      POSTGRES_PASSWORD: "my-app-password"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+
+  app:
+    container_name: app
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    hostname: app
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    environment:
+      DOCKER_ENV: "true"
+      DATABASE_URL: "postgres://my-app-user:my-app-password@postgres/my-app-db"
