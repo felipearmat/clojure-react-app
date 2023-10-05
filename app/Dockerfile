@@ -1,7 +1,15 @@
-FROM openjdk:8-alpine
+# syntax = docker/dockerfile:1.2
+FROM clojure:openjdk-17 AS build
 
-ADD target/app-0.0.1-SNAPSHOT-standalone.jar /app/app.jar
+WORKDIR /
+COPY . /
 
-EXPOSE 8080
+RUN clj -Sforce -T:build all
 
-CMD ["java", "-jar", "/app/app.jar"]
+FROM azul/zulu-openjdk-alpine:17
+
+COPY --from=build /target/app-standalone.jar /app/app-standalone.jar
+
+EXPOSE $PORT
+
+ENTRYPOINT exec java $JAVA_OPTS -jar /app/app-standalone.jar
