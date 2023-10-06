@@ -66,9 +66,7 @@
  :db.sql/query-fn
  {:conn     #ig/ref :db.sql/connection
   :options  {}
-  :filenames ["queries/users.sql"
-              "queries/operations.sql"
-              "queries/records.sql"]}
+  :folder "queries/"}
 
  :db.sql/migrations
  {:store            :database
