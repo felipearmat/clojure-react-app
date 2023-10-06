@@ -1,0 +1,3 @@
+DROP DOMAIN IF EXISTS domain_email;
+--;;
+DROP EXTENSION IF EXISTS citext;
