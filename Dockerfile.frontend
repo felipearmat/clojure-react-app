@@ -5,10 +5,13 @@ WORKDIR /app
 # EXPOSE is merely a hint that a certain ports are useful
 EXPOSE 8080
 
+# Add .bin to PATH so it can run npm command
 ENV PATH /app/node_modules/.bin:$PATH
 
+# Copy json files to prepare the docker container
 COPY ./frontend/package*.json /app/
 
+# Install dependencies
 RUN npm install
 
 # Copy project to container
