@@ -7,8 +7,6 @@
  :metrics/prometheus
  {}
 
-
-
  :server/http
  {:port    #long #or [#env PORT 3000]
   :host    #or [#env HTTP_HOST "0.0.0.0"]
@@ -45,8 +43,7 @@
  {:base-path "/api"
   :env       #ig/ref :system/env
   :metrics   #ig/ref :metrics/prometheus
-  :query-fn #ig/ref :db.sql/query-fn
-  }
+  :query-fn  #ig/ref :db.sql/query-fn}
 
  :router/routes
  {:routes #ig/refset :reitit/routes}

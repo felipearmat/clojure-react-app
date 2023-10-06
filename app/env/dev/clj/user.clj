@@ -53,9 +53,13 @@
 
 (def query-fn (:db.sql/query-fn state/system))
 
+(defn create-migration
+  [migration-name]
+  (migratus.core/create (:db.sql/migrations state/system) migration-name))
+
+
 (def start-dev
   (go))
-
 
 (comment
   (go)

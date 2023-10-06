@@ -16,10 +16,18 @@ CREATE TABLE records (
 	    REFERENCES users(id)
 );
 --;;
-CREATE INDEX records_user_id_deleted on records(user_id, deleted);
+CREATE INDEX records_user_id_ix on records(user_id)
+  WHERE deleted IS NOT TRUE;
 --;;
-CREATE INDEX records_operation_id_deleted on records(operation_id, deleted);
+CREATE INDEX records_operation_id_ix on records(operation_id)
+  WHERE deleted IS NOT TRUE;
 --;;
-CREATE INDEX records_created_at_deleted on records(created_at, deleted);
+CREATE INDEX records_created_at_ix on records(created_at)
+  WHERE deleted IS NOT TRUE;
 --;;
-CREATE TRIGGER records_auto_updated_at BEFORE UPDATE ON records FOR EACH ROW EXECUTE PROCEDURE auto_updated_at();
+CREATE INDEX records_deleted_ix on records(deleted);
+--;;
+CREATE TRIGGER records_auto_updated_at
+  BEFORE UPDATE ON records
+  FOR EACH ROW
+  EXECUTE PROCEDURE auto_updated_at();
