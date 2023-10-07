@@ -41,43 +41,42 @@
 
 (def refresh repl/refresh)
 
+(defn reset-with
+  "Halts current state/system and resets it adding keys on keys-vector"
+  [keys-vector]
+    (let [current-keys (keys state/system)
+          new-keys (distinct (concat keys-vector current-keys))]
+      (halt)
+      (prep)
+      (init new-keys)))
+
+(defn use-system
+  "Starts state/system key if it wasn't started and return its value"
+  [key]
+    (if (empty? (key state/system)) (reset-with [key]))
+    (:db.sql/migrations state/system))
+
 (defn reset-db []
-  (migratus.core/reset (:db.sql/migrations state/system)))
+  (migratus.core/reset (use-system :db.sql/migrations)))
 
 (defn rollback []
-  (migratus.core/rollback (:db.sql/migrations state/system)))
+  (migratus.core/rollback (use-system :db.sql/migrations)))
 
 (defn migrate []
-  (migratus.core/migrate (:db.sql/migrations state/system)))
+  (migratus.core/migrate (use-system :db.sql/migrations)))
 
 (defn query-fn [& vars]
-  (apply (:db.sql/query-fn state/system) vars))
+  (apply (use-system :db.sql/query-fn) vars))
 
 (defn create-migration
   [migration-name]
-  (migratus.core/create (:db.sql/migrations state/system) migration-name))
-
-(defn reset-config
-  ([env]
-    (let [cfg (sample.app.config/system-config {:profile env})]
-      (alter-var-root #'state/config (constantly cfg))))
-  ([]
-    (reset-config :dev)))
-
-(defn reset-system
-  [keys-vector]
-    (reset-config)
-    (init keys-vector))
-
-(defn start-repl
-  ([_]
-    (reset-system [:db.sql/query-fn]))
-  ([]
-    (start-repl nil)))
+  (migratus.core/create (use-system :db.sql/migrations) migration-name))
 
 (defn start-dev [_]
+  ;; (go) is a sugar syntax for (do (prep)(init))
   (go))
 
 (comment
-  (go)
+  (prep) ;; this sets state/config
+  (init) ;; this sets state/system
   (reset))
