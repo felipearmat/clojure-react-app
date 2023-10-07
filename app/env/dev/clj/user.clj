@@ -41,7 +41,6 @@
 
 (def refresh repl/refresh)
 
-
 (defn reset-db []
   (migratus.core/reset (:db.sql/migrations state/system)))
 
@@ -51,14 +50,32 @@
 (defn migrate []
   (migratus.core/migrate (:db.sql/migrations state/system)))
 
-(def query-fn (:db.sql/query-fn state/system))
+(defn query-fn [& vars]
+  (apply (:db.sql/query-fn state/system) vars))
 
 (defn create-migration
   [migration-name]
   (migratus.core/create (:db.sql/migrations state/system) migration-name))
 
+(defn reset-config
+  ([env]
+    (let [cfg (sample.app.config/system-config {:profile env})]
+      (alter-var-root #'state/config (constantly cfg))))
+  ([]
+    (reset-config :dev)))
 
-(def start-dev
+(defn reset-system
+  [keys-vector]
+    (reset-config)
+    (init keys-vector))
+
+(defn start-repl
+  ([_]
+    (reset-system [:db.sql/query-fn]))
+  ([]
+    (start-repl nil)))
+
+(defn start-dev [_]
   (go))
 
 (comment

@@ -19,14 +19,14 @@
     (mapv #(clojure.string/replace (str %) #"./resources/" "") filenames)))
 
 (defn handle-folder-key-config
-  "If system-config has a [:db.sql/query-fn :folder] key, change it
-   to a [:db.sql/query-fn :filenames] key and updates its values for
-   a vector of sql files found on './resources/<original-path>'"
+  "If system-config has a [:db.sql/query-fn :folder] key, change
+   it to a [:db.sql/query-fn :filenames] key and updates its values
+   with a vector of sql files found on './resources/<folder-path>'"
   [config]
   (let [query-config     (:db.sql/query-fn config)
-        folder-config    (:folder query-config)]
-    (if (seq folder-config)
-      (->> (filenames-by-folder folder-config)
+        folder-path      (:folder query-config)]
+    (if (seq folder-path)
+      (->> (filenames-by-folder folder-path)
            (assoc query-config :filenames)
            (assoc config :db.sql/query-fn))
       config)))
