@@ -52,9 +52,9 @@
 
 (defn use-system
   "Starts state/system key if it wasn't started and return its value"
-  [system-key]
-    (if (empty? (system-key state/system)) (reset-with [system-key]))
-    (:db.sql/migrations state/system))
+  [key]
+    (if (not-any? #(= key %) (keys state/system)) (reset-with [key]))
+    (get state/system key))
 
 (defn reset-db []
   (migratus.core/reset (use-system :db.sql/migrations)))
