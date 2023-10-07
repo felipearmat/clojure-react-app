@@ -52,8 +52,8 @@
 
 (defn use-system
   "Starts state/system key if it wasn't started and return its value"
-  [key]
-    (if (empty? (key state/system)) (reset-with [key]))
+  [system-key]
+    (if (empty? (system-key state/system)) (reset-with [system-key]))
     (:db.sql/migrations state/system))
 
 (defn reset-db []
