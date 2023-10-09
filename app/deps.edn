@@ -11,6 +11,7 @@
            ring/ring-core                     {:mvn/version "1.10.0"}
            ring/ring-defaults                 {:mvn/version "0.3.4"}
            ring-cors/ring-cors                {:mvn/version "0.1.13"}
+           clj-time                           {:mvn/version "0.15.2"}
 
            ;; Logging
            ch.qos.logback/logback-classic     {:mvn/version "1.4.11"}
@@ -31,7 +32,7 @@
            io.github.kit-clj/kit-metrics      {:mvn/version "1.0.3"}
 
            ;; Auth
-           buddy/buddy-auth                   {:mvn/version "3.0.1"}}
+           buddy/buddy-auth                   {:mvn/version "3.0.323"}}
 
  :aliases {:build {:deps {io.github.clojure/tools.build {:git/sha "24f2894"
                                                          :git/tag "v0.9.5" :git/url "https://github.com/clojure/tools.build.git"}}

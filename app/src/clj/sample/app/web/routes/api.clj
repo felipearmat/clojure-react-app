@@ -1,6 +1,7 @@
 (ns sample.app.web.routes.api
   (:require
     [sample.app.web.controllers.health :as health]
+    [sample.app.web.controllers.auth :as auth]
     [sample.app.web.middleware.exception :as exception]
     [sample.app.web.middleware.formats :as formats]
     [integrant.core :as ig]
@@ -8,7 +9,8 @@
     [reitit.ring.coercion :as coercion]
     [reitit.ring.middleware.muuntaja :as muuntaja]
     [reitit.ring.middleware.parameters :as parameters]
-    [reitit.swagger :as swagger]))
+    [reitit.swagger :as swagger]
+    [sample.app.web.middleware.auth :refer [check-authentication]]))
 
 (def route-data
   {:coercion   malli/coercion
@@ -38,7 +40,18 @@
            :swagger {:info {:title "sample.app API"}}
            :handler (swagger/create-swagger-handler)}}]
    ["/health"
-    {:get health/healthcheck!}]])
+    {:get health/healthcheck!}]
+   ["/logged"
+    {:post auth/logged}]
+   ["/login"
+    {:post auth/login!}]
+   ["/logout"
+    {:post auth/logout!}]
+   ["/v1" {:middleware [check-authentication]}
+     ["/restricted"
+      {:post {:no-doc  true
+             :swagger {:info {:title "sample.app API"}}
+             :handler (swagger/create-swagger-handler)}}]]])
 
 (derive :reitit.routes/api :reitit/routes)
 

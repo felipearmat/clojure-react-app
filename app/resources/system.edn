@@ -29,7 +29,9 @@
                                                      :http-only   true
                                                      :same-site   :strict}}
                           :security  {:anti-forgery   false
-                                      :xss-protection {:enable? true, :mode :block}
+                                      ;; :xss-protection is no longer considered best practice and should be avoided
+                                      ;; (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection)
+                                      :xss-protection {:enable? false, :mode :block}
                                       :frame-options  :sameorigin
                                       :content-type-options :nosniff}
                           :static    {:resources "public"}

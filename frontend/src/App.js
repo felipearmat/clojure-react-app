@@ -8,14 +8,10 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = () => {
-    // In a real application, you would perform authentication here.
-    // For this example, we're assuming successful login when this function is called.
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
-    // In a real application, you would perform logout here.
-    // For this example, we're simulating logout when this function is called.
     setIsLoggedIn(false);
   };
 

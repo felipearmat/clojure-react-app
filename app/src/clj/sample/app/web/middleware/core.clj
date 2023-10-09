@@ -3,13 +3,29 @@
     [sample.app.env :as env]
     [ring.middleware.defaults :as defaults]
     [ring.middleware.session.cookie :as cookie]
-    [iapetos.collector.ring :as prometheus-ring]
+    [clojure.tools.logging :as log]
+    [buddy.auth.backends.token :refer [jwe-backend]]
+    [sample.app.web.middleware.auth :refer [secret-key]]
+    ;; [buddy.auth.accessrules :refer [wrap-access-rules]]
     [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-    [buddy.auth.backends :as backends]
+    [iapetos.collector.ring :as prometheus-ring]
     [ring.middleware.cors :refer [wrap-cors]]))
 
-;; Create an instance backend auth session
-(def backend (backends/session))
+;; (def rules [{:uri "/foo/*"
+;;              :handler (fn [_] true)}
+;;             {:uri "/bar/*"
+;;              :handler {:or [(fn [_] true) (fn [_] false)]}}
+;;             {:uri "/baz/*"
+;;              :handler {:and [(fn [_] true) {:or [(fn [_] false) (fn [_] false)]}]}}])
+
+;; Create jwe based backend manager
+(def auth-backend (jwe-backend {:secret secret-key
+                                :options {:alg :a256kw :enc :a128gcm}}))
+
+(defn logger-middleware [handler]
+  (fn [request]
+    (log/info (:body request))
+    (handler request)))
 
 ;; Get the allowed regex for CORS by ENV
 (def allowed-cors-regex
@@ -20,7 +36,9 @@
   (let [cookie-store (cookie/cookie-store {:key (.getBytes ^String cookie-secret)})]
     (fn [handler]
       (-> ((:middleware env/defaults) handler opts)
-          ;; (wrap-authentication backend)
+          ;; (wrap-access-rules (assoc opts :rules rules))
+          (wrap-authorization auth-backend)
+          (wrap-authentication auth-backend)
           ;; Should put anything that uses session above wrap-defaults
           (defaults/wrap-defaults
             (assoc-in site-defaults-config [:session :store] cookie-store))

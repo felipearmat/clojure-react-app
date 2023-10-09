@@ -42,7 +42,7 @@ services:
       - postgres
     environment:
       DOCKER_ENV: "true"
-      FRONTEND_HOST: "frontend:8080"
+      FRONTEND_HOST: "172.16.238.9:8080"
       JDBC_URL: "jdbc:postgresql://postgres/sample-app?user=sample-app&password=sample-app-password"
 
   frontend:
@@ -51,12 +51,13 @@ services:
       context: ./
       dockerfile: ./Dockerfile.frontend
     hostname: frontend
+    networks:
+      default:
+        ipv4_address: 172.16.238.9
     volumes:
       - ./frontend:/app
     ports:
       - "8080:8080"
-    depends_on:
-      - app
     environment:
       DOCKER_ENV: "true"
       BACKEND_HOST: "172.16.238.10:3000/api"
