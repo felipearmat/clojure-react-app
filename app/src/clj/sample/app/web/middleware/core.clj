@@ -1,15 +1,16 @@
 (ns sample.app.web.middleware.core
   (:require
-    [sample.app.env :as env]
+    ;; [buddy.auth.accessrules :refer [wrap-access-rules]]
+    [buddy.auth.backends.token :refer [jwe-backend]]
+    [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+    [buddy.core.hash :as hash]
+    [clojure.tools.logging :as log]
+    [iapetos.collector.ring :as prometheus-ring]
+    [ring.middleware.cors :refer [wrap-cors]]
     [ring.middleware.defaults :as defaults]
     [ring.middleware.session.cookie :as cookie]
-    [clojure.tools.logging :as log]
-    [buddy.auth.backends.token :refer [jwe-backend]]
-    [sample.app.web.middleware.auth :refer [secret-key]]
-    ;; [buddy.auth.accessrules :refer [wrap-access-rules]]
-    [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-    [iapetos.collector.ring :as prometheus-ring]
-    [ring.middleware.cors :refer [wrap-cors]]))
+    [sample.app.env :as env]
+    [sample.app.web.middleware.auth :refer [no-authorization? ->cookie-token wrap-ensure-token-middleware]]))
 
 ;; (def rules [{:uri "/foo/*"
 ;;              :handler (fn [_] true)}
@@ -18,13 +19,17 @@
 ;;             {:uri "/baz/*"
 ;;              :handler {:and [(fn [_] true) {:or [(fn [_] false) (fn [_] false)]}]}}])
 
+(def secret-key (hash/sha256 "mysecretkey"))
+
 ;; Create jwe based backend manager
 (def auth-backend (jwe-backend {:secret secret-key
-                                :options {:alg :a256kw :enc :a128gcm}}))
+                                :options {:alg :a256kw :enc :a128gcm}
+                                :token-name (:token-name env/defaults)}))
 
-(defn logger-middleware [handler]
+(defn wrap-logger
+  [handler]
   (fn [request]
-    (log/info (:body request))
+    (log/info request)
     (handler request)))
 
 ;; Get the allowed regex for CORS by ENV
@@ -37,8 +42,10 @@
     (fn [handler]
       (-> ((:middleware env/defaults) handler opts)
           ;; (wrap-access-rules (assoc opts :rules rules))
+          (wrap-logger)
           (wrap-authorization auth-backend)
           (wrap-authentication auth-backend)
+          (wrap-ensure-token-middleware)
           ;; Should put anything that uses session above wrap-defaults
           (defaults/wrap-defaults
             (assoc-in site-defaults-config [:session :store] cookie-store))

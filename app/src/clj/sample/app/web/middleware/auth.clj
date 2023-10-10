@@ -1,26 +1,55 @@
 (ns sample.app.web.middleware.auth
   (:require
-    [ring.util.http-response :refer [unauthorized]]
     [buddy.auth :refer [authenticated?]]
-    [buddy.core.hash :as hash]
-    [buddy.core.nonce :as nonce]
-    [buddy.core.codecs :refer [bytes->hex]]
-    [clojure.tools.logging :as log]
-    [reitit.middleware :as middleware]))
+    [clojure.string :as s]
+    [integrant.repl.state :as state]
+    [reitit.middleware :as middleware]
+    [ring.util.codec :as codec]
+    [ring.util.http-response :refer [get-header unauthorized]]
+    [sample.app.env :as env]))
 
-;; (def secret-key (bytes->hex (hash/sha256 "mysecret")))
-(def secret-key (hash/sha256 "mysecret"))
+(defn ->cookie-token
+  [request]
+  (let [header (get-header request "cookie")]
+    (if (seq header)
+      (let [token (get (codec/form-decode header) "value")]
+        (if (seq token)
+          (first
+            (s/split token #";")))))))
 
-(defn authentication-wrapper
+(defn set-authorization
+  [request value]
+  (assoc request
+    :headers
+    (merge (:headers request) {"authorization" value})))
+
+(defn set-token-from-cookie
+  [request]
+  (set-authorization request (->cookie-token request)))
+
+(defn no-authorization?
+  [request]
+  (let [header (get-header request "authorization")]
+    (empty?
+      (s/trim
+        (s/replace (str header) (re-pattern (:token-name env/defaults)) "")))))
+
+(defn wrap-ensure-token-middleware
   [handler]
   (fn [request]
-    (log/info request)
+    (cond-> request
+      (no-authorization? request) (set-token-from-cookie)
+      true (handler))))
+
+(defn wrap-authentication-middleware
+  [handler]
+  (fn [request]
     (if-not (authenticated? request)
       (unauthorized)
       (handler request))))
 
-(def check-authentication
+(def authentication-middleware
   (middleware/map->Middleware
-    {:name ::check-authentication
-     :description "Middleware that checks session authentication and authorization"
-     :wrap authentication-wrapper}))
+    {:name ::authentication-middleware
+     :description "Middleware that checks authentication and authorization"
+     :wrap wrap-authentication-middleware}))
