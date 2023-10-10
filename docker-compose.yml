@@ -14,7 +14,7 @@ networks:
 services:
   postgres:
     container_name: postgres
-    image: postgres:11.5-alpine
+    image: postgres:16.0-alpine
     hostname: postgres
     environment:
       POSTGRES_USER: "sample-app"
@@ -67,7 +67,7 @@ services:
 
   proxy:
     container_name: proxy
-    image: nginx
+    image: nginx:1.25-alpine
     hostname: localhost
     volumes:
       - ./proxy:/etc/nginx/conf.d
