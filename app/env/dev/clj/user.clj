@@ -9,9 +9,8 @@
     [integrant.core :as ig]
     [integrant.repl :refer [clear go halt prep init reset reset-all]]
     [integrant.repl.state :as state]
-    [kit.api :as kit]
     [lambdaisland.classpath.watch-deps :as watch-deps]      ;; hot loading for deps
-    [sample.app.core :refer [start-app]]))
+  ))
 
 ;; uncomment to enable hot loading for deps
 (watch-deps/start! {:aliases [:dev :test]})
@@ -72,11 +71,13 @@
   [migration-name]
   (migratus.core/create (use-system :db.sql/migrations) migration-name))
 
-(defn start-dev [_]
-  ;; (go) is a sugar syntax for (do (prep)(init))
-  (go))
+(defn start-dev [_] (go))
 
 (comment
   (prep) ;; this sets state/config
   (init) ;; this sets state/system
-  (reset))
+  (go) ;; (go) is a sugar syntax for (do (prep)(init))
+  (halt)
+  (reset)
+  (clear) ;; this unsets state/config
+  (reset-all)) ;; Reset-all does halt, clear, prep and init

@@ -2,7 +2,6 @@
   (:require
     [buddy.auth :refer [authenticated?]]
     [clojure.string :as s]
-    [integrant.repl.state :as state]
     [reitit.middleware :as middleware]
     [ring.util.codec :as codec]
     [ring.util.http-response :refer [get-header unauthorized]]

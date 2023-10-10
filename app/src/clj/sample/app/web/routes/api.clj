@@ -6,7 +6,6 @@
     [reitit.ring.middleware.muuntaja :as muuntaja]
     [reitit.ring.middleware.parameters :as parameters]
     [reitit.swagger :as swagger]
-    [ring.middleware.cookies :refer [wrap-cookies]]
     [sample.app.web.controllers.auth :as auth]
     [sample.app.web.controllers.health :as health]
     [sample.app.web.middleware.auth :refer [authentication-middleware]]
