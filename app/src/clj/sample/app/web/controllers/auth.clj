@@ -7,23 +7,16 @@
     [ring.middleware.cookies :refer [cookies-response]]
     [ring.util.http-response :refer [ok unauthorized]]
     [sample.app.env :as env]
-    [sample.app.web.middleware.core :refer [secret-key]]))
-
-(def authdata
-  "Global var that stores valid users with their
-   respective passwords."
-  {:admin "secret"
-   :test "secret"})
+    [sample.app.web.middleware.core :refer [secret-key]]
+    [sample.app.web.models.users :as users]))
 
 (defn login!
   [request]
-  (let [username (get-in request [:body-params :username])
-        password (get-in request [:body-params :password])
-        valid? (some-> authdata
-                       (get (keyword username))
-                       (= password))]
+  (let [email  (get-in request [:body-params :username])
+        attemp (get-in request [:body-params :password])
+        valid? (users/verify-password attemp {:e-mail email})]
     (if valid?
-      (let [claims     {:user (keyword username)
+      (let [claims     {:user (keyword email)
                         :exp  (jt/plus (jt/instant) (jt/seconds 3600))}
             token      (jwt/encrypt claims secret-key {:alg :a256kw :enc :a128gcm})
             token-name (str (:token-name env/defaults) " ")]

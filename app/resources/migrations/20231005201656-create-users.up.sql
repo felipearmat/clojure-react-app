@@ -16,6 +16,9 @@ CREATE INDEX users_email_ix on users(email)
 CREATE INDEX users_id_ix on users(id)
   WHERE deleted IS NOT TRUE;
 --;;
+CREATE INDEX users_status_ix on users(status)
+  WHERE deleted IS NOT TRUE;
+--;;
 CREATE INDEX users_deleted_ix on users(deleted);
 --;;
 CREATE UNIQUE INDEX user_email_unique_constraint ON users(email)
