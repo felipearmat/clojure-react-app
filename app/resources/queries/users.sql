@@ -15,13 +15,13 @@ WHERE id = :id AND deleted IS NOT TRUE
 
 -- :name get-users :? :*
 -- :doc retrieve all users from table.
-SELECT email, status, created_at, updated_at FROM users
+SELECT email, status, password, created_at, updated_at FROM users
 WHERE deleted IS NOT TRUE
 ORDER by id
 
 -- :name get-user :? :1
 -- :doc retrieve an active user given the id.
-SELECT email, status, created_at, updated_at FROM users
+SELECT email, status, password, created_at, updated_at FROM users
 WHERE id = :id AND deleted IS NOT TRUE
 
 -- :name deactivate-user! :! :n
