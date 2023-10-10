@@ -5,19 +5,18 @@
     [sample.app.config :as config]
     [sample.app.env :refer [defaults]]
 
-    ;; Edges  
+    ;; Edges
     [kit.edge.db.sql.conman]
     [kit.edge.db.sql.migratus]
     [kit.edge.db.postgres]
-    [kit.edge.db.mysql] 
-    [kit.edge.scheduling.quartz]  
-    [kit.edge.utils.metrics]  
+    [kit.edge.db.mysql]
+    [kit.edge.scheduling.quartz]
+    [kit.edge.utils.metrics]
     [kit.edge.server.undertow]
     [sample.app.web.handler]
 
     ;; Routes
-    [sample.app.web.routes.api]
-    )
+    [sample.app.web.routes.api])
   (:gen-class))
 
 ;; log uncaught exceptions in threads
