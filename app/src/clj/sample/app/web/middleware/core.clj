@@ -7,6 +7,7 @@
     [clojure.tools.logging :as log]
     [iapetos.collector.ring :as prometheus-ring]
     [ring.middleware.cors :refer [wrap-cors]]
+    [ring.middleware.defaults :as defaults]
     [ring.middleware.session.cookie :as cookie]
     [sample.app.env :as env]
     [sample.app.web.middleware.auth :refer [wrap-ensure-token-middleware]]))

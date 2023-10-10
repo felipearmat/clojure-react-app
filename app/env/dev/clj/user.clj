@@ -10,7 +10,7 @@
     [integrant.repl :refer [clear go halt prep init reset reset-all]]
     [integrant.repl.state :as state]
     [lambdaisland.classpath.watch-deps :as watch-deps]      ;; hot loading for deps
-  ))
+    [sample.app.core :refer [start-app]]))
 
 ;; uncomment to enable hot loading for deps
 (watch-deps/start! {:aliases [:dev :test]})
