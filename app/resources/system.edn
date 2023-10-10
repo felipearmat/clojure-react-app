@@ -38,8 +38,7 @@
                           :responses {:not-modified-responses true
                                       :absolute-redirects     true
                                       :content-types          true
-                                      :default-charset        "utf-8"}}
-  }
+                                      :default-charset        "utf-8"}}}
 
  :reitit.routes/api
  {:base-path "/api"
