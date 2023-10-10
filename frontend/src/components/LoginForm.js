@@ -26,7 +26,6 @@ const LoginForm = ({ onLogin }) => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
-    token: "",
   });
   const [error, setError] = useState(null);
 
@@ -44,7 +43,7 @@ const LoginForm = ({ onLogin }) => {
 
     try {
       const response = await axios.post(
-        "http://172.16.238.10:3000/api/login",
+        "http://localhost/api/login",
         formData,
         {
           headers: {
@@ -54,7 +53,6 @@ const LoginForm = ({ onLogin }) => {
       );
       setFormData({
         ...formData,
-        token: response.data.token,
       });
       console.log("Logged in:", response);
       // onLogin();
@@ -71,11 +69,10 @@ const LoginForm = ({ onLogin }) => {
 
     try {
       const response = await axios.post(
-        "http://172.16.238.10:3000/api/v1/restricted",
+        "http://localhost/api/v1/restricted",
         data,
         {
           headers: {
-            Authorization: `Token ${formData["token"]}`,
             "Content-Type": "application/json",
           },
         }

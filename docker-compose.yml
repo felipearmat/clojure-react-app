@@ -64,3 +64,15 @@ services:
       PORT: 8080
     extra_hosts:
       - host.docker.internal:host-gateway
+
+  proxy:
+    container_name: proxy
+    image: nginx
+    hostname: localhost
+    volumes:
+      - ./proxy:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - app
