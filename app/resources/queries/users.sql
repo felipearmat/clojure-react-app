@@ -31,12 +31,6 @@ WHERE
 AND deleted IS TRUE
 ORDER by id
 
--- :name deactivate-user! :! :n
--- :doc change user status to inactive
-UPDATE users
-SET status = 'inactive'
-WHERE email = :email AND deleted IS NOT TRUE
-
 -- :name delete-user! :! :n
 -- :doc soft delete user
 UPDATE users
