@@ -23,6 +23,8 @@
   (spec/and string? #(re-matches email-regex %)))
 
 (spec/def :users/password
+  ;; A password that must contain at least one uppercase letter, one lowercase
+  ;; letter, one digit, one special character, and be at least 8 characters long.
   (spec/and string? #(re-matches password-regex %)))
 
 (spec/def :users/create-user!
@@ -42,16 +44,19 @@
   (spec/keys :req-un [:users.update/where :users.update/set]))
 
 (defn encrypt
+  "Encrypts a password using the bcrypt+blake2b-512 algorithm with 13 iterations."
   [password]
   (hashers/derive password {:alg :bcrypt+blake2b-512 :iterations 13}))
 
 (defn normalize-email
+  "Normalizes an email address by converting it to lowercase and validating its format."
   [email]
   (->> email
     (string/lower-case)
     (validate-spec :users/email)))
 
 (defn normalize-where
+  "Normalizes a 'where' map, especially normalizing email addresses within it."
   [where]
   (let [email (:email where)]
     (cond-> where
@@ -59,12 +64,14 @@
       true        (#(validate-spec :users.gen/where %)))))
 
 (defn get-users
+  "Retrieves user records based on the 'where' conditions."
   [where]
   (-> where
     (normalize-where)
     (#(query-fn :get-users {:where %}))))
 
 (defn create-user!
+  "Creates a new user with the given email and password."
   [email password]
   (let [data {:email (string/lower-case email) :password password}]
     (validate-spec :users/create-user! data)
@@ -75,18 +82,21 @@
       (throw (db-error "User already exists.")))))
 
 (defn get-deleted-users
+  "Retrieves deleted user records based on the 'where' conditions."
   [where]
   (-> where
     (normalize-where)
     (#(query-fn :get-deleted-users {:where %}))))
 
 (defn update-user!
+  "Updates an user's information based on 'where' and 'set' conditions."
   [where set]
   (let [data {:where where :set set}]
     (validate-spec :users/update-user! data)
     (query-fn :update-user! data)))
 
 (defn deactivate-user!
+  "Deactivates an user by setting their status to 'inactive'."
   [email]
   (-> email
     (normalize-email)
@@ -94,6 +104,7 @@
                     {:status "inactive"}))))
 
 (defn activate-user!
+  "Activates an user by setting their status to 'active'."
   [email]
   (-> email
     (normalize-email)
@@ -101,21 +112,26 @@
                     {:status "active"}))))
 
 (defn delete-user!
+  "Deletes an user based on their email address."
   [email]
   (-> email
     (normalize-email)
     (#(query-fn :delete-user! {:email %}))))
 
 (defn update-password!
-  [new-password where]
+  "Updates an user's password with a new one."
+  [new-password email]
   (validate-spec :users/password new-password)
-  (-> where
-    (normalize-where)
-    (update-user! {:password (encrypt new-password)})))
+  (-> email
+    (normalize-email)
+    (#(update-user! {:email %}
+                    {:password (encrypt new-password)}))))
 
 (defn verify-password
-  [attempt where]
-  (when-let [user (first (get-users where))]
+  "Verifies a password attempt against the user's stored password hash."
+  [attempt email]
+  (normalize-email email)
+  (when-let [user (first (get-users {:email email}))]
     (when (not (:inactive user))
       (-> (:password user)
         (#(hashers/verify attempt % {:limit trusted-algs}))
