@@ -56,19 +56,20 @@
  {:schedule []}
 
  :db.sql/connection
- #profile {:dev  {:jdbc-url   #env JDBC_DEV_URL
-                  :username   #env DB_USER
-                  :password   #env DB_PASSWORD}
-           :test {:jdbc-url   #env JDBC_TEST_URL
-                  :username   #env DB_USER
-                  :password   #env DB_PASSWORD}
-           :prod {:jdbc-url   #env JDBC_URL
-                  :username   #env DB_USER
-                  :password   #env DB_PASSWORD
-                  :init-size  1
-                  :min-idle   1
-                  :max-idle   8
-                  :max-active 32}}
+ #profile {:dev  {:jdbc-url    #env JDBC_DEV_URL
+                  :username    #env DB_USER
+                  :password    #env DB_PASSWORD}
+           :test {:jdbc-url    #env JDBC_TEST_URL
+                  :username    #env DB_USER
+                  :password    #env DB_PASSWORD
+                  :auto-commit false}
+           :prod {:jdbc-url    #env JDBC_URL
+                  :username    #env DB_USER
+                  :password    #env DB_PASSWORD
+                  :init-size   1
+                  :min-idle    1
+                  :max-idle    8
+                  :max-active  32}}
 
  :db.sql/query-fn
  {:conn     #ig/ref :db.sql/connection

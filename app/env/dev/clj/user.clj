@@ -59,9 +59,6 @@
 (defn migrate []
   (migratus.core/migrate (use-system :db.sql/migrations)))
 
-(defn query-fn [& vars]
-  (apply (use-system :db.sql/query-fn) vars))
-
 (defn create-migration
   [migration-name]
   (migratus.core/create (use-system :db.sql/migrations) migration-name))

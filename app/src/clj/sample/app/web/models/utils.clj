@@ -1,7 +1,6 @@
 (ns sample.app.web.models.utils
   (:require
     [clojure.spec.alpha :as spec]
-    [clojure.string :as string]
     [hugsql.parameters :refer [identifier-param-quote]]
     [integrant.repl.state :as state]))
 
@@ -22,14 +21,18 @@
     input
     (throw (spec-error spec input))))
 
+(defn db-connector
+  []
+  (:db.sql/query-fn state/system))
+
 (defn query-fn [& vars]
   (try
-    (apply (:db.sql/query-fn state/system) vars)
+    (apply (db-connector) vars)
     (catch Exception e (throw (db-error e)))))
 
 (defn transpile-query
   [params command separator options]
-    (clojure.string/join " AND "
+    (clojure.string/join separator
       (for [[field value] (get params command)]
         (let [expression (or (:raw value) (str " = :v" command "."))]
           (str (identifier-param-quote (name field) options)
@@ -41,6 +44,6 @@
 
 (defn expand-where
   [params options]
-  (if (= params {:where :all})
+  (if (= :all (:where params))
     " id IS NOT NULL "
     (transpile-query params :where " AND " options)))
