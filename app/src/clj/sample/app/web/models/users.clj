@@ -41,7 +41,7 @@
   (spec/keys :req-un [(or :users/email :users/uuid)]))
 
 (spec/def :users/update-user!
-  (spec/keys :req-un [:users.update/where :users.update/set]))
+  (spec/keys :req-un [:users.gen/where :users.gen/set]))
 
 (defn encrypt
   "Encrypts a password using the bcrypt+blake2b-512 algorithm with 13 iterations."

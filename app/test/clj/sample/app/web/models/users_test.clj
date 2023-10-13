@@ -75,3 +75,42 @@
 
   (testing "Return nil with wrong password"
     (is (not (verify-password (str "a" valid-password) valid-email)))))
+
+(deftest deactivate-user!-test
+  (create-user! valid-email valid-password)
+
+  (testing "Deactivate a user"
+    (deactivate-user! valid-email)
+    (let [user (first (get-users {:email valid-email}))]
+      (is (= "inactive" (:status user))))))
+
+(deftest activate-user!-test
+  (create-user! valid-email valid-password)
+
+  (testing "Activate a user"
+    (deactivate-user! valid-email) ; Deactivate the user first
+    (activate-user! valid-email)
+    (let [user (first (get-users {:email valid-email}))]
+      (is (= "active" (:status user))))))
+
+(deftest delete-user!-test
+  (create-user! valid-email valid-password)
+
+  (testing "Delete a user"
+    (delete-user! valid-email)
+    (is (empty? (get-users {:email valid-email})))
+    (is (seq (get-deleted-users {:email valid-email})))))
+
+(deftest update-user!-test
+  (create-user! valid-email valid-password)
+
+  (testing "Update a user's status"
+    (update-user! {:email valid-email} {:status "inactive"})
+    (let [user (first (get-users {:email valid-email}))]
+      (is (= "inactive" (:status user)))))
+
+  (testing "Update a user's email"
+    (let [new-email "new_email@example.com"]
+      (update-user! {:email valid-email} {:email new-email})
+      (is (empty? (get-users {:email valid-email})))
+      (is (seq (get-users {:email new-email}))))))
