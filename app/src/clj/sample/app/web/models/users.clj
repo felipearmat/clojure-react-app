@@ -57,11 +57,10 @@
 
 (defn normalize-where
   "Normalizes a 'where' map, especially normalizing email addresses within it."
-  [where]
-  (let [email (:email where)]
-    (cond-> where
-      (seq email) (merge {:email (normalize-email email)})
-      true        (#(validate-spec :users.gen/where %)))))
+  [{:keys [email] :as where}]
+  (cond-> where
+    (seq email) (merge {:email (normalize-email email)})
+    true        (#(validate-spec :users.gen/where %))))
 
 (defn get-users
   "Retrieves user records based on the 'where' conditions."

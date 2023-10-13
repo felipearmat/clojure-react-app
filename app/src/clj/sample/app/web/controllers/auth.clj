@@ -14,7 +14,7 @@
   [request]
   (let [email  (get-in request [:body-params :username])
         attemp (get-in request [:body-params :password])
-        valid? (users/verify-password attemp {:e-mail email})]
+        valid? (users/verify-password attemp email)]
     (if valid?
       (let [claims     {:user (keyword email)
                         :exp  (jt/plus (jt/instant) (jt/seconds 3600))}
