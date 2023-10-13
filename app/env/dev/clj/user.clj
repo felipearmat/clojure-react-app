@@ -31,11 +31,6 @@
                               (-> (sample.app.config/system-config {:profile :test})
                                   (ig/prep)))))
 
-;; Can change this to test-prep! if want to run tests as the test profile in your repl
-;; You can run tests in the dev profile, too, but there are some differences between
-;; the two profiles.
-(dev-prep!)
-
 (repl/set-refresh-dirs "src/clj")
 
 (def refresh repl/refresh)
@@ -71,7 +66,9 @@
   [migration-name]
   (migratus.core/create (use-system :db.sql/migrations) migration-name))
 
-(defn start-dev [_] (go))
+(defn start-dev [_]
+  (dev-prep!)
+  (go))
 
 (comment
   (prep) ;; this sets state/config
