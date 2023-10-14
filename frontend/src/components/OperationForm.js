@@ -34,7 +34,6 @@ function OperationForm() {
 
       console.log("Operation created:", response.data);
 
-      // Clear form fields after successful submission
       setOperationType("");
       setCost("");
     } catch (error) {

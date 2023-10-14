@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Container, Typography } from "@mui/material";
 import DataTable from "../components/DataTable";
@@ -8,9 +8,8 @@ const RecordList = () => {
   const [totalBalance, setTotalBalance] = useState(0);
 
   useEffect(() => {
-    // Make an HTTP request to get the user's records
     axios
-      .get("http://localhost/api/records")
+      .get("http://localhost/api/v1/records")
       .then((response) => {
         const data = response.data;
         if (Array.isArray(data)) {
@@ -28,7 +27,7 @@ const RecordList = () => {
     setTotalBalance(total);
   };
 
-  const columns = [
+  const headers = [
     {
       id: "id",
       label: "ID",
@@ -49,15 +48,23 @@ const RecordList = () => {
 
   return (
     <Container>
-      <DataTable
-        title="Banana"
-        rows={records}
-        columns={columns}
-        pagination={true}
-      />
-      <Typography variant="h6" gutterBottom>
-        Total Balance: {totalBalance}
-      </Typography>
+      {records.length > 0 ? (
+        <>
+          <DataTable
+            title="Records"
+            rows={records}
+            columns={headers}
+            pagination={true}
+          />
+          <Typography variant="h6" gutterBottom>
+            Total Balance: {totalBalance}
+          </Typography>
+        </>
+      ) : (
+        <Typography variant="h6" gutterBottom>
+          No records available.
+        </Typography>
+      )}
     </Container>
   );
 };

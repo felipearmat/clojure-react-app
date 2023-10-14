@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import { styled } from "@mui/system";
+import AppLayout from "./layouts/AppLayout";
 import GlobalCss from "./components/GlobalCss";
 import LoginForm from "./components/LoginForm";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { styled } from "@mui/system";
-import AppLayout from "./layouts/AppLayout";
-import { Container, CircularProgress } from "@mui/material";
+import Loading from "./components/Loading";
+import { Container } from "@mui/material";
 import axios from "axios";
 
-const StyledContainer = styled(Container)(({ _theme }) => ({
+const StyledContainer = styled(Container)(() => ({
   display: "block",
   height: "100vh",
 }));
@@ -17,37 +18,36 @@ const StyledContainer = styled(Container)(({ _theme }) => ({
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Get the navigation function
 
   const handleLogout = () => {
     setAuthenticated(false);
   };
 
-  const loader = function () {
-    return loading ? (
-      <CircularProgress />
-    ) : authenticated ? (
+  const loader = authenticated ? (
+    <Loading isLoading={loading}>
       <Outlet />
-    ) : (
-      <LoginForm setAuthenticated={setAuthenticated} />
-    );
-  };
+    </Loading>
+  ) : (
+    <LoginForm setAuthenticated={setAuthenticated} />
+  );
 
   useEffect(() => {
-    axios
-      .get("http://localhost/api/logged")
-      .then((response) => {
+    const checkAuthentication = async () => {
+      try {
+        const response = await axios.get("http://localhost/api/logged");
         const data = response.data;
         if (data.authenticated === true) {
           setAuthenticated(true);
         }
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error checking authentication:", error);
         setLoading(false);
-      });
-  }, [navigate]); // Pass navigate as a dependency
+      }
+    };
+
+    checkAuthentication();
+  }, []);
 
   return (
     <StyledContainer>
@@ -56,7 +56,7 @@ function App() {
         header={
           <Header isLoggedIn={authenticated} logoutHandler={handleLogout} />
         }
-        content={loader()}
+        content={loader}
         footer={<Footer />}
       />
     </StyledContainer>

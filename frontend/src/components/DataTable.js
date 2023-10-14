@@ -1,18 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
+import { tableCellClasses } from "@mui/material/TableCell";
 import {
   Table,
   TableBody,
-  Container,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
-  TablePagination,
 } from "@mui/material";
-import { tableCellClasses } from "@mui/material/TableCell";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -68,13 +67,14 @@ function DataTableBody({ rows, headers }) {
 }
 
 DataTable.propTypes = {
+  title: PropTypes.string,
   rows: PropTypes.array.isRequired,
   columns: PropTypes.array,
   pagination: PropTypes.bool,
   minWidth: PropTypes.number,
 };
 
-function DataTable({ title, rows, columns, pagination, minWidth }) {
+function DataTable({ title, rows, columns, pagination, minWidth = 400 }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -119,16 +119,16 @@ function DataTable({ title, rows, columns, pagination, minWidth }) {
   };
 
   return (
-    <Container sx={{ width: "100%", overflow: "hidden" }}>
-      <Typography variant="h4" gutterBottom>
-        {title || "My DataTable"}
-      </Typography>
-      <TableContainer component={Container}>
-        <Table sx={{ minWidth }} aria-label="customized table">
-          <DataTableHeader headers={headers} />
-          <DataTableBody rows={rows} headers={headers} />
-        </Table>
-      </TableContainer>
+    <TableContainer sx={{ width: "100%", overflow: "hidden" }}>
+      {title && (
+        <Typography variant="h4" gutterBottom>
+          {title}
+        </Typography>
+      )}
+      <Table sx={{ minWidth }} aria-label="customized table">
+        <DataTableHeader headers={headers} />
+        <DataTableBody rows={rows} headers={headers} />
+      </Table>
       {pagination && (
         <TablePagination
           rowsPerPageOptions={[10, 25, 50, 100]}
@@ -140,7 +140,7 @@ function DataTable({ title, rows, columns, pagination, minWidth }) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       )}
-    </Container>
+    </TableContainer>
   );
 }
 

@@ -10,11 +10,19 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
   justifyContent: "space-between",
+  alignItems: "center",
+  padding: "0.5rem 1rem",
 });
 
-const StyledLogoutButton = styled(IconButton)({
+const StyledTypography = styled(Typography)(({ theme }) => ({
   color: "white",
-});
+  fontWeight: "bold",
+  fontSize: "1.5rem",
+}));
+
+const StyledLogoutButton = styled(IconButton)(({ theme }) => ({
+  color: "white",
+}));
 
 function Header({ isLoggedIn, logoutHandler }) {
   const handleLogout = async () => {
@@ -33,7 +41,9 @@ function Header({ isLoggedIn, logoutHandler }) {
   return (
     <StyledAppBar position="static">
       <StyledToolbar>
-        <Typography variant="h6">ArithmeticCalculatorAPI</Typography>
+        <StyledTypography variant="h6">
+          ArithmeticCalculatorAPI
+        </StyledTypography>
         {isLoggedIn && (
           <StyledLogoutButton onClick={handleLogout}>
             <ExitToApp />

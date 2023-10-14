@@ -4,22 +4,21 @@ import { Button, TextField, Typography, Paper, Box } from "@mui/material";
 import { styled } from "@mui/system";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(1.5),
+  padding: theme.spacing(3),
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: theme.spacing(1.5),
+  gap: theme.spacing(2),
   maxWidth: "300px",
   margin: "0 auto",
 }));
 
-const StyledButton = styled(Button)(() => ({
-  backgroundColor: "#4285F4",
+const StyledButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme?.palette?.primary?.main,
   color: "#fff",
   "&:hover": {
-    backgroundColor: "#3579D8",
+    backgroundColor: theme?.palette?.primary?.dark,
   },
-  margin: "1rem 0 0.5rem 0",
 }));
 
 const LoginForm = ({ setAuthenticated }) => {
@@ -56,7 +55,7 @@ const LoginForm = ({ setAuthenticated }) => {
 
   return (
     <StyledPaper elevation={3}>
-      <Typography variant="h4">Sign in</Typography>
+      <Typography variant="h5">Sign in</Typography>
       <form onSubmit={handleSubmit}>
         <TextField
           label="Email"
@@ -83,7 +82,7 @@ const LoginForm = ({ setAuthenticated }) => {
           </Box>
         )}
         <StyledButton type="submit" variant="contained">
-          Submit
+          Sign In
         </StyledButton>
       </form>
     </StyledPaper>
