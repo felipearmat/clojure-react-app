@@ -1,109 +1,138 @@
 # clojure-react-app
 
-A simple project for a back-end clojure and front-end react app
+A simple project for a back-end Clojure and front-end React app.
 
 ## Index
 
 - [Requirements](#requirements)
-- [App stack](#app-stack)
-- [Development workflow](#development-workflow)
-  - [Starting a REPL](#starting-a-repl)
-- [Production workflow](#production-workflow)
+- [App Stack](#app-stack)
+- [Development Workflow](#development-workflow)
+  - [Running the Application](#running-the-application)
+  - [Accessing the REPL](#accessing-the-repl)
+- [Production Workflow](#production-workflow)
 - [Testing](#testing)
-- [Good to know](#good-to-know)
+  - [Backend Testing](#backend-testing)
+  - [Frontend Testing](#frontend-testing)
+- [Good to Know](#good-to-know)
 
 ## Requirements
 
-First, make shure you enabled the 'recurse-submodules' git tag when cloning this repo, because all the stack is served through submodules.
-Then you'll need a few requirements to run this project:
+First, make sure to enable the 'recurse-submodules' git tag when cloning this repository:
+
+```shell
+git clone --recurse-submodules <repo_url> <folder>
+```
+
+Then you'll need some applications and libs installed on your pc:
 
 - [Docker](https://docs.docker.com/engine/install/)
 - [docker-compose](https://docs.docker.com/compose/install/)
 
-And that's it! :P
+## App Stack
 
-## App stack
+This project consists of the following components:
 
-In this project you're going to find four folders:
+- **app**: A backend application written in Clojure. It's primarily configured using [kit-clj](https://kit-clj.github.io/) with some additional development enhancements. Please ensure you've enabled the submodules cloning, otherwise this folder will be empty.
 
-- app: A backend app that run on clojure. It uses mostly the default configuration of [kit-clj](https://kit-clj.github.io/) with some nice changes to development and use. This folder is linked through a git submodule, so make shure you turned the tag for submodules on.
-- frontend: A frontend app running in react using functional approach. It's also a git submodule, so pay attention to the submodule tag.
-- postgres: A folder with a shell script file that is executed on the first time you start its container. Not much to talk about it.
-- proxy: A folder with a simple nginx configuration to create a reverse-proxy for the backend and front-end, so they act like a single application.
-- .env: An environment file that sets most of the docker-compose file values and make setting these configs for the apps easier. You can change its configuration for a better usage on you computer.
-- docker-compose: A docker-compose yml file. Not much to talk about it too.
+- **frontend**: A frontend application built with React using a functional approach. Ensure you've enabled the submodules cloning, otherwise this folder will be empty.
+
+- **postgres**: This folder contains a shell script that is responsible for setting up the database and executes the first time you start the postgres container.
+
+- **proxy**: A simple Nginx configuration for creating a reverse-proxy server that makes backend and frontend act as a single application.
+
+- **.env**: An environment file that configures the docker-compose values for the apps. You can adjust these configurations to better suit your needs.
+
+- **docker-compose.yml**: The docker-compose YAML file for orchestrating the containers.
 
 ## Development workflow
 
-To run the app you must start the docker-compose file, you can run it on many ways:
+### Running the Application
+
+You can start the app using the following docker-compose commands:
 
 ```shell
-docker compose up -d # runs the containers on background
+docker compose up -d # Runs the containers in the background
 
 # or
 
-docker compose up # runs the containers using the STDOUT as output
+docker compose up # Runs the containers with output displayed
 
 # or even
 
-docker compose up app proxy # start selected containers and every container that it depends, but when you ctrl+c the proccess it stops only the containers passed as parameters and leave other containers running on backgroun
+docker compose up app proxy # Starts selected containers and their dependencies. Press Ctrl+C to stop only the specified containers and leave others running in the background.
 ```
 
-Once you started the app you can access you [localhost](http://localhost) to check the front-end.
-Back-end requests are made against [localhost/api/v1](http://localhost/api/v1) endpoints.
-You can find a nice swagger interface at [localhost/api/](http://localhost/api/) and check the endpoints, parameters and methods to use the API.
+After starting the app, access the front-end at [localhost](http://localhost). Backend requests are made to [localhost/api/v1](http://localhost/api/v1) endpoints. You can access the Swagger interface at [localhost/api/](http://localhost/api/) to explore the available endpoints, parameters, and methods.
 
-### Starting a REPL
+### Database values
 
-To access an repl interface you must first access the app container shell:
+You might want to create some default data for development. You can do this by running the (seeds) command on REPL on user namespace. This function will create some data for easy of development.
+
+### Accessing the REPL
+
+To access a REPL interface, follow these steps:
+
+1. Access the app container's shell:
 
 ```bash
 docker compose exec app /bin/sh
 ```
 
-Then you can start a REPL by acessing the clojure REPL with dev alias:
+2. Start a REPL by running the following command:
 
 ```sh
-/app# clojure -M:dev
+clojure -M:dev
 # Clojure 1.11.1
 # user=>
 ```
 
-You'll probably want to access some database, for this you'll need to start a connection and set it on system state with these simple commands:
+Now you have a Clojure REPL for interacting with the app. You'll need to stablish database connection so you can make some queries:
 
 ```clojure
-user=># (prep)
+(prep)
 ;; 2023-10-13 00:00:01,000 [main] INFO  kit.config - Reading config system.edn
 ;; :prepped
 
-user=># (use-system :db.sql/query-fn)
+(use-system :db.sql/query-fn)
 ;; #object[kit.edge.db.sql.conman$eval12560$fn__12562$fn__12564 0x1a173e0f "kit.edge.db.sql.conman$eval12560$fn__12562$fn__12564@1a173e0f"]
 ```
 
-Now you can use any function that requires a DB connection.
-For more info check [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli)
+For more information, refer to the [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli).
 
 ## Production workflow
 
-<!-- TODO: Explain how to deploy app -->
+(Instructions for deploying the app will be provided in a future update.)
 
 ## Testing
 
-### Backend
+### Backend Testing
 
-You can test the aplication backend accessing the app container and running the REPL on test alias:
+You can test the application's backend by accessing the app container and running the REPL in the test alias:
 
 ```bash
 docker compose exec app /bin/sh
-/app#
+# /app#
 
-/app# clojure -X:test
+clojure -X:test
 ```
 
-### Frontend
+### Frontend Testing
 
-<!-- TODO: Explain the front-end testing workflow -->
+(Instructions for frontend testing will be provided in a future update.)
 
 ## Good to know
 
-<!-- TODO: What is good to know? -->
+Here are some additional resources and information to help you get the most out of this project:
+
+1. **Official Documentation**:
+
+   - [Clojure Documentation](https://clojure.org/)
+   - [React Documentation](https://reactjs.org/)
+   - [Docker Documentation](https://docs.docker.com/)
+   - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+
+2. **Tutorials and Learning Resources**:
+   - [Learn Clojure on ClojureDocs](https://clojuredocs.org/community/tutorials)
+   - [Clojure for the brave and true](https://www.braveclojure.com/foreword/)
+   - [Docker Getting Started Guide](https://docs.docker.com/get-started/)
+   - [PostgreSQL Tutorial](https://www.postgresqltutorial.com/)
