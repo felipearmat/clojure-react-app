@@ -12,7 +12,7 @@
 (use-fixtures :each test-utils/database-rollback)
 
 ;; Create a user before each test
-(use-fixtures :each {:before (fn [] (create-user! valid-email valid-password)) })
+(use-fixtures :each {:before (fn [] (create-user! valid-email valid-password))})
 
 (deftest test-normalize-where
   (testing "Should not add :email unnecessarily"

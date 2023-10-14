@@ -1,30 +1,31 @@
 (ns sample.app.config
   (:require
-    [kit.config :as config]))
+    [kit.config :as kc]))
 
 (def ^:const system-filename "system.edn")
+(def ^:const resources-path "./resources/")
 
 (defn- list-files
-  "Returns a seq of java.io.Files inside a path and all of it's subfolders"
+  "Returns a seq of java.io.Files inside a path and all of its subfolders"
   [path]
   (filter #(.isFile %) (file-seq (clojure.java.io/file path))))
 
-(defn- filenames-by-folder
+(defn filenames-by-folder
   "Returns a vector of filename paths relative to 'resources'
    folder to be used on system-file configuration"
   [folder]
-  (let [fullpath  (str "./resources/" folder)
+  (let [fullpath  (str resources-path folder)
         all-files (list-files fullpath)
         filenames (filter #(re-find #".sql" (.getPath %)) all-files)]
-    (mapv #(clojure.string/replace (str %) #"./resources/" "") filenames)))
+    (mapv #(clojure.string/replace (str %) resources-path "") filenames)))
 
 (defn handle-folder-key-config
   "If system-config has a [:db.sql/query-fn :folder] key, change
    it to a [:db.sql/query-fn :filenames] key and updates its values
-   with a vector of sql files found on './resources/<folder-path>'"
+   with a vector of SQL files found on './resources/<folder-path>'"
   [config]
-  (let [query-config     (:db.sql/query-fn config)
-        folder-path      (:folder query-config)]
+  (let [query-config (:db.sql/query-fn config)
+        folder-path  (:folder query-config)]
     (if (seq folder-path)
       (->> (filenames-by-folder folder-path)
            (assoc query-config :filenames)
@@ -34,4 +35,4 @@
 (defn system-config
   [options]
   (handle-folder-key-config
-    (config/read-config system-filename options)))
+    (kc/read-config system-filename options)))
