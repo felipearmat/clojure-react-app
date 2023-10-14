@@ -1,41 +1,23 @@
-import React from "react";
-import { AppBar, Button } from "@mui/material";
-import { css } from "@emotion/react";
+import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import { ExitToApp } from "@mui/icons-material";
+import { styled } from "@mui/system";
 import axios from "axios";
 
-const classes = {
-  app: css`
-    display: "flex",
-    flexDirection: "column",
-    minHeight: "100vh",
-  `,
-  header: css`
-    padding: "16px";
-  `,
-  footer: css`
-    padding: "16px",
-    marginTop: "auto",
-  `,
-  content: css`
-    flexGrow: 1,
-    padding: "16px",
-  `,
-  formPaper: css`
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  `,
-  logoutButton: css`
-    marginLeft: "auto",
-    color: "white",
-    backgroundColor: "#f44336", // Red color
-  `,
-};
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: "#1976D2", // Material-UI primary color
+}));
 
-function Header({ logoutHandler }) {
-  const logout = async (e) => {
-    e.preventDefault();
+const StyledToolbar = styled(Toolbar)({
+  display: "flex",
+  justifyContent: "space-between",
+});
+
+const StyledLogoutButton = styled(IconButton)({
+  color: "white",
+});
+
+function Header({ isLoggedIn, logoutHandler }) {
+  const handleLogout = async () => {
     try {
       await axios.post("http://localhost/api/logout", {
         headers: {
@@ -49,11 +31,17 @@ function Header({ logoutHandler }) {
   };
 
   return (
-    <AppBar position="static" className={classes.header}>
-      <Button className={classes.logoutButton} onClick={logout}>
-        Logout
-      </Button>
-    </AppBar>
+    <StyledAppBar position="static">
+      <StyledToolbar>
+        <Typography variant="h6">ArithmeticCalculatorAPI</Typography>
+        {isLoggedIn && (
+          <StyledLogoutButton onClick={handleLogout}>
+            <ExitToApp />
+          </StyledLogoutButton>
+        )}
+      </StyledToolbar>
+    </StyledAppBar>
   );
 }
+
 export default Header;
