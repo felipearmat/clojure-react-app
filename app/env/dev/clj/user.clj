@@ -4,12 +4,13 @@
     [clojure.pprint]
     [clojure.spec.alpha :as s]
     [clojure.tools.namespace.repl :as repl]
-    [criterium.core :as c]                                  ;; benchmarking
+    [criterium.core :as c] ;; benchmarking
     [expound.alpha :as expound]
     [integrant.core :as ig]
     [integrant.repl :refer [clear go halt prep init reset reset-all]]
     [integrant.repl.state :as state]
-    [lambdaisland.classpath.watch-deps :as watch-deps]      ;; hot loading for deps
+    [lambdaisland.classpath.watch-deps :as watch-deps] ;; hot loading for deps
+    [migratus.core :as m]
     [sample.app.core :refer [start-app]]))
 
 ;; uncomment to enable hot loading for deps
@@ -50,18 +51,32 @@
     (if (not-any? #(= key %) (keys state/system)) (reset-with [key]))
     (get state/system key))
 
+(defn gen-seeds-config
+  []
+  (let [seeds-config {:migration-dir "seeds"
+                      :migration-table-name "seeds_migrations"}]
+    (merge seeds-config (use-system :db.sql/migrations))))
+
 (defn reset-db []
-  (migratus.core/reset (use-system :db.sql/migrations)))
+  (m/reset (gen-seeds-config))
+  (m/reset (use-system :db.sql/migrations)))
 
 (defn rollback []
-  (migratus.core/rollback (use-system :db.sql/migrations)))
+  (m/rollback (use-system :db.sql/migrations)))
 
 (defn migrate []
-  (migratus.core/migrate (use-system :db.sql/migrations)))
+  (m/migrate (use-system :db.sql/migrations)))
+
+(defn seeds []
+  (m/migrate (gen-seeds-config)))
+
+(defn create-seed
+  [seed-name]
+  (m/create (gen-seeds-config) seed-name))
 
 (defn create-migration
   [migration-name]
-  (migratus.core/create (use-system :db.sql/migrations) migration-name))
+  (m/create (use-system :db.sql/migrations) migration-name))
 
 (defn start-dev [_]
   (dev-prep!)
