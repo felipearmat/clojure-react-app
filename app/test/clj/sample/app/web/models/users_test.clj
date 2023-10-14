@@ -11,6 +11,9 @@
 
 (use-fixtures :each test-utils/database-rollback)
 
+;; Create a user before each test
+(use-fixtures :each {:before (fn [] (create-user! valid-email valid-password)) })
+
 (deftest normalize-where-test
   (testing "Should not add :email unnecessarily"
     (let [where {:anykey "anything"}
@@ -25,27 +28,24 @@
 
 (deftest get-users-test
   (testing "Should retrieve users when using :all keyword"
-    (is (= 0 (count (get-users :all)))))
+    (is (= 1 (count (get-users :all)))))
 
   (testing "Should query with normalized email"
-    (create-user! valid-email valid-password)
-    (let [result (first (get-users {:email scrambled-email}))]
+    (let [result (last (get-users {:email scrambled-email}))]
       (is (= valid-email (:email result))))))
 
 (deftest create-user!-test
   (testing "Should create a single user"
-    (create-user! valid-email valid-password)
     (is (= 1 (count (get-users {:email valid-email})))))
 
   (testing "Should ensure email matches"
-    (is (= valid-email (:email (first (get-users :all))))))
+    (is (= valid-email (:email (last (get-users :all))))))
 
   (testing "Shouldn't allow users with the same email"
     (is (thrown? Exception (create-user! valid-email valid-password)))))
 
 (deftest update-password!-test
-  (create-user! valid-email valid-password)
-  (let [new-password "Password@2"]
+  (let [new-password (str valid-password "0")]
     (testing "Should update with a valid password"
       (is (= 1 (update-password! new-password valid-email)))
       (is (verify-password new-password valid-email)))
@@ -64,36 +64,32 @@
           (is (thrown? Exception (update-password! bad-password))))))))
 
 (deftest deactivate-user!-test
-  (create-user! valid-email valid-password)
   (testing "Should deactivate a user"
     (deactivate-user! valid-email)
-    (let [user (first (get-users {:email valid-email}))]
+    (let [user (last (get-users {:email valid-email}))]
       (is (= "inactive" (:status user))))))
 
 (deftest activate-user!-test
-  (create-user! valid-email valid-password)
   (testing "Should activate a user"
     (deactivate-user! valid-email) ; Deactivate the user first
     (activate-user! valid-email)
-    (let [user (first (get-users {:email valid-email}))]
+    (let [user (last (get-users {:email valid-email}))]
       (is (= "active" (:status user))))))
 
 (deftest delete-user!-test
-  (create-user! valid-email valid-password)
   (testing "Should delete a user"
     (delete-user! valid-email)
     (is (empty? (get-users {:email valid-email})))
     (is (seq (get-deleted-users {:email valid-email})))))
 
 (deftest update-users!-test
-  (create-user! valid-email valid-password)
   (testing "Should update a user's status"
     (update-users! {:email valid-email} {:status "inactive"})
-    (let [user (first (get-users {:email valid-email}))]
+    (let [user (last (get-users {:email valid-email}))]
       (is (= "inactive" (:status user)))))
 
   (testing "Should update a user's email"
-    (let [new-email "new_email@example.com"]
-      (update-users! {:email valid-email} {:email new-email})
+    (let [new-valid-email (str "a" valid-email)]
+      (update-users! {:email valid-email} {:email new-valid-email})
       (is (empty? (get-users {:email valid-email})))
-      (is (seq (get-users {:email new-email}))))))
+      (is (seq (get-users {:email new-valid-email}))))))
