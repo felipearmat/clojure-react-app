@@ -22,6 +22,9 @@ CREATE INDEX records_user_id_ix on records(user_id)
 CREATE INDEX records_operation_id_ix on records(operation_id)
   WHERE deleted IS NOT TRUE;
 --;;
+CREATE INDEX records_user_operation_id_ix on records(user_id, operation_id)
+  WHERE deleted IS NOT TRUE;
+--;;
 CREATE INDEX records_created_at_ix on records(created_at)
   WHERE deleted IS NOT TRUE;
 --;;

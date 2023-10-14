@@ -1,25 +1,34 @@
--- place your sql queries here
--- see https://www.hugsql.org/ for documentation
+-- Place your SQL queries here
+-- See https://www.hugsql.org/ for documentation
 
 -- :name create-record! :! :n
--- :doc creates a new record record
-INSERT INTO records
-(operation_id, user_id, amount, operation_response)
-VALUES (:operation_id, :user_id, :amount, :operation_response)
+-- :doc Create a new record.
+-- :require [sample.app.web.models.utils :refer [expand-where]]
+INSERT INTO records (operation_id, user_id, amount, user_balance, operation_response)
+VALUES (:operation_id, :user_id, :amount, :user_balance, :operation_response)
 
 -- :name get-records :? :*
--- :doc retrieve all records from table.
-SELECT id, operation_id, user_id, amount, user_balance, operation_response, created_at, updated_at FROM records
-WHERE deleted IS NOT TRUE
-ORDER by id
+-- :doc Retrieves non-deleted records.
+-- :require [sample.app.web.models.utils :refer [expand-where]]
+SELECT id, operation_id, user_id, amount, user_balance, operation_response, created_at, updated_at
+FROM records
+WHERE
+--~ (expand-where params options)
+AND deleted IS NOT TRUE
+ORDER BY id
 
--- :name get-record :? :1
--- :doc retrieve an active record given the id.
-SELECT id, operation_id, user_id, amount, user_balance, operation_response, created_at, updated_at FROM records
-WHERE id = :id AND deleted IS NOT TRUE
+-- :name get-deleted-records :? :*
+-- :doc Retrieves deleted records.
+-- :require [sample.app.web.models.utils :refer [expand-where]]
+SELECT *
+FROM records
+WHERE
+--~ (expand-where params options)
+AND deleted IS TRUE
+ORDER BY id
 
 -- :name delete-record! :! :n
--- :doc soft delete record
+-- :doc Soft delete a record.
 UPDATE records
 SET deleted = TRUE
 WHERE id = :id
