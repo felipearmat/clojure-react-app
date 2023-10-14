@@ -24,9 +24,24 @@
                                      "expires" (:exp claims)}}))
       (unauthorized))))
 
+(defn logout!
+  [request]
+  (cookies-response {:cookies {"value" ""}}))
+
+(defn change-password!
+  [request]
+  (let [old-password (get-in request [:body-params :old-password])
+        new-password (get-in request [:body-params :new-password])
+        email (get-in request [:body-params :email])]
+    (if (users/verify-password old-password email)
+      (do
+        (users/update-password! new-password email)
+        (ok "Password changed"))
+      (unauthorized "Invalid old password"))))
+
 (defn logged
   [request]
   (do
     (log/info (:identity request))
     (ok
-      {:response  (authenticated? request)})))
+      {:authenticated  (authenticated? request)})))

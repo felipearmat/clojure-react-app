@@ -44,9 +44,11 @@
       ["/health"
         {:get health/healthcheck!}]
       ["/logged"
-        {:post auth/logged}]
+        {:get auth/logged}]
       ["/login"
         {:post auth/login!}]
+      ["/logout"
+        {:post auth/logout!}]
       ["/v1" {:middleware [authentication-middleware]}
         ["/restricted"
           {:post {:no-doc  true
