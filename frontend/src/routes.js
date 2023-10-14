@@ -1,8 +1,8 @@
-import React from "react";
 import App from "./App";
 import Records from "./views/Records";
 import { Navigate } from "react-router-dom";
-// import Operations from "./views/Operations";
+import Operations from "./views/Operations";
+// import UserProfile from "./views/UserProfile";
 // import IncreaseCredit from "./views/IncreaseCredit";
 // import UserProfile from "./views/UserProfile";
 
@@ -12,24 +12,20 @@ const routes = [
     element: <App />,
     children: [
       {
-        path: "/records",
+        path: "/",
         element: <Records />,
       },
-      // {
-      //   path: "/operations",
-      //   element: <Operations />,
-      // },
+      {
+        path: "/operations",
+        element: <Operations />,
+      },
       // {
       //   path: "/increase-credit",
       //   element: <IncreaseCredit />,
       // },
-      // {
-      //   path: "/profile",
-      //   element: <UserProfile />,
-      // },
       {
         path: "*",
-        element: <Navigate to="/records" />,
+        element: <Navigate to="/" />,
       },
     ],
   },

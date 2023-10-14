@@ -4,7 +4,7 @@ import { styled } from "@mui/system";
 import axios from "axios";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: "#1976D2", // Material-UI primary color
+  backgroundColor: "#1976D2",
 }));
 
 const StyledToolbar = styled(Toolbar)({

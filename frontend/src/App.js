@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Outlet, useNavigate } from "react-router-dom";
 import GlobalCss from "./components/GlobalCss";
 import LoginForm from "./components/LoginForm";
 import Header from "./components/Header";
@@ -40,7 +40,6 @@ function App() {
         const data = response.data;
         if (data.authenticated === true) {
           setAuthenticated(true);
-          navigate("/records"); // Redirect to /records when authenticated
         }
         setLoading(false);
       })

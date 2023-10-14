@@ -1,14 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableBody from "@mui/material/TableBody";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
+import { Container, Typography } from "@mui/material";
+import DataTable from "../components/DataTable";
 
 const RecordList = () => {
   const [records, setRecords] = useState([]);
@@ -35,33 +28,33 @@ const RecordList = () => {
     setTotalBalance(total);
   };
 
+  const columns = [
+    {
+      id: "id",
+      label: "ID",
+    },
+    {
+      id: "operation_id",
+      label: "Operation ID",
+    },
+    {
+      id: "amount",
+      label: "Amount",
+    },
+    {
+      id: "user_balance",
+      label: "User Balance",
+    },
+  ];
+
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
-        My Records
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Operation ID</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>User Balance</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {records.map((record) => (
-              <TableRow key={record.id}>
-                <TableCell>{record.id}</TableCell>
-                <TableCell>{record.operation_id}</TableCell>
-                <TableCell>{record.amount}</TableCell>
-                <TableCell>{record.user_balance}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <DataTable
+        title="Banana"
+        rows={records}
+        columns={columns}
+        pagination={true}
+      />
       <Typography variant="h6" gutterBottom>
         Total Balance: {totalBalance}
       </Typography>
