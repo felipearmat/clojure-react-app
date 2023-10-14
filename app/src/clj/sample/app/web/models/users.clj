@@ -1,9 +1,9 @@
 (ns sample.app.web.models.users
   (:require
     [buddy.hashers :as hashers]
-    [clojure.string :as string]
+    [clojure.string :as str]
     [clojure.spec.alpha :as spec]
-    [sample.app.web.models.utils :refer [query-fn validate-spec db-error]]))
+    [sample.app.web.models.utils :refer [db-error query-fn validate-spec]]))
 
 (def trusted-algs #{:bcrypt+blake2b-512})
 
@@ -30,18 +30,11 @@
 (spec/def :users/create-user!
   (spec/keys :req-un [:users/email :users/password]))
 
-(spec/def :users.gen/all #(= :all %))
-
-(spec/def :users.gen/where (spec/or :where map?
-                                    :all   :users.gen/all))
-
-(spec/def :users.gen/set map?)
-
 (spec/def :users.password/where
   (spec/keys :req-un [(or :users/email :users/uuid)]))
 
-(spec/def :users/update-user!
-  (spec/keys :req-un [:users.gen/where :users.gen/set]))
+(spec/def :users/update-users!
+  (spec/keys :req-un [:general/where :general.update/set]))
 
 (defn encrypt
   "Encrypts a password using the bcrypt+blake2b-512 algorithm with 13 iterations."
@@ -52,7 +45,7 @@
   "Normalizes an email address by converting it to lowercase and validating its format."
   [email]
   (->> email
-    (string/lower-case)
+    (str/lower-case)
     (validate-spec :users/email)))
 
 (defn normalize-where
@@ -60,7 +53,7 @@
   [{:keys [email] :as where}]
   (cond-> where
     (seq email) (merge {:email (normalize-email email)})
-    true        (#(validate-spec :users.gen/where %))))
+    true        (#(validate-spec :general/where %))))
 
 (defn get-users
   "Retrieves user records based on the 'where' conditions."
@@ -72,7 +65,7 @@
 (defn create-user!
   "Creates a new user with the given email and password."
   [email password]
-  (let [data {:email (string/lower-case email) :password password}]
+  (let [data {:email (str/lower-case email) :password password}]
     (validate-spec :users/create-user! data)
     (if (empty? (get-users (select-keys data [:email])))
       (-> data
@@ -87,49 +80,46 @@
     (normalize-where)
     (#(query-fn :get-deleted-users {:where %}))))
 
-(defn update-user!
-  "Updates an user's information based on 'where' and 'set' conditions."
+(defn update-users!
+  "Updates a user's information based on 'where' and 'set' conditions."
   [where set]
   (let [data {:where where :set set}]
-    (validate-spec :users/update-user! data)
-    (query-fn :update-user! data)))
+    (validate-spec :users/update-users! data)
+    (query-fn :update-users! data)))
 
 (defn deactivate-user!
-  "Deactivates an user by setting their status to 'inactive'."
+  "Deactivates a user by setting their status to 'inactive'."
   [email]
   (-> email
     (normalize-email)
-    (#(update-user! {:email %}
-                    {:status "inactive"}))))
+    (#(update-users! {:email %} {:status "inactive"}))))
 
 (defn activate-user!
-  "Activates an user by setting their status to 'active'."
+  "Activates a user by setting their status to 'active'."
   [email]
   (-> email
     (normalize-email)
-    (#(update-user! {:email %}
-                    {:status "active"}))))
+    (#(update-users! {:email %} {:status "active"}))))
 
 (defn delete-user!
-  "Deletes an user based on their email address."
+  "Deletes a user based on their email address."
   [email]
   (-> email
     (normalize-email)
     (#(query-fn :delete-user! {:email %}))))
 
 (defn update-password!
-  "Updates an user's password with a new one."
+  "Updates a user's password with a new one."
   [new-password email]
   (validate-spec :users/password new-password)
   (-> email
     (normalize-email)
-    (#(update-user! {:email %}
-                    {:password (encrypt new-password)}))))
+    (#(update-users! {:email %} {:password (encrypt new-password)}))))
 
 (defn verify-password
-  "Verifies a password attempt against the user's stored password hash."
+  "Verifies a password attempt against the user's stored password hash.
+  Returns nil if the user doesn't exist, is inactive, or the password is wrong."
   [attempt email]
-  (normalize-email email)
   (when-let [user (first (get-users {:email email}))]
     (when (not (:inactive user))
       (-> (:password user)

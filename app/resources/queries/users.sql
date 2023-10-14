@@ -4,8 +4,8 @@ INSERT INTO users
 (email, password)
 VALUES (:email, :password)
 
--- :name update-user! :! :n
--- :doc update an existing user record
+-- :name update-users! :! :n
+-- :doc update existing user records based on where expression
 -- :require [sample.app.web.models.utils :refer [expand-set expand-where]]
 UPDATE users SET
 --~ (expand-set params options)
@@ -20,16 +20,16 @@ SELECT email, status, password, created_at, updated_at FROM users
 WHERE
 --~ (expand-where params options)
 AND deleted IS NOT TRUE
-ORDER by id
+ORDER by email
 
 -- :name get-deleted-users :? :*
 -- :doc retrieve deleted users from table.
 -- :require [sample.app.web.models.utils :refer [expand-where]]
-SELECT email, status, password, created_at, updated_at FROM users
+SELECT * FROM users
 WHERE
 --~ (expand-where params options)
 AND deleted IS TRUE
-ORDER by id
+ORDER by email
 
 -- :name delete-user! :! :n
 -- :doc soft delete user

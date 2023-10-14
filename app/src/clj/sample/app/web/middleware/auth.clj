@@ -1,7 +1,7 @@
 (ns sample.app.web.middleware.auth
   (:require
     [buddy.auth :refer [authenticated?]]
-    [clojure.string :as s]
+    [clojure.string :as str]
     [reitit.middleware :as middleware]
     [ring.util.codec :as codec]
     [ring.util.http-response :refer [get-header unauthorized]]
@@ -14,7 +14,7 @@
       (let [token (get (codec/form-decode header) "value")]
         (if (seq token)
           (first
-            (s/split token #";")))))))
+            (str/split token #";")))))))
 
 (defn set-authorization
   [request value]
@@ -30,8 +30,8 @@
   [request]
   (let [header (get-header request "authorization")]
     (empty?
-      (s/trim
-        (s/replace (str header) (re-pattern (:token-name env/defaults)) "")))))
+      (str/trim
+        (str/replace (str header) (re-pattern (:token-name env/defaults)) "")))))
 
 (defn wrap-ensure-token-middleware
   [handler]

@@ -12,22 +12,14 @@ CREATE INDEX operations_type_ix on operations(type)
 --;;
 CREATE INDEX operations_id_ix on operations(id)
   WHERE deleted is not TRUE;
+  --;;
+CREATE INDEX operations_cost_ix on operations(cost)
+  WHERE deleted is not TRUE;
 --;;
 CREATE INDEX operations_deleted_ix on operations(deleted);
 --;;
 CREATE UNIQUE INDEX operations_type_unique_constraint ON operations(type)
   WHERE deleted is not TRUE;
---;;
-ALTER TABLE operations
-  ADD CONSTRAINT check_type
-  CHECK (type IN (
-    'addition',
-    'subtraction',
-    'multiplication',
-    'division',
-    'square_root',
-    'random_string'
-  ));
 --;;
 CREATE TRIGGER operations_auto_updated_at
   BEFORE UPDATE ON operations

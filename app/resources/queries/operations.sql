@@ -7,22 +7,32 @@ INSERT INTO operations
 (type, cost)
 VALUES (:type, :cost)
 
--- :name update-operation! :! :n
+-- :name update-operations! :! :n
 -- :doc update an existing operation record
-UPDATE operations
-SET type = :type, cost = :cost
-WHERE id = :id AND deleted IS NOT TRUE
+-- :require [sample.app.web.models.utils :refer [expand-where]]
+UPDATE operations SET
+--~ (expand-set params options)
+WHERE
+--~ (expand-where params options)
+AND deleted IS NOT TRUE
 
 -- :name get-operations :? :*
 -- :doc retrieve all operations from table.
+-- :require [sample.app.web.models.utils :refer [expand-where]]
 SELECT id, type, cost, created_at, updated_at FROM operations
-WHERE deleted IS NOT TRUE
+WHERE
+--~ (expand-where params options)
+AND deleted IS NOT TRUE
 ORDER by id
 
--- :name get-operation :? :1
--- :doc retrieve an active operation given the id.
-SELECT id, type, cost, created_at, updated_at FROM operations
-WHERE id = :id AND deleted IS NOT TRUE
+-- :name get-deleted-operations :? :*
+-- :doc retrieve all operations from table.
+-- :require [sample.app.web.models.utils :refer [expand-where]]
+SELECT * FROM operations
+WHERE
+--~ (expand-where params options)
+AND deleted IS TRUE
+ORDER by id
 
 -- :name delete-operation! :! :n
 -- :doc soft delete operation

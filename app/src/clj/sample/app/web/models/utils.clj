@@ -4,6 +4,21 @@
     [hugsql.parameters :refer [identifier-param-quote]]
     [integrant.repl.state :as state]))
 
+(spec/def :general/where #(or (map? %) (= :all %)))
+
+(spec/def :general/set map?)
+
+(defn contains-some?
+  [coll1 coll2]
+  (some (set coll1) coll2))
+
+(spec/def :general/unpermitted-set
+  #(not (contains-some? % [:id, :updated_at, :created_at])))
+
+(spec/def :general.update/set
+  (spec/merge :general/set
+              :general/unpermitted-set))
+
 (defn spec-error
   [spec input]
   (ex-info (spec/explain-str spec input)
@@ -23,7 +38,9 @@
 
 (defn db-connector
   []
-  (:db.sql/query-fn state/system))
+  (if-let [query-fn (:db.sql/query-fn state/system)]
+    query-fn
+    (throw (ex-info "Database connection not initialized. Did you execute (prep) and (init)?" {:type :system.exception/db-connection-failure}))))
 
 (defn query-fn [& vars]
   (try
@@ -31,7 +48,7 @@
     (catch Exception e (throw (db-error e)))))
 
 (defn transpile-query
-  [params command separator options]
+  [command separator params options]
     (clojure.string/join separator
       (for [[field value] (get params command)]
         (let [expression (or (:raw value) (str " = :v" command "."))]
@@ -40,10 +57,10 @@
 
 (defn expand-set
   [params options]
-    (transpile-query params :set ", " options))
+  (transpile-query :set ", " params options))
 
 (defn expand-where
   [params options]
   (if (= :all (:where params))
     " id IS NOT NULL "
-    (transpile-query params :where " AND " options)))
+    (transpile-query :where " AND " params options)))
