@@ -1,37 +1,46 @@
 import React from "react";
-import { Container, Grid } from "@mui/material";
-import { css } from "@emotion/react";
+import { Container, Grid, Box } from "@mui/material";
+import { styled } from "@mui/system";
 
-const classes = {
-  appHeader: css`
-    padding: "0",
-    paddingLeft: "2rem",
-    paddingRight: "2rem",
-  `,
-  appFooter: css`
-    padding: "0.875rem",
-    paddingLeft: "2rem",
-    paddingRight: "2rem",
-    "&.spaced": {
-      paddingTop: "1.75rem",
-      paddingBottom: "1.75rem",
-    },
-  `,
-  contentContainer: css`
-    padding: "0";
-  `,
-};
+const Header = styled(Container)(({ theme }) => ({
+  padding: "0",
+  paddingLeft: "2rem",
+  paddingRight: "2rem",
+}));
+
+const Footer = styled(Container)(({ theme }) => ({
+  padding: "0.875rem",
+  paddingLeft: "2rem",
+  paddingRight: "2rem",
+}));
+
+const Content = styled(Container)(({ theme }) => ({
+  padding: "0",
+  flex: "1",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  height: "100%",
+}));
 
 const AppLayout = ({ sidebar, header, content, footer }) => {
   return (
-    <div>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      height="100vh"
+    >
       {sidebar && <div id="app_sidebar">{sidebar}</div>}
       {header && (
-        <Container id="app_header" className={classes.appHeader} maxWidth="lg">
+        <Header id="app_header" maxWidth="lg">
           {header}
-        </Container>
+        </Header>
       )}
-      <Container id="app_content" className={classes.contentContainer}>
+      <Content id="app_content">
         <Grid container>
           <Grid item xs={12} sm={2} md={3} />
           <Grid item xs={12} sm={8} md={6}>
@@ -39,17 +48,13 @@ const AppLayout = ({ sidebar, header, content, footer }) => {
           </Grid>
           <Grid item xs={12} sm={2} md={3} />
         </Grid>
-      </Container>
+      </Content>
       {footer && (
-        <Container
-          id="app_footer"
-          className={`${classes.appFooter} ${"spaced"}`}
-          maxWidth="lg"
-        >
+        <Footer id="app_footer" maxWidth="lg">
           {footer}
-        </Container>
+        </Footer>
       )}
-    </div>
+    </Box>
   );
 };
 

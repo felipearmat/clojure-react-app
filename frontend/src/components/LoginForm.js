@@ -55,47 +55,38 @@ const LoginForm = ({ setAuthenticated }) => {
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      textAlign="center"
-      height="100vh"
-    >
-      <StyledPaper elevation={3}>
-        <Typography variant="h4">Sign in</Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Email"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            margin="normal"
-            fullWidth
-            required
-          />
-          <TextField
-            type="password"
-            label="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            margin="normal"
-            fullWidth
-            required
-          />
-          {error && (
-            <Box mt={1}>
-              <Typography color="error">{error}</Typography>
-            </Box>
-          )}
-          <StyledButton type="submit" variant="contained">
-            Submit
-          </StyledButton>
-        </form>
-      </StyledPaper>
-    </Box>
+    <StyledPaper elevation={3}>
+      <Typography variant="h4">Sign in</Typography>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label="Email"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          margin="normal"
+          fullWidth
+          required
+        />
+        <TextField
+          type="password"
+          label="Password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          margin="normal"
+          fullWidth
+          required
+        />
+        {error && (
+          <Box mt={1}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        )}
+        <StyledButton type="submit" variant="contained">
+          Submit
+        </StyledButton>
+      </form>
+    </StyledPaper>
   );
 };
 

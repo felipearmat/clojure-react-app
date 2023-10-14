@@ -1,26 +1,23 @@
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom"; // Import useNavigate
 import GlobalCss from "./components/GlobalCss";
 import LoginForm from "./components/LoginForm";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { styled } from "@mui/system";
 import AppLayout from "./layouts/AppLayout";
-import { css } from "@emotion/react";
 import { Container, CircularProgress } from "@mui/material";
 import axios from "axios";
 
-const classes = {
-  root: css`
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100vh",
-  `,
-};
+const StyledContainer = styled(Container)(({ _theme }) => ({
+  display: "block",
+  height: "100vh",
+}));
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Get the navigation function
 
   const handleLogout = () => {
     setAuthenticated(false);
@@ -30,7 +27,7 @@ function App() {
     return loading ? (
       <CircularProgress />
     ) : authenticated ? (
-      <Outlet setAuthenticated={setAuthenticated} />
+      <Outlet />
     ) : (
       <LoginForm setAuthenticated={setAuthenticated} />
     );
@@ -43,6 +40,7 @@ function App() {
         const data = response.data;
         if (data.authenticated === true) {
           setAuthenticated(true);
+          navigate("/records"); // Redirect to /records when authenticated
         }
         setLoading(false);
       })
@@ -50,18 +48,19 @@ function App() {
         console.error("Error checking authentication:", error);
         setLoading(false);
       });
-  }, []);
+  }, [navigate]); // Pass navigate as a dependency
 
   return (
-    <Container className={classes.root}>
+    <StyledContainer>
       <GlobalCss />
       <AppLayout
-        header={<Header logoutHandler={handleLogout} />}
+        header={
+          <Header isLoggedIn={authenticated} logoutHandler={handleLogout} />
+        }
         content={loader()}
-        // footer={<Footer />}
-        footer={<div> Footer </div>}
+        footer={<Footer />}
       />
-    </Container>
+    </StyledContainer>
   );
 }
 
