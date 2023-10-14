@@ -63,7 +63,8 @@
     (#(query-fn :get-users {:where %}))))
 
 (defn create-user!
-  "Creates a new user with the given email and password."
+  "Creates a new user with the given email and password.
+  Returns 1 on success or throws an exception if the user already exists."
   [email password]
   (let [data {:email (str/lower-case email) :password password}]
     (validate-spec :users/create-user! data)
@@ -81,35 +82,35 @@
     (#(query-fn :get-deleted-users {:where %}))))
 
 (defn update-users!
-  "Updates a user's information based on 'where' and 'set' conditions."
+  "Updates a user's information based on 'where' and 'set' conditions. Returns the number of rows affected"
   [where set]
   (let [data {:where where :set set}]
     (validate-spec :users/update-users! data)
     (query-fn :update-users! data)))
 
 (defn deactivate-user!
-  "Deactivates a user by setting their status to 'inactive'."
+  "Deactivates a user by setting their status to 'inactive'. Returns 1 on success"
   [email]
   (-> email
     (normalize-email)
     (#(update-users! {:email %} {:status "inactive"}))))
 
 (defn activate-user!
-  "Activates a user by setting their status to 'active'."
+  "Activates a user by setting their status to 'active'. Returns 1 on success"
   [email]
   (-> email
     (normalize-email)
     (#(update-users! {:email %} {:status "active"}))))
 
 (defn delete-user!
-  "Deletes a user based on their email address."
+  "Deletes a user based on their email address. Returns 1 on success"
   [email]
   (-> email
     (normalize-email)
     (#(query-fn :delete-user! {:email %}))))
 
 (defn update-password!
-  "Updates a user's password with a new one."
+  "Updates a user's password with a new one. Returns 1 on success"
   [new-password email]
   (validate-spec :users/password new-password)
   (-> email
@@ -120,7 +121,7 @@
   "Verifies a password attempt against the user's stored password hash.
   Returns nil if the user doesn't exist, is inactive, or the password is wrong."
   [attempt email]
-  (when-let [user (first (get-users {:email email}))]
+  (when-let [user (last (get-users {:email email}))]
     (when (not (:inactive user))
       (-> (:password user)
         (#(hashers/verify attempt % {:limit trusted-algs}))
