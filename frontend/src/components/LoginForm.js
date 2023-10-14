@@ -22,7 +22,7 @@ const StyledButton = styled(Button)(() => ({
   margin: "1rem 0 0.5rem 0",
 }));
 
-const LoginForm = ({ onLogin }) => {
+const LoginForm = ({ setAuthenticated }) => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -37,114 +37,65 @@ const LoginForm = ({ onLogin }) => {
     });
   };
 
-  const handleSubmit1 = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost/api/login",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setFormData({
-        ...formData,
+      await axios.post("http://localhost/api/login", formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      console.log("Logged in:", response);
-      // onLogin();
+      setAuthenticated(true);
     } catch (err) {
-      setError("Invalid credentials. Please try again.");
-    }
-  };
-
-  const handleSubmit2 = async (e) => {
-    e.preventDefault();
-    setError(null);
-
-    let data = JSON.stringify(formData);
-
-    try {
-      const response = await axios.post(
-        "http://localhost/api/v1/restricted",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Restricted data:", response.data);
-    } catch (err) {
+      console.log(err);
       setError("Invalid credentials. Please try again.");
     }
   };
 
   return (
-    <StyledPaper elevation={3}>
-      <Typography variant="h4">Sign in</Typography>
-      <form onSubmit={handleSubmit1}>
-        <TextField
-          label="Email"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          margin="normal"
-          fullWidth
-          required
-        />
-        <TextField
-          type="password"
-          label="Password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          margin="normal"
-          fullWidth
-          required
-        />
-        {error && (
-          <Box mt={1}>
-            <Typography color="error">{error}</Typography>
-          </Box>
-        )}
-        <StyledButton type="submit" variant="contained">
-          Submit
-        </StyledButton>
-      </form>
-      <form onSubmit={handleSubmit2}>
-        <TextField
-          label="Email"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          margin="normal"
-          fullWidth
-          required
-        />
-        <TextField
-          type="password"
-          label="Password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          margin="normal"
-          fullWidth
-          required
-        />
-        {error && (
-          <Box mt={1}>
-            <Typography color="error">{error}</Typography>
-          </Box>
-        )}
-        <StyledButton type="submit" variant="contained">
-          Submit
-        </StyledButton>
-      </form>
-    </StyledPaper>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      height="100vh"
+    >
+      <StyledPaper elevation={3}>
+        <Typography variant="h4">Sign in</Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Email"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            margin="normal"
+            fullWidth
+            required
+          />
+          <TextField
+            type="password"
+            label="Password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            margin="normal"
+            fullWidth
+            required
+          />
+          {error && (
+            <Box mt={1}>
+              <Typography color="error">{error}</Typography>
+            </Box>
+          )}
+          <StyledButton type="submit" variant="contained">
+            Submit
+          </StyledButton>
+        </form>
+      </StyledPaper>
+    </Box>
   );
 };
 

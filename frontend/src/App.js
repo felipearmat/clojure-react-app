@@ -1,60 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import GlobalCss from "./components/GlobalCss";
 import LoginForm from "./components/LoginForm";
-import LogoSVG from "./components/logoSVG";
-import { Container, Typography, Button, Box } from "@mui/material";
+import Header from "./components/Header";
+import AppLayout from "./layouts/AppLayout";
+import { css } from "@emotion/react";
+import { Container, CircularProgress } from "@mui/material";
+import axios from "axios";
+
+const classes = {
+  root: css`
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100vh",
+  `,
+};
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    setAuthenticated(false);
   };
 
+  const loader = function () {
+    return loading ? (
+      <CircularProgress />
+    ) : authenticated ? (
+      <Outlet setAuthenticated={setAuthenticated} />
+    ) : (
+      <LoginForm setAuthenticated={setAuthenticated} />
+    );
+  };
+
+  useEffect(() => {
+    axios
+      .get("http://localhost/api/logged")
+      .then((response) => {
+        const data = response.data;
+        if (data.authenticated === true) {
+          setAuthenticated(true);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error checking authentication:", error);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <Container component="main" maxWidth="xs">
+    <Container className={classes.root}>
       <GlobalCss />
-      <div>
-        {isLoggedIn ? (
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            textAlign="center"
-            height="100vh"
-          >
-            <Typography variant="h4">You're logged in!</Typography>
-            <Box mt={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            </Box>
-          </Box>
-        ) : (
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            textAlign="center"
-            height="100vh"
-          >
-            <Box mb={1}>
-              <LogoSVG />
-            </Box>
-            <LoginForm onLogin={handleLogin} />
-          </Box>
-        )}
-      </div>
+      <AppLayout
+        header={<Header logoutHandler={handleLogout} />}
+        content={loader()}
+        // footer={<Footer />}
+        footer={<div> Footer </div>}
+      />
     </Container>
   );
 }
