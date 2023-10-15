@@ -8,19 +8,18 @@
 
 (def user-id (atom nil))
 
-(defn base-fixtures []
+;; Create a user, operations, and some records before each test
+(defn base-fixtures [f]
   (users/create-user! "test@mail.com" "Password@1")
   (operations/create-operation! "addition" 10.0)
   (records/create-record! {:operation-id 1
                            :user-id 1
                            :amount 50.0
                            :user-balance 100.0})
-  (swap! user-id (first (users/create-user! :all))))
+  (swap! user-id (first (users/create-user! :all)))
+  (f))
 
-(use-fixtures :each test-utils/database-rollback)
-
-;; Create a user, operations, and some records before each test
-(use-fixtures :each {:before base-fixtures})
+(use-fixtures :each test-utils/database-rollback base-fixtures)
 
 (deftest test-create-record!
   (let [valid-data {:operation-id 1
@@ -36,7 +35,7 @@
 
 (deftest test-get-records
   (testing "Retrieve records based on 'where' conditions"
-    (is (sequential? (records/get-records {:user-id @user-id}))))
+    (is (= 1 (:user-id (first (records/get-records {:user-id @user-id}))))))
 
   (testing "Retrieve records with invalid 'where' conditions"
     (is (thrown? Exception (records/get-records {:amount "invalid"})))))

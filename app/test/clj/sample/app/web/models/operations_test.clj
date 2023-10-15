@@ -4,10 +4,12 @@
     [sample.app.test-utils :as test-utils]
     [sample.app.web.models.operations :refer :all]))
 
-(use-fixtures :each test-utils/database-rollback)
-
 ;; Create an operation before each test
-(use-fixtures :each {:before (fn [] (create-operation! "addition" 10.0)) })
+(defn op-fixture [f]
+  (create-operation! "addition" 10.0)
+  (f))
+
+(use-fixtures :each test-utils/database-rollback op-fixture)
 
 (deftest test-get-operations
   (testing "It retrieves operations based on 'where' conditions"

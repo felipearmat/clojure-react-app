@@ -9,10 +9,11 @@
 (def scrambled-email "TeSt@MaIl.CoM")
 (def valid-password "Password@1")
 
-(use-fixtures :each test-utils/database-rollback)
+(defn user-fixture [f]
+  (create-user! valid-email valid-password)
+  (f))
 
-;; Create a user before each test
-(use-fixtures :each {:before (fn [] (create-user! valid-email valid-password))})
+(use-fixtures :each test-utils/database-rollback user-fixture)
 
 (deftest test-normalize-where
   (testing "Should not add :email unnecessarily"

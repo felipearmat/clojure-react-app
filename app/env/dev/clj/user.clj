@@ -78,6 +78,13 @@
   [migration-name]
   (m/create (use-system :db.sql/migrations) migration-name))
 
+(defn start-repl
+  ([_]
+    (dev-prep!)
+    (prep)
+    (use-system :db.sql/query-fn))
+  ([] (start-repl nil)))
+
 (defn start-dev [_]
   (dev-prep!)
   (go))
