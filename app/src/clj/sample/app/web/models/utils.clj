@@ -2,6 +2,9 @@
   (:require
     [clojure.spec.alpha :as spec]
     [clojure.string :as str]
+    [next.jdbc :as jdbc]
+    [next.jdbc.result-set :as rs]
+    [honey.sql :as hsql]
     [hugsql.parameters :refer [identifier-param-quote]]
     [integrant.repl.state :as state]))
 
@@ -53,6 +56,26 @@
           "Database connection not initialized. Did you execute"
           " (integrant.repl/prep) and (integrant.repl/init)?")
         {:type :system.exception/db-connection-failure}))))
+
+(defn db-connection
+  "Retrieves the database query function from the system state."
+  []
+  (if-let [data-source (:db.sql/connection state/system)]
+    data-source
+    (throw
+      (ex-info
+        (str
+          "Database connection not initialized. Did you execute"
+          " (integrant.repl/prep) and (integrant.repl/init)?")
+        {:type :system.exception/db-connection-failure}))))
+
+(defn execute-query-conn
+  [conn sqlmap]
+    (jdbc/execute! conn (hsql/format sqlmap) {:builder-fn rs/as-unqualified-maps}))
+
+(defn execute-query
+  [sqlmap]
+    (execute-query-conn sqlmap (db-connection)))
 
 (defn query-fn
   "Executes a database query function with provided arguments."

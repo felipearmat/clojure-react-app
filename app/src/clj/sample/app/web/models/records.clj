@@ -1,7 +1,7 @@
 (ns sample.app.web.models.records
   (:require
     [clojure.spec.alpha :as spec]
-    [sample.app.web.models.utils :refer [query-fn validate-spec]]))
+    [sample.app.web.models.utils :refer [execute-query query-fn validate-spec]]))
 
 (spec/def :records/id int?)
 (spec/def :records/operation_id int?)
@@ -23,7 +23,10 @@
   (->> record-data
     (#(assoc % :operation_response ""))
     (validate-spec :records/create-record!)
-    (query-fn :create-record!)))
+    (#(execute-query {:insert-into [:records],
+                      :columns (keys %),
+                      :values  [(vals %)]}))
+    (#(:next.jdbc/update-count (first %)))))
 
 (defn get-records
   "Retrieve records based on the 'where' conditions. Returns a coll of retrieved records."

@@ -11,7 +11,8 @@
   (let [query-fn    (:db.sql/query-fn state/system)
         data-source (:db.sql/connection state/system)]
     (jdbc/with-transaction [conn data-source {:isolation :serializable}]
-      (with-redefs [utils/db-connector #(partial query-fn conn)]
+      (with-redefs [utils/db-connector  #(partial query-fn conn)
+                    utils/execute-query (partial utils/execute-query-conn conn)]
         (f)
         (.rollback conn)))))
 
