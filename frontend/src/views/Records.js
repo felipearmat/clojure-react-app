@@ -5,16 +5,17 @@ import DataTable from "../components/DataTable";
 
 const RecordList = () => {
   const [records, setRecords] = useState([]);
-  const [totalBalance, setTotalBalance] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     axios
       .get("http://localhost/api/v1/records")
       .then((response) => {
         const data = response.data;
+        console.info("sample:", response.data[0]);
         if (Array.isArray(data)) {
           setRecords(data);
-          calculateTotalBalance(data);
+          calculateTotalAmount(data);
         }
       })
       .catch((error) => {
@@ -22,27 +23,29 @@ const RecordList = () => {
       });
   }, []);
 
-  const calculateTotalBalance = (data) => {
+  const calculateTotalAmount = (data) => {
     const total = data.reduce((acc, record) => acc + record.amount, 0);
-    setTotalBalance(total);
+    setTotalAmount(Number.parseFloat(total).toFixed(2));
   };
 
   const headers = [
     {
-      id: "id",
-      label: "ID",
+      id: "created_at",
+      label: "Date",
     },
     {
-      id: "operation_id",
-      label: "Operation ID",
+      id: "operation_type",
+      label: "Operation Type",
     },
     {
       id: "amount",
       label: "Amount",
+      format: (val) => Number.parseFloat(val).toFixed(2),
     },
     {
       id: "user_balance",
       label: "User Balance",
+      format: (val) => Number.parseFloat(val).toFixed(2),
     },
   ];
 
@@ -57,7 +60,7 @@ const RecordList = () => {
             pagination={true}
           />
           <Typography variant="h6" gutterBottom>
-            Total Balance: {totalBalance}
+            Total Amount: {totalAmount}
           </Typography>
         </>
       ) : (

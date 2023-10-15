@@ -32,6 +32,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const StyledTitle = styled(Typography)(({ theme }) => ({
+  textAlign: "center",
+  marginTop: "2rem",
+  marginBottom: "1rem",
+}));
+
 function DataTableHeader({ headers }) {
   return (
     <TableHead>
@@ -50,18 +56,20 @@ function DataTableHeader({ headers }) {
   );
 }
 
-function DataTableBody({ rows, headers }) {
+function DataTableBody({ rows, headers, page, rowsPerPage }) {
   return (
     <TableBody>
-      {rows.map((row, idx) => (
-        <StyledTableRow role="checkbox" tabIndex={-1} key={idx}>
-          {headers.map((header) => (
-            <StyledTableCell key={header.id} align={header.align}>
-              {header.format ? header.format(row[header.id]) : row[header.id]}
-            </StyledTableCell>
-          ))}
-        </StyledTableRow>
-      ))}
+      {rows
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .map((row) => (
+          <StyledTableRow role="checkbox" tabIndex={-1} key={row.id}>
+            {headers.map((header) => (
+              <StyledTableCell key={header.id} align={header.align}>
+                {header.format ? header.format(row[header.id]) : row[header.id]}
+              </StyledTableCell>
+            ))}
+          </StyledTableRow>
+        ))}
     </TableBody>
   );
 }
@@ -76,7 +84,11 @@ DataTable.propTypes = {
 
 function DataTable({ title, rows, columns, pagination, minWidth = 400 }) {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(9999);
+
+  if (rowsPerPage === 9999 && pagination) {
+    setRowsPerPage(10);
+  }
 
   const dataLength = columns
     ? columns.length
@@ -121,13 +133,18 @@ function DataTable({ title, rows, columns, pagination, minWidth = 400 }) {
   return (
     <TableContainer sx={{ width: "100%", overflow: "hidden" }}>
       {title && (
-        <Typography variant="h4" gutterBottom>
+        <StyledTitle variant="h4" gutterBottom>
           {title}
-        </Typography>
+        </StyledTitle>
       )}
-      <Table sx={{ minWidth }} aria-label="customized table">
+      <Table stickyHeader sx={{ minWidth }} aria-label="sticky table">
         <DataTableHeader headers={headers} />
-        <DataTableBody rows={rows} headers={headers} />
+        <DataTableBody
+          rows={rows}
+          headers={headers}
+          page={page}
+          rowsPerPage={rowsPerPage}
+        />
       </Table>
       {pagination && (
         <TablePagination
