@@ -30,14 +30,14 @@
   [where]
   (->> where
     (validate-spec :general/where)
-    (#(query-fn :get-records {:where %}))))
+    (#(query-fn :get-records {:where % :namespace "records."}))))
 
 (defn get-deleted-records
   "Retrieve deleted records based on the 'where' conditions. Returns a coll of retrieved records."
   [where]
   (->> where
     (validate-spec :general/where)
-    (#(query-fn :get-deleted-records {:where %}))))
+    (#(query-fn :get-deleted-records {:where % :namespace "records."}))))
 
 (defn delete-record!
   "Delete a record identified by its ID. Returns 1 on success."

@@ -38,13 +38,14 @@
 
 (deftest test-transpile-query
   (testing "It transpile values of keyword"
-    (let [params {:set {:field1 "value1" :field2 "value2"}
-                  :where {:field3 "value3" :field4 "value4"}}
+    (let [params {:set {:field1 "value1" :x->field2 "value2"}
+                  :namespace "n."
+                  :where {:field?3 "value3" :field4 "value4"}}
           options {:param1 "param1" :param2 "param2"}]
       (testing ":set to be used in a hugsql command"
-        (is (= "field1 = :v:set.field1, field2 = :v:set.field2"
+        (is (= "n.field1 = :v:set.field1, x.field2 = :v:set.x->field2"
               (transpile-query :set ", " params options))))
 
       (testing ":where to be used in a hugsql command"
-        (is (= "field3 = :v:where.field3 AND field4 = :v:where.field4"
+        (is (= "n.field?3 = :v:where.field?3 AND n.field4 = :v:where.field4"
               (transpile-query :where " AND " params options)))))))

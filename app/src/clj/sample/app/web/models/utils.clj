@@ -1,6 +1,7 @@
 (ns sample.app.web.models.utils
   (:require
     [clojure.spec.alpha :as spec]
+    [clojure.string :as str]
     [hugsql.parameters :refer [identifier-param-quote]]
     [integrant.repl.state :as state]))
 
@@ -60,14 +61,24 @@
     (apply (db-connector) vars)
     (catch Exception e (throw (db-error e)))))
 
+(defn extract-ns
+  [field]
+  (when (str/includes? field "->")
+    (str (first (str/split field #"->")) ".")))
+
 (defn transpile-query
   "Creates a string to be used in hugsql query expressions given parameters."
-  [command separator params options]
-    (clojure.string/join separator
+  [command separator {:keys [namespace] :as params} options]
+    (str/join separator
       (for [[field value] (get params command)]
-        (let [expression (or (:raw value) (str " = :v" command "."))]
-          (str (identifier-param-quote (name field) options)
-            expression (name field))))))
+        (let [expression (str " = :v" command ".")
+              field-str  (name field)
+              field      (last (str/split field-str #"->"))
+              field-ns   (extract-ns field-str)]
+          (str
+            (or field-ns namespace)
+            (identifier-param-quote field options)
+            expression field-str)))))
 
 (def expand-set
   (partial transpile-query :set ", "))
@@ -75,5 +86,5 @@
 (defn expand-where
   [params options]
   (if (= :all (:where params))
-    " id IS NOT NULL "
+    (str " " (:namespace params) "id IS NOT NULL ")
     (transpile-query :where " AND " params options)))

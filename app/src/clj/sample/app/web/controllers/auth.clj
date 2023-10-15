@@ -42,6 +42,5 @@
 (defn logged
   [request]
   (do
-    (log/info (:identity request))
     (ok
       {:authenticated  (authenticated? request)})))
