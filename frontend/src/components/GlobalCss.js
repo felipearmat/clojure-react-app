@@ -7,6 +7,12 @@ function GlobalCss() {
       <CssBaseline />
       <Global
         styles={css`
+          #root {
+            min-width: 350px;
+          }
+          #root > div {
+            padding: 0;
+          }
           body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
@@ -14,8 +20,8 @@ function GlobalCss() {
               "Helvetica Neue", sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            background-color: #f7f7f7; /* Change to your desired background color */
-            color: #333; /* Change to your desired text color */
+            background-color: #f7f7f7;
+            color: #333;
           }
           code {
             font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

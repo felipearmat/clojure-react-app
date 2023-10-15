@@ -1,19 +1,12 @@
 import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { styled } from "@mui/system";
 import AppLayout from "./layouts/AppLayout";
 import GlobalCss from "./components/GlobalCss";
 import LoginForm from "./components/LoginForm";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Loading from "./components/Loading";
-import { Container } from "@mui/material";
 import axios from "axios";
-
-const StyledContainer = styled(Container)(() => ({
-  display: "block",
-  height: "100vh",
-}));
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -50,7 +43,7 @@ function App() {
   }, []);
 
   return (
-    <StyledContainer>
+    <>
       <GlobalCss />
       <AppLayout
         header={
@@ -59,7 +52,7 @@ function App() {
         content={loader}
         footer={<Footer />}
       />
-    </StyledContainer>
+    </>
   );
 }
 
