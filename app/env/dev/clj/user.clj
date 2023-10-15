@@ -7,6 +7,7 @@
     [criterium.core :as c] ;; benchmarking
     [expound.alpha :as expound]
     [integrant.core :as ig]
+    [seeds.dev-data :as seeds]
     [integrant.repl :refer [clear go halt prep init reset reset-all]]
     [integrant.repl.state :as state]
     [lambdaisland.classpath.watch-deps :as watch-deps] ;; hot loading for deps
@@ -51,14 +52,7 @@
     (if (not-any? #(= key %) (keys state/system)) (reset-with [key]))
     (get state/system key))
 
-(defn gen-seeds-config
-  []
-  (let [seeds-config {:migration-dir "seeds"
-                      :migration-table-name "seeds_migrations"}]
-    (merge seeds-config (use-system :db.sql/migrations))))
-
 (defn reset-db []
-  (m/reset (gen-seeds-config))
   (m/reset (use-system :db.sql/migrations)))
 
 (defn rollback []
@@ -68,11 +62,7 @@
   (m/migrate (use-system :db.sql/migrations)))
 
 (defn seeds []
-  (m/migrate (gen-seeds-config)))
-
-(defn create-seed
-  [seed-name]
-  (m/create (gen-seeds-config) seed-name))
+  (seeds/seeds))
 
 (defn create-migration
   [migration-name]
