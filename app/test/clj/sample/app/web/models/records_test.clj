@@ -38,15 +38,14 @@
 
 (deftest test-get-records
   (testing "Retrieve records based on 'where' conditions"
-    (is (sequential? (records/get-records {:user_id @user_id}))))
+    (is (sequential? (records/get-records [:= :records.user_id @user_id]))))
 
   (testing "Retrieve records with invalid 'where' conditions"
-    (is (thrown? Exception (records/get-records {:amount "invalid"})))))
+    (is (thrown? Exception (records/get-records [:= :records.amount "invalid"])))))
 
 (deftest test-delete-record!
   (testing "Delete a record with a valid ID"
-    (is (= 1 (records/delete-record!
-              (:id (first (records/get-records {:user_id @user_id})))))))
+    (is (= 1 (records/delete-record! (:id (first (records/get-records [:= :records.user_id @user_id])))))))
 
   (testing "Thrown an error when an invalid ID is given"
     (is (thrown? Exception (records/delete-record! "invalid")))))
@@ -54,7 +53,7 @@
 (deftest test-get-deleted-records
   (testing "Retrieve deleted records based on 'where' conditions"
     (records/delete-record! 1)
-    (is (sequential? (records/get-deleted-records {:user_id @user_id}))))
+    (is (sequential? (records/get-deleted-records [:= :records.user_id @user_id]))))
 
   (testing "Retrieve deleted records with invalid 'where' conditions"
-    (is (thrown? Exception (records/get-deleted-records {:amount "invalid"})))))
+    (is (thrown? Exception (records/get-deleted-records [:= :records.amount "invalid"])))))

@@ -10,6 +10,8 @@
 
 (spec/def :general/where #(or (map? %) (= :all %)))
 
+(spec/def :general/query vector?)
+
 (spec/def :general/set map?)
 
 (defn contains-some?
@@ -75,7 +77,7 @@
 
 (defn execute-query
   [sqlmap]
-    (execute-query-conn sqlmap (db-connection)))
+    (execute-query-conn (db-connection) sqlmap))
 
 (defn query-fn
   "Executes a database query function with provided arguments."
