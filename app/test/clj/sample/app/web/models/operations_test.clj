@@ -45,11 +45,11 @@
 
 (deftest test-create-operation!
   (testing "It creates a new operation"
-    (let [new-op (create-operation! "addition" 10.0)
-          new-id (:id new-op)]
+    (let [new-op (create-operation! "subtraction" 20.0)
+          new-id (:id (last (get-operations :all)))]
       (is (integer? new-id))
       (is (= 1 (count (get-operations {:id new-id}))))
-      (is (= 10.0 (-> (last (get-operations {:id new-id})) :cost)))))
+      (is (= 20.0 (-> (last (get-operations {:id new-id})) :cost)))))
 
   (testing "It throws an exception if 'type' is invalid"
     (is (thrown? clojure.lang.ExceptionInfo (create-operation! "non-existent" 10.0)))

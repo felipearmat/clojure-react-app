@@ -1,7 +1,7 @@
 CREATE TABLE records (
   id SERIAL PRIMARY KEY,
   operation_id INTEGER,
-  user_id UUID,
+  user_id VARCHAR(36),
   amount float NOT NULL,
   user_balance float NOT NULL,
   operation_response VARCHAR(255),

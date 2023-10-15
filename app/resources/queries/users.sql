@@ -16,7 +16,7 @@ AND deleted IS NOT TRUE
 -- :name get-users :? :*
 -- :doc retrieve users from table.
 -- :require [sample.app.web.models.utils :refer [expand-where]]
-SELECT email, status, password, created_at, updated_at FROM users
+SELECT id, email, status, password, created_at, updated_at FROM users
 WHERE
 --~ (expand-where params options)
 AND deleted IS NOT TRUE
