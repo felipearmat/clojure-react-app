@@ -57,10 +57,12 @@
 
 (defn get-users
   "Retrieves user records based on the 'where' conditions."
-  [where]
+  ([]
+  (get-users nil))
+  ([where]
   (-> where
     (normalize-where)
-    (#(query-fn :get-users {:where %}))))
+    (#(query-fn :get-users {:where %})))))
 
 (defn create-user!
   "Creates a new user with the given email and password.
@@ -76,10 +78,12 @@
 
 (defn get-deleted-users
   "Retrieves deleted user records based on the 'where' conditions."
-  [where]
+  ([]
+  (get-deleted-users nil))
+  ([where]
   (-> where
     (normalize-where)
-    (#(query-fn :get-deleted-users {:where %}))))
+    (#(query-fn :get-deleted-users {:where %})))))
 
 (defn update-users!
   "Updates a user's information based on 'where' and 'set' conditions. Returns the number of rows affected"

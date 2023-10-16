@@ -33,8 +33,8 @@
       (is (thrown? Exception (db-connector))))))
 
 (deftest test-expand-where
-  (testing "Returns ' id IS NOT NULL ' if :where value is :all"
-    (is (= " id IS NOT NULL " (expand-where {:where :all} {})))))
+  (testing "Returns ' id IS NOT NULL ' if :where value is nil"
+    (is (= " id IS NOT NULL " (expand-where {:where nil} {})))))
 
 (deftest test-transpile-query
   (testing "It transpile values of keyword"

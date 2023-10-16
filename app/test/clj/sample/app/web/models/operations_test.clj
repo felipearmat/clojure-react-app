@@ -22,7 +22,7 @@
 
 (deftest test-delete-operation!
   (testing "It deletes an operation based on 'id'"
-    (let [op-id (:id (last (get-operations :all)))]
+    (let [op-id (:id (last (get-operations)))]
       (is (= 1 (delete-operation! op-id)))
       (is (= 0 (count (get-operations {:id op-id}))))))
 
@@ -32,7 +32,7 @@
 
 (deftest test-update-operations!
   (testing "It updates operations based on 'where' and 'set' conditions"
-    (let [op-id (:id (last (get-operations :all)))]
+    (let [op-id (:id (last (get-operations)))]
       (is (= 1 (update-operations! {:id op-id} {:cost 20.0})))
       (is (= 1 (count (get-operations {:id op-id}))))
       (is (= 20.0 (:cost (last (get-operations {:id op-id})))))))
@@ -46,7 +46,7 @@
 (deftest test-create-operation!
   (testing "It creates a new operation"
     (let [new-op (create-operation! "subtraction" 20.0)
-          new-id (:id (last (get-operations :all)))]
+          new-id (:id (last (get-operations)))]
       (is (integer? new-id))
       (is (= 1 (count (get-operations {:id new-id}))))
       (is (= 20.0 (-> (last (get-operations {:id new-id})) :cost)))))

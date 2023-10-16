@@ -28,8 +28,8 @@
       (is (= normalized-email (:email result))))))
 
 (deftest test-get-users
-  (testing "Should retrieve users when using :all keyword"
-    (is (= 1 (count (get-users :all)))))
+  (testing "Should retrieve users when no keyword"
+    (is (= 1 (count (get-users)))))
 
   (testing "Should query with normalized email"
     (let [result (last (get-users {:email scrambled-email}))]
@@ -40,7 +40,7 @@
     (is (= 1 (count (get-users {:email valid-email})))))
 
   (testing "Should ensure email matches"
-    (is (= valid-email (:email (last (get-users :all))))))
+    (is (= valid-email (:email (last (get-users))))))
 
   (testing "Shouldn't allow users with the same email"
     (is (thrown? Exception (create-user! valid-email valid-password)))))

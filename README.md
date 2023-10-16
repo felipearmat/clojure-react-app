@@ -97,6 +97,16 @@ Now you have a Clojure REPL for interacting with the app. You'll need to stablis
 ;; #object[kit.edge.db.sql.conman$eval12560$fn__12562$fn__12564 0x1a173e0f "kit.edge.db.sql.conman$eval12560$fn__12562$fn__12564@1a173e0f"]
 ```
 
+Since it might look boring having two commands that will commonly be used, there's also a shortcut for those commands:
+
+```clojure
+(start-repl)
+;; 2023-10-16 12:28:29,527 [main] INFO  kit.config - Reading config system.edn
+;; 2023-10-16 12:28:29,537 [main] INFO  kit.config - Reading config system.edn
+;; #object[kit.edge.db.sql.conman$eval16250$fn__16252$fn__16254 0x483f0877 "kit.edge.db.sql.conman$eval16250$fn__16252$fn__16254@483f0877"]
+
+```
+
 For more information, refer to the [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli).
 
 ## Production workflow

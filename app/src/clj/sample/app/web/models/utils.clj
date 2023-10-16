@@ -2,15 +2,16 @@
   (:require
     [clojure.spec.alpha :as spec]
     [clojure.string :as str]
+    [clojure.tools.logging :as log]
     [next.jdbc :as jdbc]
     [next.jdbc.result-set :as rs]
     [honey.sql :as hsql]
     [hugsql.parameters :refer [identifier-param-quote]]
     [integrant.repl.state :as state]))
 
-(spec/def :general/where #(or (map? %) (= :all %)))
+(spec/def :general/where #(or (map? %) (= nil %)))
 
-(spec/def :general/query vector?)
+(spec/def :general/query #(and (vector? %) (not= % [])))
 
 (spec/def :general/set map?)
 
@@ -47,6 +48,11 @@
     input
     (throw (spec-error spec input))))
 
+(defn format-hsql-output
+  "Formats data of returning Honeysql execute query to match hugsql format"
+  [response]
+  (:next.jdbc/update-count (first response)))
+
 (defn db-connector
   "Retrieves the database query function from the system state."
   []
@@ -73,6 +79,8 @@
 
 (defn execute-query-conn
   [conn sqlmap]
+    ;; (log/info sqlmap)
+    (log/info (hsql/format sqlmap))
     (jdbc/execute! conn (hsql/format sqlmap) {:builder-fn rs/as-unqualified-maps}))
 
 (defn execute-query
@@ -110,6 +118,6 @@
 
 (defn expand-where
   [params options]
-  (if (= :all (:where params))
+  (if (nil? (:where params))
     (str " " (:namespace params) "id IS NOT NULL ")
     (transpile-query :where " AND " params options)))

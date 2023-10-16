@@ -35,10 +35,22 @@
 (defn get-operations
   "Retrieves operations based on the 'where' conditions.
   Returns a collection of maps containing operation fields."
-  [where]
+  ([]
+  (get-operations nil))
+  ([where]
   (->> where
     (validate-spec :general/where)
-    (#(query-fn :get-operations {:where %}))))
+    (#(query-fn :get-operations {:where %})))))
+
+(defn get-deleted-operations
+  "Retrieves operations based on the 'where' conditions.
+  Returns a collection of maps containing operation fields."
+  ([]
+  (get-deleted-operations nil))
+  ([where]
+  (->> where
+    (validate-spec :general/where)
+    (#(query-fn :get-deleted-operations {:where %})))))
 
 (defn delete-operation!
   "Deletes an operation identified by its unique ID.
