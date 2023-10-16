@@ -1,7 +1,8 @@
-(ns seeds.dev-data
+(ns seeds.seed-dev-data
   (:require
     [sample.app.web.models.users :as users]
     [sample.app.web.models.operations :as operations]
+    [sample.app.web.models.credits :as credits]
     [sample.app.web.models.records :as records]))
 
 (def users-data [
@@ -23,8 +24,8 @@
 ])
 
 (defn gen-records [num-records]
-  (let [users (users/get-users :all)
-        ops   (operations/get-operations :all)]
+  (let [users (users/get-users)
+        ops   (operations/get-operations)]
     (doseq [i (range num-records)]
       (let [op       (rand-nth ops)
             type     (:type op)
@@ -45,6 +46,9 @@
     (users/create-user! (:email user) "Password@1")
     (when (:deleted user)
       (users/delete-user! (:email user))))
+  (doseq [user (users/get-users)]
+    (when-not (:deleted user)
+      (credits/add-credit! (:id user) 500)))
   (doseq [operation operations-data]
     (operations/create-operation! (:type operation) (:cost operation))
     (when (:deleted operation)

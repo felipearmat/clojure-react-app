@@ -7,7 +7,7 @@
     [criterium.core :as c] ;; benchmarking
     [expound.alpha :as expound]
     [integrant.core :as ig]
-    [seeds.dev-data :as seeds]
+    [seeds.seed-dev-data :as seeds]
     [integrant.repl :refer [clear go halt prep init reset reset-all]]
     [integrant.repl.state :as state]
     [lambdaisland.classpath.watch-deps :as watch-deps] ;; hot loading for deps
