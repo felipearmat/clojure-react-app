@@ -13,7 +13,7 @@
     "square_root"
     "random_string"})
 
-(spec/def :operations/cost float?)
+(spec/def :operations/cost number?)
 
 (spec/def :operations/create-operation!
   (spec/keys :req-un [:operations/cost :operations/type]))

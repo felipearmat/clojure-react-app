@@ -3,12 +3,10 @@
     [buddy.hashers :as hashers]
     [clojure.string :as str]
     [clojure.spec.alpha :as spec]
+    [sample.app.web.models.utils :as utils]
     [sample.app.web.models.utils :refer [db-error query-fn validate-spec]]))
 
 (def trusted-algs #{:bcrypt+blake2b-512})
-
-(def uuid-regex
-  #"^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$")
 
 (def email-regex
   #"^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$")
@@ -17,7 +15,7 @@
   #"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}")
 
 (spec/def :users/uuid
-  (spec/and string? #(re-matches uuid-regex %)))
+  (spec/and string? #(re-matches utils/uuid-regex %)))
 
 (spec/def :users/email
   (spec/and string? #(re-matches email-regex %)))

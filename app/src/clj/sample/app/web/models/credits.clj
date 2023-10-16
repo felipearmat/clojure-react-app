@@ -1,80 +1,68 @@
 (ns sample.app.web.models.credits
   (:require
     [clojure.spec.alpha :as spec]
-    [sample.app.web.models.utils :refer [execute-query query-fn validate-spec]]))
+    [sample.app.web.models.utils :as utils]))
 
-(spec/def :credits/id int?)
+(spec/def :credits/id (spec/and string? #(re-matches utils/uuid-regex %)))
 (spec/def :credits/user_id :users/uuid)
-(spec/def :credits/value #(and (float? %) (pos? %)))
+(spec/def :credits/value #(and (number? %) (pos? %)))
 
 (spec/def :credits/add-credit!
   (spec/keys :req-un [:credits/user_id
                       :credits/value]))
 
 (def select-fields
-  [[:operations.cost :operation_cost]
-   [:operations.type :operation_type]
-   [:credits.amount :amount]
-   [:credits.created_at :created_at]
-   [:credits.user_id :user_id]
-   [:credits.operation_id :operation_id]
+  [[:credits.created_at :created_at]
    [:credits.id :id]
-   [:credits.operation_response :operation_response]
-   [:credits.updated_at :updated_at]
-   [:credits.user_balance :user_balance]
+   [:credits.user_id :user_id]
+   [:credits.value :value]
    [:users.email :user_email]
    [:users.status :user_status]])
 
-(defn format-data
-  "Format sent data to the query format of honeysql"
-  [data]
-  (let [columns (vec (keys data))
-        values  (mapv #(get data %) columns)]
-        (execute-query {:insert-into [:credits]
-                        :columns     columns
-                        :values      [values]})))
-
 (defn add-credit!
-  "Create a new credit with the provided data. Returns 1 on success."
-  [user-id value]
-  (->> {:user_id user-id :value value}
-    (validate-spec :credits/create-credit!)
-    (format-data)
-    (#(:next.jdbc/update-count (first %)))))
+  "Add given amount. Returns 1 on success."
+  [user-id amount]
+  (->> {:user_id user-id :value amount}
+    (utils/validate-spec :credits/add-credit!)
+    (#(utils/execute-query {:insert-into :credits
+                            :columns     [:user_id :value]
+                            :values      [[(:user_id %) (:value %)]]}))
+    (utils/format-hsql-output)))
 
 (defn get-credits
   "Retrieve credits based on the 'where' conditions. Returns a coll of retrieved credits."
-  [where]
+  ([]
+  (get-credits nil))
+  ([where]
   (->> where
     (conj [:and [:<> :credits.deleted true]])
-    (validate-spec :general/query)
-    (#(execute-query {:select    select-fields
-                      :from      [:credits]
-                      :join      [:operations [:= :credits.operation_id :operations.id]
-                                  :users      [:= :credits.user_id :users.id]]
-                      :where      %
-                      :order-by  [:credits.id]}))))
+    (utils/validate-spec :general/query)
+    (#(utils/execute-query {:select    select-fields
+                            :from      [:credits]
+                            :join      [:users [:= :credits.user_id :users.id]]
+                            :where     %
+                            :order-by  [:credits.id]})))))
 
 (defn get-deleted-credits
   "Retrieve deleted credits based on the 'where' conditions. Returns a coll of retrieved credits."
-  [where]
+  ([]
+  (get-credits nil))
+  ([where]
   (->> where
     (#(vec (conj [:and [:= :credits.deleted true]] %)))
-    (validate-spec :general/query)
-    (#(execute-query {:select   (conj select-fields [:credits.deleted :deleted])
-                      :from     :credits
-                      :join     [:operations [:= :credits.operation_id :operations.id]
-                                 :users      [:= :credits.user_id :users.id]]
-                      :order-by [:credits.id]
-                      :where %}))))
+    (utils/validate-spec :general/query)
+    (#(utils/execute-query {:select    (conj select-fields [:credits.deleted :deleted])
+                            :from      [:credits]
+                            :join      [:users [:= :credits.user_id :users.id]]
+                            :where     %
+                            :order-by  [:credits.id]})))))
 
 (defn delete-credit!
   "Delete a credit identified by its ID. Returns 1 on success."
   [id]
   (->> id
-    (validate-spec :credits/id)
-    (#(execute-query {:update :credits
-                      :set    {:deleted true}
-                      :where  [:= :id %]}))
-    (first)
-    (:next.jdbc/update-count)))
+    (utils/validate-spec :credits/id)
+    (#(utils/execute-query {:update :credits
+                            :set    {:deleted true}
+                            :where  [:= :id %]}))
+    (utils/format-hsql-output)))

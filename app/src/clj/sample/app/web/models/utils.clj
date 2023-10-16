@@ -9,6 +9,9 @@
     [hugsql.parameters :refer [identifier-param-quote]]
     [integrant.repl.state :as state]))
 
+(def uuid-regex
+  #"^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$")
+
 (spec/def :general/where #(or (map? %) (= nil %)))
 
 (spec/def :general/query #(and (vector? %) (not= % [])))

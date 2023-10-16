@@ -6,7 +6,7 @@
 (spec/def :records/id int?)
 (spec/def :records/operation_id int?)
 (spec/def :records/user_id :users/uuid)
-(spec/def :records/amount #(and (float? %) (pos? %)))
+(spec/def :records/amount #(and (number? %) (pos? %)))
 (spec/def :records/operation-response string?)
 (spec/def :records/deleted boolean?)
 (spec/def :records/operation_response string?)
