@@ -24,7 +24,8 @@
   (testing "It deletes an operation based on 'id'"
     (let [op-id (:id (last (get-operations)))]
       (is (= 1 (delete-operation! op-id)))
-      (is (= 0 (count (get-operations {:id op-id}))))))
+      (is (= 0 (count (get-operations {:id op-id}))))
+      (is (= 1 (count (get-deleted-operations {:id op-id}))))))
 
   (testing "It throws an exception if 'id' is not an integer"
     (is (thrown? Exception (delete-operation! "not-an-integer")))
