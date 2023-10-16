@@ -7,6 +7,7 @@
     [reitit.ring.middleware.parameters :as parameters]
     [reitit.swagger :as swagger]
     [sample.app.web.controllers.auth :as auth]
+    [sample.app.web.controllers.records :as records]
     [sample.app.web.controllers.health :as health]
     [sample.app.web.middleware.auth :refer [authentication-middleware]]
     [sample.app.web.middleware.exception :as exception]
@@ -50,6 +51,8 @@
       ["/logout"
         {:post auth/logout!}]
       ["/v1" {:middleware [authentication-middleware]}
+        ["/records"
+          {:get records/get-records}]
         ["/restricted"
           {:post {:no-doc  true
                   :swagger {:info {:title "sample.app API"}}

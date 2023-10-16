@@ -18,18 +18,18 @@
                       :records/user_balance]))
 
 (def select-fields
-  [[:operations.cost :operations_cost]
-   [:operations.id :operations_id]
-   [:operations.type :operations_type]
-   [:records.amount :records_amount]
+  [[:operations.cost :operation_cost]
+   [:operations.type :operation_type]
+   [:records.amount :amount]
    [:records.created_at :created_at]
+   [:records.user_id :user_id]
+   [:records.operation_id :operation_id]
    [:records.id :id]
    [:records.operation_response :operation_response]
    [:records.updated_at :updated_at]
    [:records.user_balance :user_balance]
-   [:users.email :users_email]
-   [:users.id :users_id]
-   [:users.status :users_status]])
+   [:users.email :user_email]
+   [:users.status :user_status]])
 
 (defn format-data
   "Format sent data to the query format of honeysql"
@@ -53,13 +53,13 @@
   "Retrieve records based on the 'where' conditions. Returns a coll of retrieved records."
   [where]
   (->> where
-    (#(vec (conj [:and [:<> :records.deleted true]] %)))
+    (conj [:and [:<> :records.deleted true]])
     (validate-spec :general/query)
     (#(execute-query {:select    select-fields
-                      :from      :records
+                      :from      [:records]
                       :join      [:operations [:= :records.operation_id :operations.id]
-                                 :users       [:= :records.user_id :users.id]]
-                      :where     %
+                                  :users      [:= :records.user_id :users.id]]
+                      :where      %
                       :order-by  [:records.id]}))))
 
 (defn get-deleted-records

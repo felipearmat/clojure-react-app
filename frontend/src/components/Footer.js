@@ -22,9 +22,7 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 function Footer() {
   return (
     <StyledFooter>
-      <StyledTypography variant="body2">
-        Your Footer Information Here
-      </StyledTypography>
+      <StyledTypography variant="body2">Nice footer you have!</StyledTypography>
     </StyledFooter>
   );
 }
