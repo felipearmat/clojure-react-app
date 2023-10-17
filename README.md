@@ -107,7 +107,7 @@ Since it might look boring having two commands that will commonly be used, there
 
 ```
 
-For more information, refer to the [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli).
+For more information, refer to [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli) for REPL starting and [Integrant-REPL](https://github.com/weavejester/integrant-repl) for state/config and state/system.
 
 ## Production workflow
 
