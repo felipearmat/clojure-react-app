@@ -2,6 +2,7 @@ import App from "./App";
 import Records from "./views/Records";
 import { Navigate } from "react-router-dom";
 import Operations from "./views/Operations";
+import CalculatorView from "./views/CalculatorView";
 // import UserProfile from "./views/UserProfile";
 // import IncreaseCredit from "./views/IncreaseCredit";
 // import UserProfile from "./views/UserProfile";
@@ -13,6 +14,10 @@ const routes = [
     children: [
       {
         path: "/",
+        element: <CalculatorView />,
+      },
+      {
+        path: "/records",
         element: <Records />,
       },
       {

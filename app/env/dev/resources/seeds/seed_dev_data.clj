@@ -38,7 +38,6 @@
           {:operation_id (:id op)
            :user_id (:id user)
            :amount amount
-           :user_balance balance
            :operation_response response})))))
 
 (defn seeds []
