@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Box, Snackbar, Alert } from "@mui/material";
@@ -12,9 +12,9 @@ const StyledInput = styled(TextField)`
 const StyledButton = styled(Button)(({ theme }) => ({
   margin: "4px",
   textAlign: "left",
-  border: "1px solid #e0e0e0" /* Add a thin gray border */,
-  borderRadius: "4px" /* Round the corners of the border */,
-  padding: "8px 12px" /* Add some padding to the button */,
+  border: "1px solid #e0e0e0",
+  borderRadius: "4px",
+  padding: "8px 12px",
   "&:hover": {
     backgroundColor: "#DCEAF9",
   },
@@ -25,16 +25,16 @@ const StyledHistoryItem = styled(Box)`
 `;
 
 const buttonArrays = [
-  ["(", ")", "C", "√"],
+  ["(", ")", "C", "<-"],
   ["7", "8", "9", "/"],
   ["4", "5", "6", "*"],
   ["1", "2", "3", "-"],
-  [".", "0", "="],
+  [".", "0", "=", "√("],
   ["randomstr"],
 ];
 
 const Calculator = () => {
-  const [expression, setExpression] = useState("");
+  const [expression, setExpression] = useState([]);
   const [history, setHistory] = useState([]);
   const [result, setResult] = useState("");
   const [error, setError] = useState(null);
@@ -44,20 +44,27 @@ const Calculator = () => {
       case "C":
         setExpression("");
         break;
+      case "<-":
+        setExpression((prevExpression) => prevExpression.slice(0, -1));
+        break;
       case "randomstr":
-        handleRandomStr(expression);
+        handleRequest("randomstr");
         break;
       case "=":
         handleRequest(expression);
         break;
       default:
-        setExpression((prevExpression) => prevExpression + symbol);
+        setExpression((prevExpression) => [...prevExpression, symbol]);
     }
+  };
+
+  const readExpression = (expression) => {
+    return (expression && expression?.join("")) || "";
   };
 
   const handleRequest = (expression) => {
     axios
-      .post("/api/v1/calculate", { expression: expression })
+      .post("/api/v1/calculate", { expression: readExpression(expression) })
       .then((response) => {
         setResult(response.data.result);
         updateHistory();
@@ -67,12 +74,8 @@ const Calculator = () => {
       });
   };
 
-  const handleRandomStr = () => {
-    handleRequest("randomstr");
-  };
-
   const updateHistory = () => {
-    const newHistory = `${expression} = ${result}`;
+    const newHistory = `${readExpression()} = ${result}`;
     setHistory((prevHistory) => [...prevHistory, ...newHistory].slice(-15));
   };
 
@@ -88,7 +91,7 @@ const Calculator = () => {
         <StyledHistoryItem key={index}>{item}</StyledHistoryItem>
       ))}
       <StyledInput
-        value={expression}
+        value={readExpression()}
         readOnly
         InputProps={{
           readOnly: true,

@@ -10,12 +10,6 @@ const StyledContainer = styled(Container)`
   text-align: left;
 `;
 
-const StyledInput = styled(Calculator.Input)``;
-
-const StyledButton = styled(Calculator.Button)`
-  text-align: left;
-`;
-
 const CalculatorView = () => {
   return (
     <StyledContainer>
