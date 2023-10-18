@@ -6,5 +6,8 @@
 (defn calculate
   [req]
   (let [user (:user (:identity req))
-        expression (:expression (:params req))]
-        (http-response/ok (calculator/calculate! expression))))
+        expression (:expression (:params req))
+        result (calculator/calculate! expression)]
+    (if (:msg result)
+      (http-response/bad-request (:msg result))
+      (http-response/ok {:result result}))))

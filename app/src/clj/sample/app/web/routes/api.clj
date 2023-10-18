@@ -10,7 +10,7 @@
     [sample.app.web.controllers.auth :as auth]
     [sample.app.web.controllers.calculator :as calculator]
     [sample.app.web.controllers.health :as health]
-    [sample.app.web.controllers.records :as records]
+    [sample.app.web.controllers.record :as record]
     [sample.app.web.middleware.auth :refer [authentication-middleware]]
     [sample.app.web.middleware.exception :as exception]
     [sample.app.web.middleware.formats :as formats]))
@@ -47,15 +47,15 @@
                 :handler (swagger/create-swagger-handler)}}])
       ["/health"
         {:get health/healthcheck!}]
-      ["/logged"
-        {:get auth/logged}]
       ["/login"
         {:post auth/login!}]
       ["/logout"
         {:post auth/logout!}]
+      ["/data"
+        {:get auth/data}]
       ["/v1" {:middleware [authentication-middleware]}
-        ["/records"
-          {:get records/get-records}]
+        ["/record"
+          {:get record/get-records}]
         ["/calculate"
           {:post calculator/calculate}]]]])
 

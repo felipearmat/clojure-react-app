@@ -1,7 +1,7 @@
-(ns sample.app.web.controllers.records
+(ns sample.app.web.controllers.record
   (:require
     [ring.util.http-response :as http-response]
-    [sample.app.models.records :as records-model]))
+    [sample.app.models.records :as records]))
 
 (defn get-records
   [req]
@@ -26,4 +26,4 @@
                 (when (seq end-date)
                   [:<= :records.created_at end-date])
                 ]]
-        (http-response/ok (records-model/get-records query))))
+        (http-response/ok {:records (records/get-records query)})))

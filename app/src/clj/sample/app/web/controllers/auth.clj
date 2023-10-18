@@ -5,10 +5,12 @@
     [clojure.tools.logging :as log]
     [java-time.api :as jt]
     [ring.middleware.cookies :refer [cookies-response]]
-    [ring.util.http-response :refer [ok unauthorized]]
+    [ring.util.http-response :refer [ok unauthorized bad-request]]
     [sample.app.env :as env]
-    [sample.app.web.middleware.core :refer [secret-key]]
-    [sample.app.models.users :as users]))
+    [sample.app.models.credits :as credits]
+    [sample.app.models.records :as records]
+    [sample.app.models.users :as users]
+    [sample.app.web.middleware.core :refer [secret-key]]))
 
 (defn login!
   [request]
@@ -28,6 +30,17 @@
   [request]
   (cookies-response {:cookies {"value" ""}}))
 
+(defn data
+  [{:keys [identity]}]
+  (if-let [email (:user identity)]
+    (let [credits (credits/get-credits [:= :users.email email])
+          records (records/get-records [:= :users.email email])
+          balance (- (reduce + (map :value credits)) (reduce + (map :amount records)))]
+      (ok {:logged true
+           :balance (format "%.2f" balance)
+           :email email}))
+    (ok {:logged false})))
+
 (defn change-password!
   [request]
   (let [old-password (get-in request [:body-params :old-password])
@@ -38,9 +51,3 @@
         (users/update-password! new-password email)
         (ok "Password changed"))
       (unauthorized "Invalid old password"))))
-
-(defn logged
-  [request]
-  (do
-    (ok
-      {:authenticated  (authenticated? request)})))
