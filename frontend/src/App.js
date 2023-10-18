@@ -10,6 +10,7 @@ import axios from "axios";
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
+  const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
 
   const handleLogout = () => {
@@ -27,10 +28,15 @@ function App() {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await axios.get("http://localhost/api/logged");
+        const response = await axios.get("http://localhost/api/data");
         const data = response.data;
-        if (data.authenticated === true) {
+        if (data.logged === true) {
           setAuthenticated(true);
+          setData({
+            ...data,
+            balance: data.balance,
+            email: data.email,
+          });
         }
         setLoading(false);
       } catch (error) {
@@ -47,7 +53,11 @@ function App() {
       <GlobalCss />
       <AppLayout
         header={
-          <Header isLoggedIn={authenticated} logoutHandler={handleLogout} />
+          <Header
+            isLoggedIn={authenticated}
+            data={data}
+            logoutHandler={handleLogout}
+          />
         }
         content={loader}
         footer={<Footer />}

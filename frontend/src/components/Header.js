@@ -17,14 +17,24 @@ const StyledToolbar = styled(Toolbar)({
 const StyledTypography = styled(Typography)(({ theme }) => ({
   color: "white",
   fontWeight: "bold",
-  fontSize: "1.5rem",
+  fontSize: "1.25rem",
+}));
+
+const Data = styled(Typography)(({ theme }) => ({
+  color: "white",
+  fontWeight: "bold",
+  fontSize: "1rem",
+  textAlign: "right",
+  width: "100%",
+  padding: "0 2.5rem",
+  whiteSpace: "pre-wrap",
 }));
 
 const StyledLogoutButton = styled(IconButton)(({ theme }) => ({
   color: "white",
 }));
 
-function Header({ isLoggedIn, logoutHandler }) {
+function Header({ data, isLoggedIn, logoutHandler }) {
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost/api/logout", {
@@ -45,9 +55,14 @@ function Header({ isLoggedIn, logoutHandler }) {
           ArithmeticCalculatorAPI
         </StyledTypography>
         {isLoggedIn && (
-          <StyledLogoutButton onClick={handleLogout}>
-            <ExitToApp />
-          </StyledLogoutButton>
+          <>
+            {data && (
+              <Data>{`${data.email}   /   Balance: ${data.balance}`}</Data>
+            )}
+            <StyledLogoutButton onClick={handleLogout}>
+              <ExitToApp />
+            </StyledLogoutButton>
+          </>
         )}
       </StyledToolbar>
     </StyledAppBar>

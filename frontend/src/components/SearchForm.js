@@ -34,7 +34,7 @@ const SearchForm = ({ onChange }) => {
 
   const handleSearch = () => {
     axios
-      .get("http://localhost/api/v1/records", { params: searchParams })
+      .get("http://localhost/api/v1/record", { params: searchParams })
       .then((response) => {
         const data = response.data;
         if (Array.isArray(data)) {
@@ -42,7 +42,7 @@ const SearchForm = ({ onChange }) => {
         }
       })
       .catch((error) => {
-        console.error("Error fetching records:", error);
+        console.error("Error fetching record:", error);
       });
   };
 
