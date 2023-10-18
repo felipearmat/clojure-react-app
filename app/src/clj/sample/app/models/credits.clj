@@ -24,7 +24,7 @@
   [user-id amount]
   (->> {:user_id user-id :value amount}
     (utils/validate-spec :credits/add-credit!)
-    (#(utils/execute-query {:insert-into :credits
+    (#(utils/hsql-execute! {:insert-into :credits
                             :columns     [:user_id :value]
                             :values      [[(:user_id %) (:value %)]]}))
     (utils/format-hsql-output)))
@@ -37,7 +37,7 @@
   (->> where
     (conj [:and [:<> :credits.deleted true]])
     (utils/validate-spec :general/query)
-    (#(utils/execute-query {:select    select-fields
+    (#(utils/hsql-execute! {:select    select-fields
                             :from      [:credits]
                             :join      [:users [:= :credits.user_id :users.id]]
                             :where     %
@@ -51,7 +51,7 @@
   (->> where
     (#(vec (conj [:and [:= :credits.deleted true]] %)))
     (utils/validate-spec :general/query)
-    (#(utils/execute-query {:select    (conj select-fields [:credits.deleted :deleted])
+    (#(utils/hsql-execute! {:select    (conj select-fields [:credits.deleted :deleted])
                             :from      [:credits]
                             :join      [:users [:= :credits.user_id :users.id]]
                             :where     %
@@ -62,7 +62,7 @@
   [id]
   (->> id
     (utils/validate-spec :credits/id)
-    (#(utils/execute-query {:update :credits
+    (#(utils/hsql-execute! {:update :credits
                             :set    {:deleted true}
                             :where  [:= :id %]}))
     (utils/format-hsql-output)))

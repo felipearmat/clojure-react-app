@@ -35,7 +35,7 @@
   [data]
   (let [columns (vec (keys data))
         values  (mapv #(get data %) columns)]
-        (utils/execute-query {:insert-into [:records]
+        (utils/hsql-execute! {:insert-into [:records]
                               :columns     columns
                               :values      [values]})))
 
@@ -56,7 +56,7 @@
   (->> where
     (conj [:and [:<> :records.deleted true]])
     (utils/validate-spec :general/query)
-    (#(utils/execute-query {:select    select-fields
+    (#(utils/hsql-execute! {:select    select-fields
                             :from      [:records]
                             :join      [:operations [:= :records.operation_id :operations.id]
                                         :users      [:= :records.user_id :users.id]]
@@ -71,7 +71,7 @@
   (->> where
     (#(vec (conj [:and [:= :records.deleted true]] %)))
     (utils/validate-spec :general/query)
-    (#(utils/execute-query {:select   (conj select-fields [:records.deleted :deleted])
+    (#(utils/hsql-execute! {:select   (conj select-fields [:records.deleted :deleted])
                             :from     :records
                             :join     [:operations [:=
                                                       :records.operation_id
@@ -87,7 +87,7 @@
   [id]
   (->> id
     (utils/validate-spec :records/id)
-    (#(utils/execute-query {:update :records
+    (#(utils/hsql-execute! {:update :records
                             :set    {:deleted true}
                             :where  [:= :id %]}))
     (utils/format-hsql-output)))

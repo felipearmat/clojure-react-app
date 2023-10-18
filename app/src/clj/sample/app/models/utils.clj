@@ -80,15 +80,14 @@
           " (integrant.repl/prep) and (integrant.repl/init)?")
         {:type :system.exception/db-connection-failure}))))
 
-(defn execute-query-conn
+(defn conn-hsql-execute!
   [conn sqlmap]
-    ;; (log/info sqlmap)
     (log/info (hsql/format sqlmap))
     (jdbc/execute! conn (hsql/format sqlmap) {:builder-fn rs/as-unqualified-maps}))
 
-(defn execute-query
+(defn hsql-execute!
   [sqlmap]
-    (execute-query-conn (db-connection) sqlmap))
+    (conn-hsql-execute! (db-connection) sqlmap))
 
 (defn query-fn
   "Executes a database query function with provided arguments."

@@ -20,7 +20,7 @@
         data-source (:db.sql/connection state/system)]
     (jdbc/with-transaction [conn data-source {:isolation :serializable}]
       (with-redefs [utils/db-connector  #(partial query-fn conn)
-                    utils/execute-query (partial utils/execute-query-conn conn)]
+                    utils/hsql-execute! (partial utils/conn-hsql-execute! conn)]
         (f)
         (.rollback conn)))))
 
