@@ -1,7 +1,7 @@
-(ns sample.app.web.models.records
+(ns sample.app.models.records
   (:require
     [clojure.spec.alpha :as spec]
-    [sample.app.web.models.utils :as utils]))
+    [sample.app.models.utils :as utils]))
 
 (spec/def :records/id int?)
 (spec/def :records/operation_id int?)

@@ -1,8 +1,8 @@
-(ns sample.app.web.models.utils-test
+(ns sample.app.models.utils-test
   (:require
     [clojure.test :refer :all]
     [integrant.repl.state :as state]
-    [sample.app.web.models.utils :refer :all]))
+    [sample.app.models.utils :refer :all]))
 
 (deftest test-contains-some?
   (testing "Should return true if any element in coll2 is in coll1"

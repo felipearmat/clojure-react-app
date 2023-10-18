@@ -1,9 +1,9 @@
 (ns seeds.seed-dev-data
   (:require
-    [sample.app.web.models.users :as users]
-    [sample.app.web.models.operations :as operations]
-    [sample.app.web.models.credits :as credits]
-    [sample.app.web.models.records :as records]))
+    [sample.app.models.users :as users]
+    [sample.app.models.operations :as operations]
+    [sample.app.models.credits :as credits]
+    [sample.app.models.records :as records]))
 
 (def users-data [
   {:status "active"   :deleted false :email "admin@sample.com"}

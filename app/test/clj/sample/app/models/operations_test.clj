@@ -1,8 +1,8 @@
-(ns sample.app.web.models.operations-test
+(ns sample.app.models.operations-test
   (:require
     [clojure.test :refer :all]
     [sample.app.test-utils :as test-utils]
-    [sample.app.web.models.operations :refer :all]))
+    [sample.app.models.operations :refer :all]))
 
 ;; Create an operation before each test
 (defn op-fixture [f]

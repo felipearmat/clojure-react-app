@@ -8,7 +8,7 @@
     [ring.util.http-response :refer [ok unauthorized]]
     [sample.app.env :as env]
     [sample.app.web.middleware.core :refer [secret-key]]
-    [sample.app.web.models.users :as users]))
+    [sample.app.models.users :as users]))
 
 (defn login!
   [request]

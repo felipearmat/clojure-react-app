@@ -1,10 +1,10 @@
-(ns sample.app.web.models.records-test
+(ns sample.app.models.records-test
   (:require
     [clojure.test :refer :all]
     [sample.app.test-utils :as test-utils]
-    [sample.app.web.models.operations :as operations]
-    [sample.app.web.models.records :as records]
-    [sample.app.web.models.users :as users]))
+    [sample.app.models.operations :as operations]
+    [sample.app.models.records :as records]
+    [sample.app.models.users :as users]))
 
 (def user_id (atom "test"))
 (def op_id (atom 1))

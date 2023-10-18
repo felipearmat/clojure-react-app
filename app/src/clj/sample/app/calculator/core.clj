@@ -5,9 +5,9 @@
     [clojure.string :as str]
     [clojure.tools.logging :as log]
     [infix.macros :as inf]
-    [sample.app.web.models.operations :as operations]
-    [sample.app.web.models.records :as records]
-    [sample.app.web.models.utils :as utils]))
+    [sample.app.models.operations :as operations]
+    [sample.app.models.records :as records]
+    [sample.app.models.utils :as utils]))
 
 ;; Define the expression spec for validation
 (spec/def :calculator/expression

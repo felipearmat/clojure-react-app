@@ -1,4 +1,4 @@
-(ns sample.app.web.models.utils
+(ns sample.app.models.utils
   (:require
     [clojure.spec.alpha :as spec]
     [clojure.string :as str]

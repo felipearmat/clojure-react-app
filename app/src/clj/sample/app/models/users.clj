@@ -1,10 +1,10 @@
-(ns sample.app.web.models.users
+(ns sample.app.models.users
   (:require
     [buddy.hashers :as hashers]
     [clojure.string :as str]
     [clojure.spec.alpha :as spec]
-    [sample.app.web.models.utils :as utils]
-    [sample.app.web.models.utils :refer [db-error query-fn validate-spec]]))
+    [sample.app.models.utils :as utils]
+    [sample.app.models.utils :refer [db-error query-fn validate-spec]]))
 
 (def trusted-algs #{:bcrypt+blake2b-512})
 

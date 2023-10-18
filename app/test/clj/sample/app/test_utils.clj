@@ -3,7 +3,7 @@
     [integrant.repl :refer [prep]]
     [integrant.repl.state :as state]
     [next.jdbc :as jdbc]
-    [sample.app.web.models.utils :as utils]))
+    [sample.app.models.utils :as utils]))
 
 (defn mock
   "Creates a mock function that allows counting how many times it was called."

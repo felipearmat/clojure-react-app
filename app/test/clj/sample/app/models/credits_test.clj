@@ -1,9 +1,9 @@
-(ns sample.app.web.models.credits-test
+(ns sample.app.models.credits-test
   (:require
     [clojure.test :refer :all]
     [sample.app.test-utils :as test-utils]
-    [sample.app.web.models.credits :as credits]
-    [sample.app.web.models.users :as users]))
+    [sample.app.models.credits :as credits]
+    [sample.app.models.users :as users]))
 
 (def user-id (atom "test"))
 (def user-email "test@mail.com")

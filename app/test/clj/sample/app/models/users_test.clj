@@ -1,9 +1,9 @@
-(ns sample.app.web.models.users-test
+(ns sample.app.models.users-test
   (:require
     [clojure.test :refer :all]
     [clojure.string :as str]
     [sample.app.test-utils :as test-utils]
-    [sample.app.web.models.users :refer :all]))
+    [sample.app.models.users :refer :all]))
 
 (def valid-email "test@mail.com")
 (def scrambled-email "TeSt@MaIl.CoM")

@@ -1,7 +1,7 @@
 (ns sample.app.web.controllers.records
   (:require
     [ring.util.http-response :as http-response]
-    [sample.app.web.models.records :as records-model]))
+    [sample.app.models.records :as records-model]))
 
 (defn get-records
   [req]
