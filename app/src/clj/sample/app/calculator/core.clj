@@ -56,7 +56,7 @@
   (fn [_ expression] expression))
 
 (defmethod calc-expression "randomstr" [user-id _]
-  (let [random-string-op (first (operations/get-operations {:type "random_string"}))
+  (let [random-string-op (first (operations/get-operations [:= :type "random_string"]))
         random-string (gen-random-string)]
     (record-operation user-id random-string-op)
     random-string))

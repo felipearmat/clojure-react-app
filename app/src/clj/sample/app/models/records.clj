@@ -72,15 +72,15 @@
     (#(vec (conj [:and [:= :records.deleted true]] %)))
     (utils/validate-spec :general/query)
     (#(utils/hsql-execute! {:select   (conj select-fields [:records.deleted :deleted])
-                            :from     :records
+                            :from      :records
                             :join     [:operations [:=
-                                                      :records.operation_id
-                                                      :operations.id]
-                                      :users      [:=
-                                                    :records.user_id
-                                                    :users.id]]
+                                                     :records.operation_id
+                                                     :operations.id]
+                                       :users      [:=
+                                                     :records.user_id
+                                                     :users.id]]
                             :order-by [:records.id]
-                            :where %})))))
+                            :where    %})))))
 
 (defn delete-record!
   "Delete a record identified by its ID. Returns 1 on success."

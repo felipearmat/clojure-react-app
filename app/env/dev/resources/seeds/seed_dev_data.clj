@@ -51,5 +51,5 @@
   (doseq [operation operations-data]
     (operations/create-operation! (:type operation) (:cost operation))
     (when (:deleted operation)
-      (operations/delete-operation! (:id (first (operations/get-operations {:type (:type operation)}))))))
+      (operations/delete-operation! (:id (first (operations/get-operations [:= :type (:type operation)]))))))
   (gen-records 1000))

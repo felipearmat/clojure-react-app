@@ -1,7 +1,7 @@
 (ns sample.app.models.operations
   (:require
     [clojure.spec.alpha :as spec]
-    [sample.app.utils :refer [query-fn validate-spec]]))
+    [sample.app.utils :as utils]))
 
 (spec/def :operations/id int?)
 
@@ -21,16 +21,20 @@
 (spec/def :operations/delete-operation!
   (spec/keys :req-un [:operations/cost :operations/type]))
 
+(spec/def :operations/where :general/query)
+
 (spec/def :operations/update-operations!
-  (spec/keys :req-un [:general/where :general.update/set]))
+  (spec/keys :req-un [:operations/where :general.update/set]))
 
 (defn create-operation!
   "Creates a new operation with the given type and cost.
   Returns 1 on success."
   [type cost]
   (->> {:type type :cost cost}
-    (validate-spec :operations/create-operation!)
-    (#(query-fn :create-operation! %))))
+    (utils/validate-spec :operations/create-operation!)
+    (#(utils/hsql-execute! {:insert-into [:operations]
+                            :columns     [:type :cost]
+                            :values      [[(:type %) (:cost %)]]}))))
 
 (defn get-operations
   "Retrieves operations based on the 'where' conditions.
@@ -39,8 +43,14 @@
   (get-operations nil))
   ([where]
   (->> where
-    (validate-spec :general/where)
-    (#(query-fn :get-operations {:where %})))))
+    (conj [:and [:<> :operations.deleted true]])
+    (utils/validate-spec :operations/where)
+    (#(utils/hsql-execute! {:select   [:operations.id :operations.type
+                                       :operations.cost :operations.created_at
+                                       :operations.updated_at]
+                            :from     [:operations]
+                            :where    %
+                            :order-by [:operations.id]})))))
 
 (defn get-deleted-operations
   "Retrieves operations based on the 'where' conditions.
@@ -49,21 +59,33 @@
   (get-deleted-operations nil))
   ([where]
   (->> where
-    (validate-spec :general/where)
-    (#(query-fn :get-deleted-operations {:where %})))))
+    (conj [:and [:= :operations.deleted true]])
+    (utils/validate-spec :operations/where)
+    (#(utils/hsql-execute! {:select   [:operations.id :operations.type
+                                       :operations.cost :operations.created_at
+                                       :operations.updated_at :operations.deleted]
+                            :from     [:operations]
+                            :where    %
+                            :order-by [:operations.id]})))))
 
 (defn delete-operation!
   "Deletes an operation identified by its unique ID.
   Returns 1 on success."
   [id]
   (->> id
-    (validate-spec :operations/id)
-    (#(query-fn :delete-operation! {:id %}))))
+    (utils/validate-spec :operations/id)
+    (#(utils/hsql-execute! {:update :operations
+                            :set    {:deleted true}
+                            :where  [:= :id %]}))
+    (utils/format-hsql-output)))
 
 (defn update-operations!
   "Updates operations based on 'where' and 'set' conditions.
   Returns the number of affected rows."
   [where set]
   (->> {:where where :set set}
-    (validate-spec :operations/update-operations!)
-    (query-fn :update-operations!)))
+    (utils/validate-spec :operations/update-operations!)
+    (#(utils/hsql-execute! {:update :operations
+                            :set    (:set %)
+                            :where  (:where %)}))
+    (utils/format-hsql-output)))
