@@ -28,6 +28,19 @@ ALTER TABLE users
    ADD CONSTRAINT check_status
    CHECK (status IN ('active', 'inactive'));
 --;;
+CREATE OR REPLACE FUNCTION lowecase_email()
+RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.email = LOWER(NEW.email);
+        RETURN NEW;
+    END;
+$$ LANGUAGE 'plpgsql';
+--;;
+CREATE TRIGGER users_lowercase_email
+  BEFORE INSERT OR UPDATE ON users
+  FOR EACH ROW
+  EXECUTE PROCEDURE lowecase_email();
+--;;
 CREATE TRIGGER users_auto_updated_at
   BEFORE UPDATE ON users
   FOR EACH ROW

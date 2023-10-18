@@ -34,7 +34,8 @@
     (utils/validate-spec :operations/create-operation!)
     (#(utils/hsql-execute! {:insert-into [:operations]
                             :columns     [:type :cost]
-                            :values      [[(:type %) (:cost %)]]}))))
+                            :values      [[(:type %) (:cost %)]]}))
+    (utils/format-hsql-output)))
 
 (defn get-operations
   "Retrieves operations based on the 'where' conditions.
@@ -76,14 +77,14 @@
     (utils/validate-spec :operations/id)
     (#(utils/hsql-execute! {:update :operations
                             :set    {:deleted true}
-                            :where  [:= :id %]}))
+                            :where  [:and [:<> :deleted true] [:= :id %]]}))
     (utils/format-hsql-output)))
 
 (defn update-operations!
   "Updates operations based on 'where' and 'set' conditions.
   Returns the number of affected rows."
   [where set]
-  (->> {:where where :set set}
+  (->> {:where [:and [:<> :operations.deleted true] where] :set set}
     (utils/validate-spec :operations/update-operations!)
     (#(utils/hsql-execute! {:update :operations
                             :set    (:set %)

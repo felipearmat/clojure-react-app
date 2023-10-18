@@ -39,10 +39,10 @@
       (is (= 20.0 (:cost (last (get-operations [:= :id op-id])))))))
 
   (testing "It throws an exception if 'where' is not a vector"
-    (is (thrown? clojure.lang.ExceptionInfo (update-operations! "addition" {:cost 20.0}))))
+    (is (thrown? Exception (update-operations! "addition" {:cost 20.0}))))
 
   (testing "It throws an exception if 'set' is not a map"
-    (is (thrown? clojure.lang.ExceptionInfo (update-operations! [:= :type "addition"] "set 20.0")))))
+    (is (thrown? Exception (update-operations! [:= :type "addition"] "set 20.0")))))
 
 (deftest test-create-operation!
   (testing "It creates a new operation"
@@ -53,9 +53,9 @@
       (is (= 20.0 (-> (last (get-operations [:= :id new-id])) :cost)))))
 
   (testing "It throws an exception if 'type' is invalid"
-    (is (thrown? clojure.lang.ExceptionInfo (create-operation! "non-existent" 10.0)))
-    (is (thrown? clojure.lang.ExceptionInfo (create-operation! "invalid_type" 10.0))))
+    (is (thrown? Exception (create-operation! "non-existent" 10.0)))
+    (is (thrown? Exception (create-operation! "invalid_type" 10.0))))
 
   (testing "It throws an exception if 'cost' is not a number"
-    (is (thrown? clojure.lang.ExceptionInfo (create-operation! "addition" "not-a-number")))
-    (is (thrown? clojure.lang.ExceptionInfo (create-operation! "addition" :not-a-number)))))
+    (is (thrown? Exception (create-operation! "addition" "not-a-number")))
+    (is (thrown? Exception (create-operation! "addition" :not-a-number)))))

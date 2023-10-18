@@ -15,29 +15,13 @@
 
 (use-fixtures :each test-utils/database-rollback user-fixture)
 
-(deftest test-normalize-where
-  (testing "Should not add :email unnecessarily"
-    (let [where {:anykey "anything"}
-          result (normalize-where where)]
-      (is (= (keys where) (keys result)))))
-
-  (testing "Should normalize :email"
-    (let [where {:email "UsErExAmPlE@example.com"}
-          result (normalize-where where)
-          normalized-email (normalize-email (:email where))]
-      (is (= normalized-email (:email result))))))
-
 (deftest test-get-users
   (testing "Should retrieve users when no keyword"
-    (is (= 1 (count (get-users)))))
-
-  (testing "Should query with normalized email"
-    (let [result (last (get-users {:email scrambled-email}))]
-      (is (= valid-email (:email result))))))
+    (is (= 1 (count (get-users))))))
 
 (deftest test-create-user!
   (testing "Should create a single user"
-    (is (= 1 (count (get-users {:email valid-email})))))
+    (is (= 1 (count (get-users [:= :users.email valid-email])))))
 
   (testing "Should ensure email matches"
     (is (= valid-email (:email (last (get-users))))))
@@ -67,30 +51,30 @@
 (deftest test-deactivate-user!
   (testing "Should deactivate a user"
     (deactivate-user! valid-email)
-    (let [user (last (get-users {:email valid-email}))]
+    (let [user (last (get-users [:= :users.email valid-email]))]
       (is (= "inactive" (:status user))))))
 
 (deftest test-activate-user!
   (testing "Should activate a user"
     (deactivate-user! valid-email) ; Deactivate the user first
     (activate-user! valid-email)
-    (let [user (last (get-users {:email valid-email}))]
+    (let [user (last (get-users [:= :users.email valid-email]))]
       (is (= "active" (:status user))))))
 
 (deftest test-delete-user!
   (testing "Should delete a user"
     (delete-user! valid-email)
-    (is (empty? (get-users {:email valid-email})))
-    (is (seq (get-deleted-users {:email valid-email})))))
+    (is (empty? (get-users [:= :users.email valid-email])))
+    (is (seq (get-deleted-users [:= :users.email valid-email])))))
 
 (deftest test-update-users!
   (testing "Should update a user's status"
-    (update-users! {:email valid-email} {:status "inactive"})
-    (let [user (last (get-users {:email valid-email}))]
+    (update-users! [:= :users.email valid-email] {:status "inactive"})
+    (let [user (last (get-users [:= :users.email valid-email]))]
       (is (= "inactive" (:status user)))))
 
   (testing "Should update a user's email"
     (let [new-valid-email (str "a" valid-email)]
-      (update-users! {:email valid-email} {:email new-valid-email})
-      (is (empty? (get-users {:email valid-email})))
-      (is (seq (get-users {:email new-valid-email}))))))
+      (update-users! [:= :users.email valid-email] {:email new-valid-email})
+      (is (empty? (get-users [:= :users.email valid-email])))
+      (is (seq (get-users [:= :users.email new-valid-email]))))))

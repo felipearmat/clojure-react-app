@@ -89,5 +89,5 @@
     (utils/validate-spec :records/id)
     (#(utils/hsql-execute! {:update :records
                             :set    {:deleted true}
-                            :where  [:= :id %]}))
+                            :where  [:and [:<> :deleted true] [:= :id %]]}))
     (utils/format-hsql-output)))

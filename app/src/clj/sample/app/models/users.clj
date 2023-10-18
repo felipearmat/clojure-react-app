@@ -30,36 +30,37 @@
 (spec/def :users.password/where
   (spec/keys :req-un [(or :users/email :users/uuid)]))
 
+(spec/def :users/where :general/query)
+
 (spec/def :users/update-users!
-  (spec/keys :req-un [:general/where :general.update/set]))
+  (spec/keys :req-un [:users/where :general.update/set]))
 
 (defn encrypt
   "Encrypts a password using the bcrypt+blake2b-512 algorithm with 13 iterations."
   [password]
   (hashers/derive password {:alg :bcrypt+blake2b-512 :iterations 13}))
 
-(defn normalize-email
-  "Normalizes an email address by converting it to lowercase and validating its format."
+(defn check-email
+  "Lowercase an email address and validate its format."
   [email]
   (->> email
     (str/lower-case)
     (utils/validate-spec :users/email)))
-
-(defn normalize-where
-  "Normalizes a 'where' map, especially normalizing email addresses within it."
-  [{:keys [email] :as where}]
-  (cond-> where
-    (seq email) (merge {:email (normalize-email email)})
-    true        (#(utils/validate-spec :general/where %))))
 
 (defn get-users
   "Retrieves user records based on the 'where' conditions."
   ([]
   (get-users nil))
   ([where]
-  (-> where
-    (normalize-where)
-    (#(utils/query-fn :get-users {:where %})))))
+  (->> where
+    (conj [:and [:<> :users.deleted true]])
+    (utils/validate-spec :users/where)
+    (#(utils/hsql-execute! {:select   [:users.id :users.email
+                                       :users.status :users.password
+                                       :users.created_at :users.updated_at]
+                            :from     [:users]
+                            :where    %
+                            :order-by [:users.id]})))))
 
 (defn create-user!
   "Creates a new user with the given email and password.
@@ -67,10 +68,13 @@
   [email password]
   (let [data {:email (str/lower-case email) :password password}]
     (utils/validate-spec :users/create-user! data)
-    (if (empty? (get-users (select-keys data [:email])))
+    (if (empty? (get-users [:= :users.email (:email data)]))
       (-> data
         (merge {:password (encrypt password)})
-        (#(utils/query-fn :create-user! %)))
+        (#(utils/hsql-execute! {:insert-into [:users]
+                                :columns     [:email :password]
+                                :values      [[(:email %) (:password %)]]}))
+        (utils/format-hsql-output))
       (throw (utils/db-error "User already exists.")))))
 
 (defn get-deleted-users
@@ -78,52 +82,64 @@
   ([]
   (get-deleted-users nil))
   ([where]
-  (-> where
-    (normalize-where)
-    (#(utils/query-fn :get-deleted-users {:where %})))))
+  (->> where
+    (conj [:and [:= :users.deleted true]])
+    (utils/validate-spec :users/where)
+    (#(utils/hsql-execute! {:select   [:users.id :users.email :users.status
+                                       :users.deleted :users.password
+                                       :users.created_at :users.updated_at]
+                            :from     [:users]
+                            :where    %
+                            :order-by [:users.id]})))))
 
 (defn update-users!
   "Updates a user's information based on 'where' and 'set' conditions. Returns the number of rows affected"
   [where set]
-  (let [data {:where where :set set}]
-    (utils/validate-spec :users/update-users! data)
-    (utils/query-fn :update-users! data)))
+  (->> {:where [:and [:<> :users.deleted true] where] :set set}
+    (utils/validate-spec :users/update-users!)
+    (#(utils/hsql-execute! {:update :users
+                            :set    (:set %)
+                            :where  (:where %)}))
+    (utils/format-hsql-output)))
 
 (defn deactivate-user!
   "Deactivates a user by setting their status to 'inactive'. Returns 1 on success"
   [email]
   (-> email
-    (normalize-email)
-    (#(update-users! {:email %} {:status "inactive"}))))
+    (check-email)
+    (#(update-users! [:= :users.email %] {:status "inactive"}))))
 
 (defn activate-user!
   "Activates a user by setting their status to 'active'. Returns 1 on success"
   [email]
   (-> email
-    (normalize-email)
-    (#(update-users! {:email %} {:status "active"}))))
+    (check-email)
+    (#(update-users! [:= :users.email %] {:status "active"}))))
 
 (defn delete-user!
   "Deletes a user based on their email address. Returns 1 on success"
   [email]
   (-> email
-    (normalize-email)
-    (#(utils/query-fn :delete-user! {:email %}))))
+    (check-email)
+    (#(utils/hsql-execute! {:update :users
+                            :set    {:deleted true}
+                            :where  [:and [:<> :deleted true] [:= :email %]]}))
+    (utils/format-hsql-output)))
 
 (defn update-password!
   "Updates a user's password with a new one. Returns 1 on success"
   [new-password email]
   (utils/validate-spec :users/password new-password)
   (-> email
-    (normalize-email)
-    (#(update-users! {:email %} {:password (encrypt new-password)}))))
+    (check-email)
+    (#(update-users! [:= :users.email %] {:password (encrypt new-password)}))))
 
 (defn verify-password
   "Verifies a password attempt against the user's stored password hash.
   Returns nil if the user doesn't exist, is inactive, or the password is wrong."
   [attempt email]
-  (when-let [user (last (get-users {:email email}))]
-    (when (not (:inactive user))
+  (when-let [user (last (get-users [:= :users.email email]))]
+    (when-not (:inactive user)
       (-> (:password user)
         (#(hashers/verify attempt % {:limit trusted-algs}))
         (:valid)))))
