@@ -31,13 +31,11 @@
             type     (:type op)
             user     (rand-nth users)
             email    (:email user)
-            amount   (float (rand 100))
-            balance  (float (rand 1000))
             response (str "Response " i)]
         (records/create-record!
           {:operation_id (:id op)
            :user_id (:id user)
-           :amount amount
+           :amount (:cost op)
            :operation_response response})))))
 
 (defn seeds []
@@ -47,9 +45,9 @@
       (users/delete-user! (:email user))))
   (doseq [user (users/get-users)]
     (when-not (:deleted user)
-      (credits/add-credit! (:id user) 500)))
+      (credits/add-credit! (:id user) 1000)))
   (doseq [operation operations-data]
     (operations/create-operation! (:type operation) (:cost operation))
     (when (:deleted operation)
       (operations/delete-operation! (:id (first (operations/get-operations [:= :type (:type operation)]))))))
-  (gen-records 1000))
+  (gen-records 200))
