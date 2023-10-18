@@ -116,6 +116,9 @@
             (identifier-param-quote field options)
             expression field-str)))))
 
+(defn map-in? [map1 map2]
+  (every? (fn [[k v]] (= (get map2 k) v)) map1))
+
 (def expand-set
   (partial transpile-query :set ", "))
 

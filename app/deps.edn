@@ -6,11 +6,14 @@
            ;; Routing
            metosin/reitit                      {:mvn/version "0.6.0"}
 
-           ;; Ring
+           ;; Ring (http server)
            metosin/ring-http-response          {:mvn/version "0.9.3"}
            ring/ring-core                      {:mvn/version "1.10.0"}
            ring/ring-defaults                  {:mvn/version "0.3.4"}
            ring-cors/ring-cors                 {:mvn/version "0.1.13"}
+
+           ;; clojure http client
+           clj-http/clj-http                   {:mvn/version "3.12.3"}
 
            ;; Structures/Functions Specs
            org.clojure/spec.alpha              {:mvn/version "0.3.218"}
@@ -35,6 +38,9 @@
            io.github.kit-clj/kit-sql-migratus  {:mvn/version "1.0.4"}
            io.github.kit-clj/kit-quartz        {:mvn/version "1.0.3"}
            io.github.kit-clj/kit-metrics       {:mvn/version "1.0.3"}
+
+           ;; infix math operations
+           rm-hull/infix                       {:mvn/version "0.4.0"}
 
            ;; SQL as Clojure data structures
            com.github.seancorfield/honeysql    {:mvn/version "2.4.1078"}
