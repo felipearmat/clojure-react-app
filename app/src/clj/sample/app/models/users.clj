@@ -3,8 +3,7 @@
     [buddy.hashers :as hashers]
     [clojure.string :as str]
     [clojure.spec.alpha :as spec]
-    [sample.app.models.utils :as utils]
-    [sample.app.models.utils :refer [db-error query-fn validate-spec]]))
+    [sample.app.utils :as utils]))
 
 (def trusted-algs #{:bcrypt+blake2b-512})
 
@@ -44,14 +43,14 @@
   [email]
   (->> email
     (str/lower-case)
-    (validate-spec :users/email)))
+    (utils/validate-spec :users/email)))
 
 (defn normalize-where
   "Normalizes a 'where' map, especially normalizing email addresses within it."
   [{:keys [email] :as where}]
   (cond-> where
     (seq email) (merge {:email (normalize-email email)})
-    true        (#(validate-spec :general/where %))))
+    true        (#(utils/validate-spec :general/where %))))
 
 (defn get-users
   "Retrieves user records based on the 'where' conditions."
@@ -60,19 +59,19 @@
   ([where]
   (-> where
     (normalize-where)
-    (#(query-fn :get-users {:where %})))))
+    (#(utils/query-fn :get-users {:where %})))))
 
 (defn create-user!
   "Creates a new user with the given email and password.
   Returns 1 on success or throws an exception if the user already exists."
   [email password]
   (let [data {:email (str/lower-case email) :password password}]
-    (validate-spec :users/create-user! data)
+    (utils/validate-spec :users/create-user! data)
     (if (empty? (get-users (select-keys data [:email])))
       (-> data
         (merge {:password (encrypt password)})
-        (#(query-fn :create-user! %)))
-      (throw (db-error "User already exists.")))))
+        (#(utils/query-fn :create-user! %)))
+      (throw (utils/db-error "User already exists.")))))
 
 (defn get-deleted-users
   "Retrieves deleted user records based on the 'where' conditions."
@@ -81,14 +80,14 @@
   ([where]
   (-> where
     (normalize-where)
-    (#(query-fn :get-deleted-users {:where %})))))
+    (#(utils/query-fn :get-deleted-users {:where %})))))
 
 (defn update-users!
   "Updates a user's information based on 'where' and 'set' conditions. Returns the number of rows affected"
   [where set]
   (let [data {:where where :set set}]
-    (validate-spec :users/update-users! data)
-    (query-fn :update-users! data)))
+    (utils/validate-spec :users/update-users! data)
+    (utils/query-fn :update-users! data)))
 
 (defn deactivate-user!
   "Deactivates a user by setting their status to 'inactive'. Returns 1 on success"
@@ -109,12 +108,12 @@
   [email]
   (-> email
     (normalize-email)
-    (#(query-fn :delete-user! {:email %}))))
+    (#(utils/query-fn :delete-user! {:email %}))))
 
 (defn update-password!
   "Updates a user's password with a new one. Returns 1 on success"
   [new-password email]
-  (validate-spec :users/password new-password)
+  (utils/validate-spec :users/password new-password)
   (-> email
     (normalize-email)
     (#(update-users! {:email %} {:password (encrypt new-password)}))))

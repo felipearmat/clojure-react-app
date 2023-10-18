@@ -5,7 +5,7 @@
     [sample.app.models.operations :as operations]
     [sample.app.models.users :as users]
     [sample.app.calculator.core :as calc]
-    [sample.app.models.utils :refer [map-in?]]
+    [sample.app.utils :refer [map-in?]]
     [sample.app.test-utils :as test-utils]))
 
 (def test-user (atom {}))

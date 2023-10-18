@@ -1,7 +1,7 @@
 (ns sample.app.models.operations
   (:require
     [clojure.spec.alpha :as spec]
-    [sample.app.models.utils :refer [query-fn validate-spec]]))
+    [sample.app.utils :refer [query-fn validate-spec]]))
 
 (spec/def :operations/id int?)
 

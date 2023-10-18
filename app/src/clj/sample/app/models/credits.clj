@@ -1,7 +1,7 @@
 (ns sample.app.models.credits
   (:require
     [clojure.spec.alpha :as spec]
-    [sample.app.models.utils :as utils]))
+    [sample.app.utils :as utils]))
 
 (spec/def :credits/id (spec/and string? #(re-matches utils/uuid-regex %)))
 (spec/def :credits/user_id :users/uuid)

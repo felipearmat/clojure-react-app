@@ -8,7 +8,7 @@
     [sample.app.env :refer [environment]]
     [sample.app.models.operations :as operations]
     [sample.app.models.records :as records]
-    [sample.app.models.utils :as utils]))
+    [sample.app.utils :as utils]))
 
 ;; Define the expression spec for validation
 (spec/def :calculator/expression
