@@ -1,10 +1,10 @@
-(ns sample.app.web.services.calculator-test
+(ns sample.app.calculator.core-test
   (:require
     [clojure.test :refer :all]
     [sample.app.web.models.records :as records]
     [sample.app.web.models.operations :as operations]
     [sample.app.web.models.users :as users]
-    [sample.app.web.services.calculator :as calc]
+    [sample.app.calculator.core :as calc]
     [sample.app.web.models.utils :refer [map-in?]]
     [sample.app.test-utils :as test-utils]))
 

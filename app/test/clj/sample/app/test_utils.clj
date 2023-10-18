@@ -5,6 +5,14 @@
     [next.jdbc :as jdbc]
     [sample.app.web.models.utils :as utils]))
 
+(defn mock
+  "Creates a mock function that allows counting how many times it was called."
+  [f]
+  (let [counter (atom 0)]
+    (fn [& args]
+      (swap! counter inc)
+      (apply f args))))
+
 (defn database-rollback
   "Wrap test on a database transaction and rollback it after testing"
   [f]

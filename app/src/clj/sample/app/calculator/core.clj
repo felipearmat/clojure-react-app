@@ -1,4 +1,4 @@
-(ns sample.app.web.services.calculator
+(ns sample.app.calculator.core
   (:require
     [clj-http.client :as client]
     [clojure.spec.alpha :as spec]
