@@ -29,7 +29,8 @@
 (defn wrap-logger
   [handler]
   (fn [request]
-    (log/info request)
+    (when (= :dev (env/environment))
+      (log/info request))
     (handler request)))
 
 ;; Get the allowed regex for CORS by ENV

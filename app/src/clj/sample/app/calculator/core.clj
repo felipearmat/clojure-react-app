@@ -5,6 +5,7 @@
     [clojure.string :as str]
     [clojure.tools.logging :as log]
     [infix.macros :as inf]
+    [sample.app.env :refer [environment]]
     [sample.app.models.operations :as operations]
     [sample.app.models.records :as records]
     [sample.app.models.utils :as utils]))
@@ -84,5 +85,6 @@
       (expand-expression-operators)
       (calc-expression user-id))
   (catch Exception e
-    (log/info e)
-    {:msg "Invalid Expression." :error e})))
+    (if (= :dev (environment))
+      (throw e))
+    {:msg "Invalid Expression."})))

@@ -1,6 +1,7 @@
 (ns sample.app.env
   (:require
     [clojure.tools.logging :as log]
+    [integrant.repl.state :as state]
     [sample.app.dev-middleware :refer [wrap-dev]]))
 
 (def defaults
@@ -15,3 +16,5 @@
    :token-name    "Token"
    :opts          {:profile       :dev
                    :persist-data? true}})
+
+(defn environment [] (:system/env state/config))

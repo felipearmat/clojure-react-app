@@ -3,11 +3,12 @@
     [clojure.spec.alpha :as spec]
     [clojure.string :as str]
     [clojure.tools.logging :as log]
-    [next.jdbc :as jdbc]
-    [next.jdbc.result-set :as rs]
     [honey.sql :as hsql]
     [hugsql.parameters :refer [identifier-param-quote]]
-    [integrant.repl.state :as state]))
+    [integrant.repl.state :as state]
+    [next.jdbc :as jdbc]
+    [next.jdbc.result-set :as rs]
+    [sample.app.env :refer [environment]]))
 
 (def uuid-regex
   #"^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$")
@@ -82,7 +83,8 @@
 
 (defn conn-hsql-execute!
   [conn sqlmap]
-    (log/info (hsql/format sqlmap))
+    (when (= :dev (environment))
+      (log/info (hsql/format sqlmap)))
     (jdbc/execute! conn (hsql/format sqlmap) {:builder-fn rs/as-unqualified-maps}))
 
 (defn hsql-execute!

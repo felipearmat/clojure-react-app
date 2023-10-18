@@ -6,10 +6,11 @@
     [reitit.ring.middleware.muuntaja :as muuntaja]
     [reitit.ring.middleware.parameters :as parameters]
     [reitit.swagger :as swagger]
+    [sample.app.env :refer [environment]]
     [sample.app.web.controllers.auth :as auth]
-    [sample.app.web.controllers.records :as records]
     [sample.app.web.controllers.calculator :as calculator]
     [sample.app.web.controllers.health :as health]
+    [sample.app.web.controllers.records :as records]
     [sample.app.web.middleware.auth :refer [authentication-middleware]]
     [sample.app.web.middleware.exception :as exception]
     [sample.app.web.middleware.formats :as formats]))
@@ -39,10 +40,11 @@
 (defn api-routes [_opts]
   [
     [""
-      ["/swagger.json"
-        {:get {:no-doc  true
-              :swagger {:info {:title "sample.app API"}}
-              :handler (swagger/create-swagger-handler)}}]
+      (if (= :dev (environment))
+        ["/swagger.json"
+          {:get {:no-doc  true
+                :swagger {:info {:title "sample.app API"}}
+                :handler (swagger/create-swagger-handler)}}])
       ["/health"
         {:get health/healthcheck!}]
       ["/logged"
@@ -55,11 +57,7 @@
         ["/records"
           {:get records/get-records}]
         ["/calculate"
-          {:post calculator/calculate}]
-        ["/restricted"
-          {:post {:no-doc  true
-                  :swagger {:info {:title "sample.app API"}}
-                  :handler (swagger/create-swagger-handler)}}]]]])
+          {:post calculator/calculate}]]]])
 
 (derive :reitit.routes/api :reitit/routes)
 
