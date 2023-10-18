@@ -89,15 +89,19 @@ clojure -M:dev
 Now you have a Clojure REPL for interacting with the app. You'll need to stablish database connection so you can make some queries:
 
 ```clojure
+(dev-prep!)
+;; #object[user$dev_prep_BANG_$fn__39701 0x40ba4a5d "user$dev_prep_BANG_$fn__39701@40ba4a5d"]
+
 (prep)
-;; 2023-10-13 00:00:01,000 [main] INFO  kit.config - Reading config system.edn
+;; 2023-10-18 11:50:11,368 [main] INFO  kit.config - Reading config system.edn
 ;; :prepped
 
-(use-system :db.sql/query-fn)
-;; #object[kit.edge.db.sql.conman$eval12560$fn__12562$fn__12564 0x1a173e0f "kit.edge.db.sql.conman$eval12560$fn__12562$fn__12564@1a173e0f"]
+(use-system :db.sql/connection)
+;; 2023-10-18 11:50:17,122 [main] INFO  kit.config - Reading config system.edn
+;; #object[com.zaxxer.hikari.HikariDataSource 0x7d6548b4 "HikariDataSource (HikariPool-1)"]
 ```
 
-Since it might look boring having two commands that will commonly be used, there's also a shortcut for those commands:
+Since it might look boring having to activate those commands everytime you start a repl, there's also a shortcut for them:
 
 ```clojure
 (start-repl)
