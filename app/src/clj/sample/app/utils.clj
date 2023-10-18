@@ -60,18 +60,6 @@
 (defn db-connector
   "Retrieves the database query function from the system state."
   []
-  (if-let [query-fn (:db.sql/query-fn state/system)]
-    query-fn
-    (throw
-      (ex-info
-        (str
-          "Database connection not initialized. Did you execute"
-          " (integrant.repl/prep) and (integrant.repl/init)?")
-        {:type :system.exception/db-connection-failure}))))
-
-(defn db-connection
-  "Retrieves the database query function from the system state."
-  []
   (if-let [data-source (:db.sql/connection state/system)]
     data-source
     (throw
@@ -79,7 +67,7 @@
         (str
           "Database connection not initialized. Did you execute"
           " (integrant.repl/prep) and (integrant.repl/init)?")
-        {:type :system.exception/db-connection-failure}))))
+        {:type :system.exception/db-connector-failure}))))
 
 (defn conn-hsql-execute!
   [conn sqlmap]
@@ -89,42 +77,12 @@
 
 (defn hsql-execute!
   [sqlmap]
-    (conn-hsql-execute! (db-connection) sqlmap))
-
-(defn query-fn
-  "Executes a database query function with provided arguments."
-  [& vars]
-  (try
-    (apply (db-connector) vars)
-    (catch Exception e (throw (db-error e)))))
+    (conn-hsql-execute! (db-connector) sqlmap))
 
 (defn extract-ns
   [field]
   (when (str/includes? field "->")
     (str (first (str/split field #"->")) ".")))
 
-(defn transpile-query
-  "Creates a string to be used in hugsql query expressions given parameters."
-  [command separator {:keys [namespace] :as params} options]
-    (str/join separator
-      (for [[field value] (get params command)]
-        (let [expression (str " = :v" command ".")
-              field-str  (name field)
-              field      (last (str/split field-str #"->"))
-              field-ns   (extract-ns field-str)]
-          (str
-            (or field-ns namespace)
-            (identifier-param-quote field options)
-            expression field-str)))))
-
 (defn map-in? [map1 map2]
   (every? (fn [[k v]] (= (get map2 k) v)) map1))
-
-(def expand-set
-  (partial transpile-query :set ", "))
-
-(defn expand-where
-  [params options]
-  (if (nil? (:where params))
-    (str " " (:namespace params) "id IS NOT NULL ")
-    (transpile-query :where " AND " params options)))

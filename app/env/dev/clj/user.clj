@@ -72,7 +72,7 @@
   ([_]
     (dev-prep!)
     (prep)
-    (use-system :db.sql/query-fn))
+    (use-system :db.sql/connection))
   ([] (start-repl nil)))
 
 (defn start-dev [_]

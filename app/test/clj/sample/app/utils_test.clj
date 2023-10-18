@@ -23,29 +23,11 @@
     (is (thrown? Exception (validate-spec integer? "not-an-integer")))))
 
 (deftest test-db-connector
-  (testing "It returns a query function if connection is established"
-    (let [query-function :query-fn]
-      (with-redefs [state/system {:db.sql/query-fn query-function}]
-        (is (= query-function (db-connector))))))
+  (testing "Should return a data-source if a database connection is established"
+    (let [data-source :ds]
+      (with-redefs [state/system {:db.sql/connection data-source}]
+        (is (= data-source (db-connector))))))
 
-  (testing "It throws an exception if no database connection"
+  (testing "It throws an exception if there isn't a database connection"
     (with-redefs [state/system {}]
       (is (thrown? Exception (db-connector))))))
-
-(deftest test-expand-where
-  (testing "Returns ' id IS NOT NULL ' if :where value is nil"
-    (is (= " id IS NOT NULL " (expand-where {:where nil} {})))))
-
-(deftest test-transpile-query
-  (testing "It transpile values of keyword"
-    (let [params {:set {:field1 "value1" :x->field2 "value2"}
-                  :namespace "n."
-                  :where {:field?3 "value3" :field4 "value4"}}
-          options {:param1 "param1" :param2 "param2"}]
-      (testing ":set to be used in a hugsql command"
-        (is (= "n.field1 = :v:set.field1, x.field2 = :v:set.x->field2"
-              (transpile-query :set ", " params options))))
-
-      (testing ":where to be used in a hugsql command"
-        (is (= "n.field?3 = :v:where.field?3 AND n.field4 = :v:where.field4"
-              (transpile-query :where " AND " params options)))))))

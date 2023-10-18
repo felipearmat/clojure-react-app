@@ -19,10 +19,9 @@
   (let [query-fn    (:db.sql/query-fn state/system)
         data-source (:db.sql/connection state/system)]
     (jdbc/with-transaction [conn data-source {:isolation :serializable}]
-      (with-redefs [utils/db-connector  #(partial query-fn conn)
-                    utils/hsql-execute! (partial utils/conn-hsql-execute! conn)]
+      (with-redefs [utils/hsql-execute! (partial utils/conn-hsql-execute! conn)]
         (f)
         (.rollback conn)))))
 
 (do (user/test-prep!) (prep) (user/reset-db)) ; initiate test database
-(user/use-system :db.sql/query-fn) ; stablish connection with database
+(user/use-system :db.sql/connection) ; stablish connection with database
