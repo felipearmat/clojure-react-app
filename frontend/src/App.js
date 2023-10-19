@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useSyncExternalStore, useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import GlobalCss from "./components/GlobalCss";
@@ -6,23 +6,25 @@ import LoginForm from "./components/LoginForm";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Loading from "./components/Loading";
+import { userState } from "./stores/userState";
 import axios from "axios";
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const user = useSyncExternalStore(userState.subscribe, userState.get);
 
   const handleLogout = () => {
-    setAuthenticated(false);
+    userState.set({
+      authenticated: false,
+    });
   };
 
-  const loader = authenticated ? (
+  const loader = user.authenticated ? (
     <Loading isLoading={loading}>
       <Outlet />
     </Loading>
   ) : (
-    <LoginForm setAuthenticated={setAuthenticated} />
+    <LoginForm />
   );
 
   useEffect(() => {
@@ -31,9 +33,8 @@ function App() {
         const response = await axios.get("/api/data");
         const data = response.data;
         if (data.logged === true) {
-          setAuthenticated(true);
-          setData({
-            ...data,
+          userState.set({
+            authenticated: data.logged,
             balance: data.balance,
             email: data.email,
           });
@@ -54,8 +55,8 @@ function App() {
       <AppLayout
         header={
           <Header
-            isLoggedIn={authenticated}
-            data={data}
+            isLoggedIn={user.authenticated}
+            data={user}
             logoutHandler={handleLogout}
           />
         }

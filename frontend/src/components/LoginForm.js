@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Button, TextField, Typography, Paper, Box } from "@mui/material";
 import { styled } from "@mui/system";
+import { userState } from "../stores/userState";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -21,7 +22,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const LoginForm = ({ setAuthenticated }) => {
+const LoginForm = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -46,7 +47,9 @@ const LoginForm = ({ setAuthenticated }) => {
           "Content-Type": "application/json",
         },
       });
-      setAuthenticated(true);
+      userState.set({
+        authenticated: true,
+      });
     } catch (err) {
       console.log(err);
       setError("Invalid credentials. Please try again.");

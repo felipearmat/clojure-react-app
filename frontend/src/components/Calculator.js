@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Typography, Snackbar, Alert } from "@mui/material";
+import { userState } from "../stores/userState";
 
 const StyledInput = styled(TextField)`
   width: 100%;
@@ -21,12 +22,10 @@ const StyledButton = styled(Button)(({ _theme }) => ({
 }));
 
 const buttonArrays = [
-  ["(", ")", "C", "<-"],
-  ["7", "8", "9", "/"],
-  ["4", "5", "6", "*"],
-  ["1", "2", "3", "-"],
-  [".", "0", "=", "+"],
-  ["randomstr", "√("],
+  ["7", "8", "9", "/", "C", "<-"],
+  ["4", "5", "6", "*", "(", ")"],
+  ["1", "2", "3", "-", "√("],
+  [".", "0", "=", "+", "randomstr"],
 ];
 
 const Calculator = () => {
@@ -62,11 +61,15 @@ const Calculator = () => {
   };
 
   const handleRequest = (expression) => {
+    if (!expression) return;
     axios
       .post("/api/v1/calculate", { expression })
       .then((response) => {
-        const result = response?.data?.result;
-        const newHistory = `${expression} = ${result}`;
+        const data = response.data;
+        const newHistory = `${expression} = ${data.result}`;
+        userState.set({
+          balance: data.balance,
+        });
         setExpression([]);
         setHistory((prevHistory) => [...prevHistory, newHistory].slice(-10));
       })

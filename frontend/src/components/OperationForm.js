@@ -27,12 +27,10 @@ function OperationForm() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("/api/operations", {
+      await axios.post("/api/operations", {
         type: operationType,
         cost: parseFloat(cost),
       });
-
-      console.log("Operation created:", response.data);
 
       setOperationType("");
       setCost("");
