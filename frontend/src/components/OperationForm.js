@@ -27,7 +27,7 @@ function OperationForm() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost/api/operations", {
+      const response = await axios.post("/api/operations", {
         type: operationType,
         cost: parseFloat(cost),
       });

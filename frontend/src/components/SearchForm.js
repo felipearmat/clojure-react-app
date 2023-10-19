@@ -34,7 +34,7 @@ const SearchForm = ({ onChange }) => {
 
   const handleSearch = () => {
     axios
-      .get("http://localhost/api/v1/record", { params: searchParams })
+      .get("/api/v1/record", { params: searchParams })
       .then((response) => {
         const data = response.data;
         if (Array.isArray(data)) {

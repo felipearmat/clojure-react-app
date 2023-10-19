@@ -28,7 +28,7 @@ function App() {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await axios.get("http://localhost/api/data");
+        const response = await axios.get("/api/data");
         const data = response.data;
         if (data.logged === true) {
           setAuthenticated(true);

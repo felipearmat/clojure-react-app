@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
-import { Button, TextField, Box, Snackbar, Alert } from "@mui/material";
+import { Button, TextField, Typography, Snackbar, Alert } from "@mui/material";
 
 const StyledInput = styled(TextField)`
   width: 100%;
@@ -9,7 +9,7 @@ const StyledInput = styled(TextField)`
   text-align: left;
 `;
 
-const StyledButton = styled(Button)(({ theme }) => ({
+const StyledButton = styled(Button)(({ _theme }) => ({
   margin: "4px",
   textAlign: "left",
   border: "1px solid #e0e0e0",
@@ -20,29 +20,28 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const StyledHistoryItem = styled(Box)`
-  margin-bottom: 4px;
-`;
-
 const buttonArrays = [
   ["(", ")", "C", "<-"],
   ["7", "8", "9", "/"],
   ["4", "5", "6", "*"],
   ["1", "2", "3", "-"],
-  [".", "0", "=", "√("],
-  ["randomstr"],
+  [".", "0", "=", "+"],
+  ["randomstr", "√("],
 ];
 
 const Calculator = () => {
   const [expression, setExpression] = useState([]);
   const [history, setHistory] = useState([]);
-  const [result, setResult] = useState("");
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setExpression([]);
+  }, []);
 
   const handleInput = (symbol) => {
     switch (symbol) {
       case "C":
-        setExpression("");
+        setExpression([]);
         break;
       case "<-":
         setExpression((prevExpression) => prevExpression.slice(0, -1));
@@ -51,7 +50,7 @@ const Calculator = () => {
         handleRequest("randomstr");
         break;
       case "=":
-        handleRequest(expression);
+        handleRequest(readExpression(expression));
         break;
       default:
         setExpression((prevExpression) => [...prevExpression, symbol]);
@@ -59,55 +58,50 @@ const Calculator = () => {
   };
 
   const readExpression = (expression) => {
-    return (expression && expression?.join("")) || "";
+    return (Array.isArray(expression) && expression.join("")) || "";
   };
 
   const handleRequest = (expression) => {
     axios
-      .post("/api/v1/calculate", { expression: readExpression(expression) })
+      .post("/api/v1/calculate", { expression })
       .then((response) => {
-        setResult(response.data.result);
-        updateHistory();
+        const result = response?.data?.result;
+        const newHistory = `${expression} = ${result}`;
+        setExpression([]);
+        setHistory((prevHistory) => [...prevHistory, newHistory].slice(-10));
       })
       .catch((error) => {
-        setError(error.message);
+        setError(error?.response?.data || error.message);
       });
   };
-
-  const updateHistory = () => {
-    const newHistory = `${readExpression()} = ${result}`;
-    setHistory((prevHistory) => [...prevHistory, ...newHistory].slice(-15));
-  };
-
-  useEffect(() => {
-    setExpression("");
-    setResult("");
-  }, []);
 
   return (
     <div>
       <h4>History:</h4>
       {history.map((item, index) => (
-        <StyledHistoryItem key={index}>{item}</StyledHistoryItem>
+        <Typography key={"history" + index}>{item}</Typography>
       ))}
-      <StyledInput
-        value={readExpression()}
-        readOnly
-        InputProps={{
-          readOnly: true,
-        }}
-      />
-
-      {buttonArrays.map((buttonRow) => (
-        <div style={{ display: "flex" }}>
-          {buttonRow.map((buttonLabel) => (
-            <StyledButton onClick={() => handleInput(buttonLabel)}>
-              {buttonLabel}
-            </StyledButton>
-          ))}
-        </div>
-      ))}
-
+      <form>
+        <StyledInput
+          value={readExpression(expression)}
+          readOnly
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        {buttonArrays.map((buttonRow, index) => (
+          <div key={"row" + index} style={{ display: "flex" }}>
+            {buttonRow.map((label) => (
+              <StyledButton
+                key={"label" + label}
+                onClick={() => handleInput(label)}
+              >
+                {label}
+              </StyledButton>
+            ))}
+          </div>
+        ))}
+      </form>
       {error && (
         <Snackbar
           open={true}

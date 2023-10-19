@@ -6,13 +6,10 @@
     [sample.app.models.users :as users]))
 
 (defn calculate
-  [{:keys [identity params]}]
+  [{:keys [identity body-params]}]
   (let [user (first (users/get-users [:= :users.email (:user identity)]))
-        b (log/info identity)
-        expression (:expression params)
-        b (log/info expression)
-        result (calculator/calculate! (:id user) expression)
-        b (log/info result)]
+        expression (:expression body-params)
+        result (calculator/calculate! (:id user) expression)]
     (if (:msg result)
       (http-response/bad-request (:msg result))
       (http-response/ok {:result result}))))

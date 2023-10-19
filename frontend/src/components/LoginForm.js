@@ -41,7 +41,7 @@ const LoginForm = ({ setAuthenticated }) => {
     setError(null);
 
     try {
-      await axios.post("http://localhost/api/login", formData, {
+      await axios.post("/api/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },

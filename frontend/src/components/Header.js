@@ -37,7 +37,7 @@ const StyledLogoutButton = styled(IconButton)(({ theme }) => ({
 function Header({ data, isLoggedIn, logoutHandler }) {
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost/api/logout", {
+      await axios.post("/api/logout", {
         headers: {
           "Content-Type": "application/json",
         },
