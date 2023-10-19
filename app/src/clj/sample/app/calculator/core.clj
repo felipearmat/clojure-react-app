@@ -6,6 +6,7 @@
     [clojure.tools.logging :as log]
     [infix.macros :as inf]
     [sample.app.env :refer [environment]]
+    [sample.app.models.credits :as credits]
     [sample.app.models.operations :as operations]
     [sample.app.models.records :as records]
     [sample.app.utils :as utils]))
@@ -37,6 +38,13 @@
      :multiplication (char-occur-fn \*)
      :division       (char-occur-fn \/)
      :square_root    (char-occur-fn \√)}))
+
+(defn get-user-balance
+  [email]
+  (let [credits (credits/get-credits [:= :users.email email])
+        records (records/get-records [:= :users.email email])]
+    (format "%.2f"
+      (- (reduce + (map :value credits)) (reduce + (map :amount records))))))
 
 (defn record-operation
   "Create a record for a specific operation."

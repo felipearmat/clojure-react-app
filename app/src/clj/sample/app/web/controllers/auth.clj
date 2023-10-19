@@ -6,6 +6,7 @@
     [java-time.api :as jt]
     [ring.middleware.cookies :refer [cookies-response]]
     [ring.util.http-response :refer [ok unauthorized bad-request]]
+    [sample.app.calculator.core :as calculator]
     [sample.app.env :as env]
     [sample.app.models.credits :as credits]
     [sample.app.models.records :as records]
@@ -33,12 +34,9 @@
 (defn data
   [{:keys [identity]}]
   (if-let [email (:user identity)]
-    (let [credits (credits/get-credits [:= :users.email email])
-          records (records/get-records [:= :users.email email])
-          balance (- (reduce + (map :value credits)) (reduce + (map :amount records)))]
-      (ok {:logged true
-           :balance (format "%.2f" balance)
-           :email email}))
+    (ok {:logged true
+         :balance (calculator/get-user-balance email)
+         :email email})
     (ok {:logged false})))
 
 (defn change-password!
