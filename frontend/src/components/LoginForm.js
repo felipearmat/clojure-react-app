@@ -48,7 +48,6 @@ const LoginForm = ({ authCallBack }) => {
       });
       authCallBack();
     } catch (err) {
-      console.log(err);
       setError("Invalid credentials. Please try again.");
     }
   };
@@ -56,7 +55,7 @@ const LoginForm = ({ authCallBack }) => {
   return (
     <StyledPaper elevation={3}>
       <Typography variant="h5">Sign in</Typography>
-      <form onSubmit={handleSubmit}>
+      <form>
         <TextField
           id="form_email"
           label="Email"
@@ -83,7 +82,12 @@ const LoginForm = ({ authCallBack }) => {
             <Typography color="error">{error}</Typography>
           </Box>
         )}
-        <StyledButton id="sign_in" type="submit" variant="contained">
+        <StyledButton
+          identificator="login-form-sign-in"
+          type="submit"
+          variant="contained"
+          onClick={handleSubmit}
+        >
           Sign In
         </StyledButton>
       </form>

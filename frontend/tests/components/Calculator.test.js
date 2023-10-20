@@ -1,34 +1,33 @@
 import React from "react";
-import { render, fireEvent, act } from "@testing-library/react";
+import { render, fireEvent, act, cleanup } from "@testing-library/react";
 import axios from "axios";
 import Calculator from "../../src/components/Calculator";
 
-jest.mock("axios");
-
-var container = null;
 var targetElement = null;
 
 describe("Calculator component", () => {
   beforeEach(() => {
-    container = render(<Calculator />).container;
+    render(<Calculator />);
   });
+
+  afterEach(cleanup);
 
   describe("rendering necessary elements", () => {
     it("- calculator history title", () => {
-      const historyTitle = container.querySelector(
+      const historyTitle = document.querySelector(
         "[identificator='calculator-history-title']"
       );
       expect(historyTitle).toBeInTheDocument();
     });
 
     it("- calculator readonly input", () => {
-      targetElement = container.querySelector("input[readonly]");
+      targetElement = document.querySelector("input[readonly]");
       expect(targetElement).toBeInTheDocument();
       expect(targetElement).toHaveValue("");
     });
 
     it("- calculator buttons", () => {
-      const buttons = container.querySelectorAll(
+      const buttons = document.querySelectorAll(
         "[identificator^='calculator-button-']"
       );
       expect(buttons).toHaveLength(22);
@@ -37,10 +36,10 @@ describe("Calculator component", () => {
 
   describe("input events behaviour", () => {
     beforeEach(() => {
-      targetElement = container.querySelector("input[readonly]");
+      targetElement = document.querySelector("input[readonly]");
 
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-1']")
+        document.querySelector("[identificator='calculator-button-1']")
       );
     });
 
@@ -48,24 +47,24 @@ describe("Calculator component", () => {
       expect(targetElement).toHaveValue("1");
 
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-2']")
+        document.querySelector("[identificator='calculator-button-2']")
       );
       expect(targetElement).toHaveValue("12");
 
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-3']")
+        document.querySelector("[identificator='calculator-button-3']")
       );
       expect(targetElement).toHaveValue("123");
 
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-+']")
+        document.querySelector("[identificator='calculator-button-+']")
       );
       expect(targetElement).toHaveValue("123+");
     });
 
     it("then clears the input when pressing C", () => {
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-C']")
+        document.querySelector("[identificator='calculator-button-C']")
       );
 
       expect(targetElement).toHaveValue("");
@@ -79,28 +78,28 @@ describe("Calculator component", () => {
       });
 
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-4']")
+        document.querySelector("[identificator='calculator-button-4']")
       );
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-+']")
+        document.querySelector("[identificator='calculator-button-+']")
       );
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-2']")
+        document.querySelector("[identificator='calculator-button-2']")
       );
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-=']")
+        document.querySelector("[identificator='calculator-button-=']")
       );
 
       await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
     });
 
     it("should clear the readonly input after pressing '='", () => {
-      targetElement = container.querySelector("input[readonly]");
+      targetElement = document.querySelector("input[readonly]");
       expect(targetElement).toHaveValue("");
     });
 
     it("should add the expression and result into the history", () => {
-      const historyItem = container.querySelector(
+      const historyItem = document.querySelector(
         "[identificator^='calculator-history-item-']"
       );
       expect(historyItem).toBeInTheDocument();
@@ -112,16 +111,16 @@ describe("Calculator component", () => {
     beforeEach(async () => {
       axios.post.mockRejectedValue(new Error("Invalid expression"));
 
-      targetElement = container.querySelector("input[readonly]");
+      targetElement = document.querySelector("input[readonly]");
 
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-1']")
+        document.querySelector("[identificator='calculator-button-1']")
       );
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-+']")
+        document.querySelector("[identificator='calculator-button-+']")
       );
       fireEvent.click(
-        container.querySelector("[identificator='calculator-button-=']")
+        document.querySelector("[identificator='calculator-button-=']")
       );
 
       await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
@@ -132,7 +131,7 @@ describe("Calculator component", () => {
     });
 
     it("should show a snackbar with error message", () => {
-      const errorSnackbar = container.querySelector(
+      const errorSnackbar = document.querySelector(
         "[identificator='calculator-error-snackbar']"
       );
       expect(errorSnackbar).toBeInTheDocument();

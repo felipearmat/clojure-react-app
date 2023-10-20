@@ -2,14 +2,14 @@ import { Backdrop, CircularProgress } from "@mui/material";
 
 function Loading({ children, isLoading, onlyComponent }) {
   const cover = onlyComponent ? (
-    <CircularProgress />
+    <CircularProgress identificator="loading-progress" />
   ) : (
     <>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}
       >
-        <CircularProgress color="inherit" />
+        <CircularProgress identificator="loading-progress" color="inherit" />
       </Backdrop>
       {children}
     </>

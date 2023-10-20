@@ -1,5 +1,6 @@
 import { useSyncExternalStore, useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { Box } from "@mui/material";
 import AppLayout from "./layouts/AppLayout";
 import GlobalCss from "./components/GlobalCss";
 import LoginForm from "./components/LoginForm";
@@ -44,11 +45,15 @@ function App() {
   };
 
   const loader = user.authenticated ? (
-    <Loading isLoading={loading}>
-      <Outlet />
-    </Loading>
+    <Box width="100%" identificator="app-outlet">
+      <Loading isLoading={loading}>
+        <Outlet />
+      </Loading>
+    </Box>
   ) : (
-    <LoginForm id="app_login_form" authCallBack={authCallBack} />
+    <Box width="100%" identificator="app-login-form">
+      <LoginForm authCallBack={authCallBack} />
+    </Box>
   );
 
   return (
