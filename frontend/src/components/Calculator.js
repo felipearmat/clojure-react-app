@@ -35,6 +35,30 @@ const Calculator = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const handleRequest = async (expression) => {
+    if (!expression) return;
+    setLoading(true);
+
+    try {
+      const response = await axios.post("/api/v1/calculate", { expression });
+      const data = response.data;
+      const newHistory = `${expression} = ${data.result}`;
+      userState.set({
+        balance: data.balance,
+      });
+      setExpression([]);
+      setHistory((prevHistory) => [...prevHistory, newHistory].slice(-10));
+    } catch (error) {
+      setError(error?.response?.data || error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const readExpression = (expression) => {
+    return (Array.isArray(expression) && expression.join("")) || "";
+  };
+
   const handleInput = (symbol) => {
     switch (symbol) {
       case "C":
@@ -52,32 +76,6 @@ const Calculator = () => {
       default:
         setExpression((prevExpression) => [...prevExpression, symbol]);
     }
-  };
-
-  const readExpression = (expression) => {
-    return (Array.isArray(expression) && expression.join("")) || "";
-  };
-
-  const handleRequest = (expression) => {
-    if (!expression) return;
-    setLoading(true);
-    axios
-      .post("/api/v1/calculate", { expression })
-      .then((response) => {
-        const data = response.data;
-        const newHistory = `${expression} = ${data.result}`;
-        userState.set({
-          balance: data.balance,
-        });
-        setExpression([]);
-        setHistory((prevHistory) => [...prevHistory, newHistory].slice(-10));
-      })
-      .catch((error) => {
-        setError(error?.response?.data || error.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
   };
 
   return (
