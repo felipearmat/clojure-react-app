@@ -50,4 +50,5 @@
     (operations/create-operation! (:type operation) (:cost operation))
     (when (:deleted operation)
       (operations/delete-operation! (:id (first (operations/get-operations [:= :type (:type operation)]))))))
-  (gen-records 200))
+  (gen-records 200)
+  (println "Seeds completed!"))

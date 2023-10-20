@@ -113,6 +113,18 @@ Since it might look boring having to activate those commands everytime you start
 
 For more information, refer to [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli) for REPL starting and [Integrant-REPL](https://github.com/weavejester/integrant-repl) for state/config and state/system.
 
+### Populating database
+
+For development environment might be a good idea to populate you database with some data, for that you can access the repl and run the command:
+
+```clojure
+(seeds)
+;; Seeds completed!
+
+```
+
+OBS\*: This function is only accessible on **dev** repl.
+
 ## Production workflow
 
 (Instructions for deploying the app will be provided in a future update.)
