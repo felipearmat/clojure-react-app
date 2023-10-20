@@ -2,14 +2,26 @@ import { useState } from "react";
 import { Container, Typography } from "@mui/material";
 import DataTable from "../components/DataTable";
 import SearchForm from "../components/SearchForm";
+import axios from "axios";
 
 const RecordList = () => {
   const [records, setRecords] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
 
-  const handleSearch = (data) => {
-    setRecords(data);
-    calculateTotalAmount(data);
+  const handleSearch = (params) => {
+    axios
+      .get("/api/v1/record", { params })
+      .then((response) => {
+        const data = response?.data?.records;
+        console.log("Records", data);
+        if (Array.isArray(data)) {
+          setRecords(data);
+          calculateTotalAmount(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching record:", error);
+      });
   };
 
   const calculateTotalAmount = (data) => {
@@ -31,16 +43,11 @@ const RecordList = () => {
       label: "Amount",
       format: (val) => Number.parseFloat(val).toFixed(2),
     },
-    {
-      id: "user_balance",
-      label: "User Balance",
-      format: (val) => Number.parseFloat(val).toFixed(2),
-    },
   ];
 
   return (
     <>
-      <SearchForm onChange={handleSearch} />
+      <SearchForm searchCallBack={handleSearch} />
       <Container>
         {records.length > 0 ? (
           <>

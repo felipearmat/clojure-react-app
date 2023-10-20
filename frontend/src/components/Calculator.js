@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Typography, Snackbar, Alert } from "@mui/material";
@@ -34,10 +34,6 @@ const Calculator = () => {
   const [history, setHistory] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setExpression([]);
-  }, []);
 
   const handleInput = (symbol) => {
     switch (symbol) {
@@ -75,20 +71,26 @@ const Calculator = () => {
         });
         setExpression([]);
         setHistory((prevHistory) => [...prevHistory, newHistory].slice(-10));
-        setLoading(false);
       })
       .catch((error) => {
-        setLoading(false);
         setError(error?.response?.data || error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
     <div>
       <Loading isLoading={loading}>
-        <h4>History:</h4>
+        <h4 identificator="calculator-history-title">History:</h4>
         {history.map((item, index) => (
-          <Typography key={"history" + index}>{item}</Typography>
+          <Typography
+            identificator={`calculator-history-item-${index}`}
+            key={`history${index}`}
+          >
+            {item}
+          </Typography>
         ))}
         <form>
           <StyledInput
@@ -99,10 +101,11 @@ const Calculator = () => {
             }}
           />
           {buttonArrays.map((buttonRow, index) => (
-            <div key={"row" + index} style={{ display: "flex" }}>
+            <div key={`row${index}`} style={{ display: "flex" }}>
               {buttonRow.map((label) => (
                 <StyledButton
-                  key={"label" + label}
+                  key={`label${label}`}
+                  identificator={`calculator-button-${label}`}
                   onClick={() => handleInput(label)}
                 >
                   {label}
@@ -114,6 +117,7 @@ const Calculator = () => {
       </Loading>
       {error && (
         <Snackbar
+          identificator="calculator-error-snackbar"
           open={true}
           autoHideDuration={5000}
           onClose={() => setError(null)}

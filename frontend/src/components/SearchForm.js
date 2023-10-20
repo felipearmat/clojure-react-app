@@ -11,13 +11,12 @@ import {
   Grid,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import axios from "axios";
 
 const SearchFormContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
 }));
 
-const SearchForm = ({ onChange }) => {
+const SearchForm = ({ searchCallBack }) => {
   const [searchParams, setSearchParams] = useState({
     operationType: "",
     operationCost: "",
@@ -30,20 +29,6 @@ const SearchForm = ({ onChange }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSearchParams({ ...searchParams, [name]: value });
-  };
-
-  const handleSearch = () => {
-    axios
-      .get("/api/v1/record", { params: searchParams })
-      .then((response) => {
-        const data = response.data;
-        if (Array.isArray(data)) {
-          onChange(data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching record:", error);
-      });
   };
 
   return (
@@ -137,7 +122,11 @@ const SearchForm = ({ onChange }) => {
           </Grid>
         </Grid>
         <Box mt={2} textAlign="center">
-          <Button variant="contained" color="primary" onClick={handleSearch}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={searchCallBack(searchParams)}
+          >
             Search
           </Button>
         </Box>
