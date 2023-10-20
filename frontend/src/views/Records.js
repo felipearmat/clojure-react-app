@@ -51,15 +51,15 @@ const RecordList = () => {
       <Container>
         {records.length > 0 ? (
           <>
-            <DataTable
-              title="Records"
-              rows={records}
-              columns={headers}
-              pagination={true}
-            />
-            <Typography variant="h6" gutterBottom>
-              Total Amount: {totalAmount}
-            </Typography>
+            <div>
+              <DataTable
+                title="Records"
+                rows={records}
+                columns={headers}
+                pageSizeOptions={[10, 25, 50]}
+              />
+            </div>
+            <Typography>Total Amount: {totalAmount}</Typography>
           </>
         ) : (
           <Typography variant="h6" gutterBottom>

@@ -37,37 +37,7 @@ const SearchForm = ({ searchCallBack }) => {
         <Grid container mt={3} mb={4} spacing={1}>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth variant="outlined">
-              <InputLabel id="operation-type-label">Operation Type</InputLabel>
-              <Select
-                name="operationType"
-                labelId="operation-type-label"
-                value={searchParams.operationType}
-                onChange={handleInputChange}
-                label="Operation Type"
-              >
-                <MenuItem value="">Select</MenuItem>
-                <MenuItem value="addition">Addition</MenuItem>
-                <MenuItem value="subtraction">Subtraction</MenuItem>
-                <MenuItem value="multiplication">Multiplication</MenuItem>
-                <MenuItem value="division">Division</MenuItem>
-                <MenuItem value="square_root">Square Root</MenuItem>
-                <MenuItem value="random_string">Random String</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="operationCost"
-              label="Operation Cost"
-              fullWidth
-              variant="outlined"
-              value={searchParams.operationCost}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel id="amount-operator-label">Amount</InputLabel>
+              <InputLabel id="amount-operator-label">Amount is</InputLabel>
               <Select
                 name="amountOperator"
                 labelId="amount-operator-label"
@@ -93,6 +63,26 @@ const SearchForm = ({ searchCallBack }) => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel id="operation-type-label">Operation Type</InputLabel>
+              <Select
+                name="operationType"
+                labelId="operation-type-label"
+                value={searchParams.operationType}
+                onChange={handleInputChange}
+                label="Operation Type"
+              >
+                <MenuItem value="">Select</MenuItem>
+                <MenuItem value="addition">Addition</MenuItem>
+                <MenuItem value="subtraction">Subtraction</MenuItem>
+                <MenuItem value="multiplication">Multiplication</MenuItem>
+                <MenuItem value="division">Division</MenuItem>
+                <MenuItem value="square_root">Square Root</MenuItem>
+                <MenuItem value="random_string">Random String</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               name="startDate"
               label="Start Date"
@@ -119,13 +109,13 @@ const SearchForm = ({ searchCallBack }) => {
               value={searchParams.endDate}
               onChange={handleInputChange}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
         <Box mt={2} textAlign="center">
           <Button
             variant="contained"
             color="primary"
-            onClick={searchCallBack(searchParams)}
+            onClick={() => searchCallBack(searchParams)}
           >
             Search
           </Button>
