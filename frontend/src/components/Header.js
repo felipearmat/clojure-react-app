@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from "react";
+import { userState } from "../stores/userState";
 import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
 import { ExitToApp } from "@mui/icons-material";
 import { styled } from "@mui/system";
@@ -34,7 +36,9 @@ const StyledLogoutButton = styled(IconButton)(({ theme }) => ({
   color: "white",
 }));
 
-function Header({ data, isLoggedIn, logoutHandler }) {
+function Header({ logoutHandler }) {
+  const user = useSyncExternalStore(userState.subscribe, userState.get);
+
   const handleLogout = async () => {
     try {
       await axios.post("/api/logout", {
@@ -54,10 +58,10 @@ function Header({ data, isLoggedIn, logoutHandler }) {
         <StyledTypography variant="h6">
           ArithmeticCalculatorAPI
         </StyledTypography>
-        {isLoggedIn && (
+        {user.authenticated && (
           <>
-            {data && (
-              <Data>{`${data.email}   /   Balance: ${data.balance}`}</Data>
+            {user.email && (
+              <Data>{`${user.email}   /   Balance: ${user.balance}`}</Data>
             )}
             <StyledLogoutButton onClick={handleLogout}>
               <ExitToApp />

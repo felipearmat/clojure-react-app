@@ -3,6 +3,7 @@ import axios from "axios";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import { userState } from "../stores/userState";
+import Loading from "./Loading";
 
 const StyledInput = styled(TextField)`
   width: 100%;
@@ -32,6 +33,7 @@ const Calculator = () => {
   const [expression, setExpression] = useState([]);
   const [history, setHistory] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setExpression([]);
@@ -62,6 +64,7 @@ const Calculator = () => {
 
   const handleRequest = (expression) => {
     if (!expression) return;
+    setLoading(true);
     axios
       .post("/api/v1/calculate", { expression })
       .then((response) => {
@@ -72,39 +75,43 @@ const Calculator = () => {
         });
         setExpression([]);
         setHistory((prevHistory) => [...prevHistory, newHistory].slice(-10));
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         setError(error?.response?.data || error.message);
       });
   };
 
   return (
     <div>
-      <h4>History:</h4>
-      {history.map((item, index) => (
-        <Typography key={"history" + index}>{item}</Typography>
-      ))}
-      <form>
-        <StyledInput
-          value={readExpression(expression)}
-          readOnly
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        {buttonArrays.map((buttonRow, index) => (
-          <div key={"row" + index} style={{ display: "flex" }}>
-            {buttonRow.map((label) => (
-              <StyledButton
-                key={"label" + label}
-                onClick={() => handleInput(label)}
-              >
-                {label}
-              </StyledButton>
-            ))}
-          </div>
+      <Loading isLoading={loading}>
+        <h4>History:</h4>
+        {history.map((item, index) => (
+          <Typography key={"history" + index}>{item}</Typography>
         ))}
-      </form>
+        <form>
+          <StyledInput
+            value={readExpression(expression)}
+            readOnly
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+          {buttonArrays.map((buttonRow, index) => (
+            <div key={"row" + index} style={{ display: "flex" }}>
+              {buttonRow.map((label) => (
+                <StyledButton
+                  key={"label" + label}
+                  onClick={() => handleInput(label)}
+                >
+                  {label}
+                </StyledButton>
+              ))}
+            </div>
+          ))}
+        </form>
+      </Loading>
       {error && (
         <Snackbar
           open={true}

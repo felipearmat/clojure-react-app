@@ -13,10 +13,34 @@ function App() {
   const [loading, setLoading] = useState(true);
   const user = useSyncExternalStore(userState.subscribe, userState.get);
 
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get("/api/data");
+      const data = response.data;
+      if (data.logged === true) {
+        userState.set({
+          authenticated: data.logged,
+          balance: data.balance,
+          email: data.email,
+        });
+      }
+    } catch (error) {
+      console.error("Error checking authentication:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const authCallBack = () => {
+    fetchUserData();
+  };
+
   const handleLogout = () => {
-    userState.set({
-      authenticated: false,
-    });
+    userState.set({});
   };
 
   const loader = user.authenticated ? (
@@ -24,42 +48,14 @@ function App() {
       <Outlet />
     </Loading>
   ) : (
-    <LoginForm />
+    <LoginForm id="app_login_form" authCallBack={authCallBack} />
   );
-
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        const response = await axios.get("/api/data");
-        const data = response.data;
-        if (data.logged === true) {
-          userState.set({
-            authenticated: data.logged,
-            balance: data.balance,
-            email: data.email,
-          });
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error checking authentication:", error);
-        setLoading(false);
-      }
-    };
-
-    checkAuthentication();
-  }, []);
 
   return (
     <>
       <GlobalCss />
       <AppLayout
-        header={
-          <Header
-            isLoggedIn={user.authenticated}
-            data={user}
-            logoutHandler={handleLogout}
-          />
-        }
+        header={<Header logoutHandler={handleLogout} />}
         content={loader}
         footer={<Footer />}
       />

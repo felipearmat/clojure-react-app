@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Button, TextField, Typography, Paper, Box } from "@mui/material";
 import { styled } from "@mui/system";
-import { userState } from "../stores/userState";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -22,7 +21,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const LoginForm = () => {
+const LoginForm = ({ authCallBack }) => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -47,9 +46,7 @@ const LoginForm = () => {
           "Content-Type": "application/json",
         },
       });
-      userState.set({
-        authenticated: true,
-      });
+      authCallBack();
     } catch (err) {
       console.log(err);
       setError("Invalid credentials. Please try again.");
@@ -61,6 +58,7 @@ const LoginForm = () => {
       <Typography variant="h5">Sign in</Typography>
       <form onSubmit={handleSubmit}>
         <TextField
+          id="form_email"
           label="Email"
           name="username"
           value={formData.username}
@@ -70,6 +68,7 @@ const LoginForm = () => {
           required
         />
         <TextField
+          id="form_password"
           type="password"
           label="Password"
           name="password"
@@ -84,7 +83,7 @@ const LoginForm = () => {
             <Typography color="error">{error}</Typography>
           </Box>
         )}
-        <StyledButton type="submit" variant="contained">
+        <StyledButton id="sign_in" type="submit" variant="contained">
           Sign In
         </StyledButton>
       </form>
