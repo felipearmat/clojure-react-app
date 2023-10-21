@@ -18,25 +18,24 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-function XDataGrid({ title, rows, columns, pageSizeOptions, minWidth = 400 }) {
-  const data = rows.map((row, index) => ({ id: index, ...row }));
-  const columnsDefs = columns.map((col) => ({
-    field: col.id,
-    headerName: col.label,
+function XDataGrid(args) {
+  const pageSizeOptions = args.pageSizeOptions;
+  const rows = args.rows.map((row, index) => ({ id: index, ...row }));
+  const columns = args.columns.map((col) => ({
     flex: 1,
-    align: col.align,
+    ...col,
   }));
 
   return (
-    <div style={{ width: "100%", minWidth: minWidth }}>
-      {title && (
+    <div style={{ width: "100%", minWidth: args.minWidth }}>
+      {args.title && (
         <Typography variant="h4" gutterBottom>
-          {title}
+          {args.title}
         </Typography>
       )}
       <StyledDataGrid
-        rows={data}
-        columns={columnsDefs}
+        rows={rows}
+        columns={columns}
         pageSizeOptions={pageSizeOptions}
         initialState={{
           pagination: {
@@ -45,8 +44,7 @@ function XDataGrid({ title, rows, columns, pageSizeOptions, minWidth = 400 }) {
             },
           },
         }}
-        checkboxSelection
-        disableSelectionOnClick
+        {...args}
       />
     </div>
   );

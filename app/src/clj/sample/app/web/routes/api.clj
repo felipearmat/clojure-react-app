@@ -54,8 +54,9 @@
       ["/data"
         {:get auth/data}]
       ["/v1" {:middleware [authentication-middleware]}
-        ["/record"
-          {:get record/get-records}]
+        ["/record" {}
+          [["/" {:get record/get-records}]
+           ["/delete" {:post record/delete-records!}]]]
         ["/calculate"
           {:post calculator/calculate}]]]])
 

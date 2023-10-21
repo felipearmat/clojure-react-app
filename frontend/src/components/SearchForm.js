@@ -16,7 +16,11 @@ const SearchFormContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
 }));
 
-const SearchForm = ({ searchCallBack }) => {
+const StyledButton = styled(Button)({
+  margin: "0 0.75rem",
+});
+
+const SearchForm = ({ searchCallBack, children }) => {
   const [searchParams, setSearchParams] = useState({
     operationType: "",
     operationCost: "",
@@ -112,13 +116,14 @@ const SearchForm = ({ searchCallBack }) => {
           </Grid> */}
         </Grid>
         <Box mt={2} textAlign="center">
-          <Button
+          <StyledButton
             variant="contained"
             color="primary"
             onClick={() => searchCallBack(searchParams)}
           >
             Search
-          </Button>
+          </StyledButton>
+          {children}
         </Box>
       </form>
     </SearchFormContainer>

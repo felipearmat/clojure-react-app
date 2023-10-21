@@ -27,9 +27,11 @@ describe("App Component", () => {
       expect(loginForm).toBeInTheDocument();
     });
 
-    it("Outlet should be rendered when user logs in", async () => {
+    it("Outlet should be rendered after user logs in", async () => {
+      // mock response for post request on backend
       axios.post.mockResolvedValue({});
 
+      // mock new get request triggered by authCallBack
       axios.get.mockResolvedValue({
         data: { logged: true, balance: 100, email: "test@example.com" },
       });

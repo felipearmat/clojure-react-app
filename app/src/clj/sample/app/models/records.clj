@@ -10,6 +10,7 @@
 (spec/def :records/operation-response string?)
 (spec/def :records/deleted boolean?)
 (spec/def :records/operation_response string?)
+(spec/def :records/delete-records! (spec/coll-of :records/id :distinct true :into []))
 
 (spec/def :records/create-record!
   (spec/keys :req-un [:records/operation_id
@@ -90,4 +91,14 @@
     (#(utils/hsql-execute! {:update :records
                             :set    {:deleted true}
                             :where  [:and [:<> :deleted true] [:= :id %]]}))
+    (utils/format-hsql-output)))
+
+(defn delete-records!
+  "Delete records identified by a vector of its ID. Returns number of columns deleted."
+  [ids]
+  (->> ids
+    (utils/validate-spec :records/delete-records!)
+    (#(utils/hsql-execute! {:update :records
+                            :set    {:deleted true}
+                            :where  [:and [:<> :deleted true] [:in :id %]]}))
     (utils/format-hsql-output)))

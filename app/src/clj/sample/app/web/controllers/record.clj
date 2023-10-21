@@ -1,6 +1,7 @@
 (ns sample.app.web.controllers.record
   (:require
     [ring.util.http-response :as http-response]
+    [sample.app.calculator.core :as calculator]
     [sample.app.models.records :as records]))
 
 (defn get-records
@@ -27,3 +28,12 @@
                   [:<= :records.created_at end-date])
                 ]]
         (http-response/ok {:records (records/get-records query)})))
+
+(defn delete-records!
+  [{:keys [identity body-params]}]
+  (let [email (:user identity)
+        records (:records body-params)
+        total (records/delete-records! records)
+        user-balance (calculator/get-user-balance email)]
+        (http-response/ok {:message (str total " records sucessfully deleted!")
+                           :balance user-balance})))
