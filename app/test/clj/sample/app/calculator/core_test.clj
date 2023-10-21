@@ -1,12 +1,13 @@
 (ns sample.app.calculator.core-test
   (:require
     [clojure.test :refer :all]
-    [sample.app.models.records :as records]
-    [sample.app.models.operations :as operations]
-    [sample.app.models.users :as users]
     [sample.app.calculator.core :as calc]
-    [sample.app.utils :refer [map-in?]]
-    [sample.app.test-utils :as test-utils]))
+    [sample.app.models.credits :as credits]
+    [sample.app.models.operations :as operations]
+    [sample.app.models.records :as records]
+    [sample.app.models.users :as users]
+    [sample.app.test-utils :as test-utils]
+    [sample.app.utils :refer [map-in?]]))
 
 (def test-user (atom {}))
 (def test-ops (atom []))
@@ -27,6 +28,7 @@
     (operations/create-operation! (:type operation) (:cost operation)))
   (reset! test-user (last (users/get-users)))
   (reset! test-ops (operations/get-operations))
+  (credits/add-credit! (:id @test-user) 73)
   (f))
 
 (use-fixtures :each test-utils/database-rollback calculator-fixtures)
@@ -73,30 +75,44 @@
             (last (records/get-records [:= :records.user_id user-id])))))))
 
 (deftest test-eval-expression
-  (testing "Should evalute expected operators correctly"
+  (testing "Should evaluate expected operators correctly"
     (is (= 42 (calc/eval-expression "42")))
     (is (= 42 (calc/eval-expression "(42)")))
     (is (= 42 (calc/eval-expression "21+21")))
     (is (= 42 (calc/eval-expression "45-3")))
-    (is (= 42 (calc/eval-expression "2*21")))
-    (is (= 84/2 (calc/eval-expression "(80+4)/2")))
+    (is (= 42 (calc/eval-expression "(10+11)*2")))
     (is (= 42 (calc/eval-expression "((80+4)/2)")))
     (is (= 42.0 (calc/eval-expression "√(1764)")))))
 
-(deftest test-calc-expression-randomstr
-  (testing "calc-expression for 'randomstr'"
+(deftest test-expand-expression-operators
+  (testing "expand-expression-operators function"
+    (is (= "2*√(2)" (calc/expand-expression-operators "2√(2)")))
+    (is (= "(1+2)*√(2)" (calc/expand-expression-operators "(1+2)√(2)")))
+    (is (= "(1+2)*√(2)*3.1-3*√(4)/5/2" (calc/expand-expression-operators "(1+2)√(2)*3.1-3√(4)/5/2")))))
+
+(deftest test-get-user-balance
+  (testing "get-user-balance function"
+    (let [record {:user_id (:id @test-user)
+                  :operation_id (:id (first @test-ops))
+                  :amount 25}]
+      (records/create-record! record)
+      (records/create-record! (assoc record :amount 6))
+      (is (= 42.00 (calc/get-user-balance user-email))))))
+
+(deftest test-process-expression-randomstr
+  (testing "process-expression for 'randomstr'"
     (let [user-id (:id @test-user)
           op (last (filter #(= "random_string" (:type %)) @test-ops))
           expected-record {:operation_id (:id op) :user_id user-id :amount (:cost op)}]
       (with-redefs [calc/gen-random-string (fn [] "gen-random-string")]
-        (is (= "gen-random-string" (calc/calc-expression user-id "randomstr")))
+        (is (= "gen-random-string" (calc/process-expression user-id "randomstr")))
         (is (map-in? expected-record (last (records/get-records [:= :records.user_id user-id]))))))))
 
-(deftest test-calc-expression-mathematical
-  (testing "calc-expression for mathematical expressions"
+(deftest test-process-expression-mathematical
+  (testing "process-expression for mathematical expressions"
     (let [user-id (:id @test-user)
           expression "(1+2)*√(4)*3.1-3*√(9)/5"
-          result (calc/calc-expression user-id expression)
+          result (calc/process-expression user-id expression)
           records (records/get-records [:= :records.user_id user-id])]
       (is (= 16.8 result))
       (is (= 1 (count (filter #(= "addition" (:operation_type %)) records))))
@@ -105,25 +121,25 @@
       (is (= 2 (count (filter #(= "square_root" (:operation_type %)) records))))
       (is (= 1 (count (filter #(= "division" (:operation_type %)) records)))))))
 
-(deftest test-expand-expression-operators
-  (testing "expand-expression-operators function"
-    (is (= "2*√(2)" (calc/expand-expression-operators "2√(2)")))
-    (is (= "(1+2)*√(2)" (calc/expand-expression-operators "(1+2)√(2)")))
-    (is (= "(1+2)*√(2)*3.1-3*√(4)/5/2" (calc/expand-expression-operators "(1+2)√(2)*3.1-3√(4)/5/2")))))
-
 (deftest test-calculate
   (testing "calculate! for valid expressions"
     (let [user-id (:id @test-user)
-          expression "(1+2)*√(4)*3.1-3*√(9)/5"
-          result (calc/calc-expression user-id expression)
-          records (records/get-records [:= :records.user_id user-id])]
-      (is (= result (calc/calculate! user-id expression)))))
+          expression "(1+2)*√(4)*3.1-3*√(9)/5+(1+2)*√(4)*3.1-3*√(9)/5"
+          result (calc/calculate! user-id expression)]
+      (is (= result (calc/eval-expression expression)))
+      (is (= 38.0 (calc/get-user-balance (:email @test-user))))))
 
   (testing "calculate! for 'randomstr'"
+    (with-redefs [calc/gen-random-string (fn [] "gen-random-string")]
+      (is (= "gen-random-string" (calc/calculate! (:id @test-user) "randomstr")))
+      (is (= 34.5 (calc/get-user-balance (:email @test-user))))))
+
+  (testing "calculate! when user is low balance"
     (let [user-id (:id @test-user)
-          expected-record {:operation_id 6 :user_id 1 :amount 3.5}]
-      (with-redefs [calc/gen-random-string (fn [] "gen-random-string")]
-        (is (= "gen-random-string" (calc/calculate! user-id "randomstr"))))))
+          expression "(1+2)*√(4)*3.1-3*√(9)/5+(1+2)*√(4)*3.1-3*√(9)/5"
+          result (calc/calculate! user-id expression)]
+      (is (= result {:msg "Insufficient balance to calculate Expression."}))
+      (is (= 34.5 (calc/get-user-balance (:email @test-user))))))
 
   (testing "calculate! for invalid expressions"
     (is (= "Invalid Expression." (:msg (calc/calculate! 1 "abc"))))))
