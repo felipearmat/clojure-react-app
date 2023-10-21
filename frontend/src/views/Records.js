@@ -98,6 +98,7 @@ const RecordList = () => {
       field: "delete",
       headerName: "Delete",
       sortable: false,
+      filterable: false,
       flex: 0.5,
       headerAlign: "center",
       align: "center",
