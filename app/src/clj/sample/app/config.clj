@@ -1,9 +1,12 @@
 (ns sample.app.config
   (:require
+    [buddy.core.hash :as hash]
     [kit.config :as kc]))
 
 (def ^:const system-filename "system.edn")
 (def ^:const resources-path "./resources/")
+
+(def secret-key (hash/sha256 "mysecretkey"))
 
 (defn- list-files
   "Returns a seq of java.io.Files inside a path and all of its subfolders"

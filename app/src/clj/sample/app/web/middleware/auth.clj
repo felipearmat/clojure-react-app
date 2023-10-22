@@ -3,28 +3,13 @@
     [buddy.auth :refer [authenticated?]]
     [clojure.string :as str]
     [reitit.middleware :as middleware]
-    [ring.util.codec :as codec]
     [ring.util.http-response :refer [get-header unauthorized]]
     [sample.app.env :as env]))
 
-(defn ->cookie-token
-  [request]
-  (let [header (get-header request "cookie")]
-    (if (seq header)
-      (let [token (get (codec/form-decode header) "value")]
-        (if (seq token)
-          (first
-            (str/split token #";")))))))
-
-(defn set-authorization
-  [request value]
-  (assoc request
-    :headers
-    (merge (:headers request) {"authorization" value})))
-
 (defn set-token-from-cookie
   [request]
-  (set-authorization request (->cookie-token request)))
+  (assoc-in request [:headers "authorization"]
+    (get-in request [:cookies "sample.app.token" :value])))
 
 (defn no-authorization?
   [request]
