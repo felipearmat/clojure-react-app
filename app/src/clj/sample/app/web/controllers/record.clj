@@ -34,6 +34,7 @@
   (let [email (:user identity)
         records (:records body-params)
         total (records/delete-records! records)
-        user-balance (calculator/get-user-balance email)]
-        (http-response/ok {:message (str total " records sucessfully deleted!")
+        user-balance (calculator/get-user-balance email)
+        message (str " record" (if (> total 1) "s") " deleted sucessfully!")]
+        (http-response/ok {:message (str total message)
                            :balance user-balance})))

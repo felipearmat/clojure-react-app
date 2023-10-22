@@ -41,7 +41,7 @@ function App() {
   };
 
   const handleLogout = () => {
-    userState.set({});
+    userState.set({ authenticated: false, balance: null, email: null });
   };
 
   const loader = user.authenticated ? (

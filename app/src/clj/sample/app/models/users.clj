@@ -139,7 +139,7 @@
   Returns nil if the user doesn't exist, is inactive, or the password is wrong."
   [attempt email]
   (when-let [user (last (get-users [:= :users.email email]))]
-    (when-not (:inactive user)
+    (when (= (:status user) "active")
       (-> (:password user)
         (#(hashers/verify attempt % {:limit trusted-algs}))
         (:valid)))))
