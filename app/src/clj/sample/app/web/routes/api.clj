@@ -41,24 +41,17 @@
 (defn api-routes [_opts]
   [
     (if (= :dev (environment))
-      ["/swagger.json"
-        {:get {:no-doc  true
-              :swagger {:info {:title "sample.app API"}}
-              :handler (swagger/create-swagger-handler)}}])
-    ["/health"
-      {:get health/healthcheck!}]
-    ["/login"
-      {:post auth/login!}]
-    ["/logout"
-      {:post auth/logout!}]
-    ["/data"
-      {:get auth/data}]
-    ["/v1" {:middleware [middleware/authentication-middleware]}
-      ["/record" {} [
-        ["" {:get record/get-records}]
-        ["/delete" {:post record/delete-records!}]]]
-      ["/calculate"
-        {:post calculator/calculate}]]])
+      ["/swagger.json" {:get {:no-doc  true
+                        :swagger {:info {:title "sample.app API"}}
+                        :handler (swagger/create-swagger-handler)}}])
+    ["/health" {:get health/healthcheck!}]
+    ["/login"  {:post auth/login!}]
+    ["/logout" {:post auth/logout!}]
+    ["/data"   {:get auth/data}]
+    ["/v1"     {:middleware [middleware/authentication-middleware]}
+      ["/record"        {:get record/get-records}]
+      ["/record/delete" {:post record/delete-records!}]
+      ["/calculate"     {:post calculator/calculate}]]])
 
 (derive :reitit.routes/api :reitit/routes)
 

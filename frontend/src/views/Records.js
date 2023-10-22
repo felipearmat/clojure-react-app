@@ -37,9 +37,7 @@ const RecordList = () => {
   const handleSearch = async (params) => {
     setLastSearch(params);
     try {
-      const response = await axios.get("/api/v1/record", {
-        params,
-      });
+      const response = await axios.get("/api/v1/record", { params });
       const data = response?.data?.records;
       if (Array.isArray(data)) {
         setRecords(data);

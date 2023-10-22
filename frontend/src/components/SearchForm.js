@@ -35,6 +35,14 @@ const SearchForm = ({ searchCallBack, children }) => {
     setSearchParams({ ...searchParams, [name]: value });
   };
 
+  const filteredParams = () => {
+    const result = {};
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (value) result[key] = value;
+    }
+    return Object.keys(result).length > 0 && result;
+  };
+
   return (
     <SearchFormContainer>
       <form>
@@ -119,7 +127,7 @@ const SearchForm = ({ searchCallBack, children }) => {
           <StyledButton
             variant="contained"
             color="primary"
-            onClick={() => searchCallBack(searchParams)}
+            onClick={() => searchCallBack(filteredParams())}
           >
             Search
           </StyledButton>
