@@ -62,7 +62,7 @@
                             :join      [:operations [:= :records.operation_id :operations.id]
                                         :users      [:= :records.user_id :users.id]]
                             :where      %
-                            :order-by  [:records.id]})))))
+                            :order-by  [[:records.id :desc]]})))))
 
 (defn get-deleted-records
   "Retrieve deleted records based on the 'where' conditions. Returns a coll of retrieved records."
@@ -80,7 +80,7 @@
                                        :users      [:=
                                                      :records.user_id
                                                      :users.id]]
-                            :order-by [:records.id]
+                            :order-by [[:records.id :desc]]
                             :where    %})))))
 
 (defn delete-record!

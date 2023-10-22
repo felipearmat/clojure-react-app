@@ -16,11 +16,12 @@
         token       (jwt/encrypt claims secret-key {:alg :a256kw :enc :a128gcm})
         token-name  (str (:token-name env/defaults) " ")
         cookie-name (:cookie-name env/defaults)]
-    {cookie-name {:value (str token-name token)
-                  :path "/"
-                  :expires (:exp claims)
-                  :secure (= (env/environment) :prod)
-                  :http-only true}}))
+    {cookie-name {:expires   (:exp claims)
+                  :http-only true
+                  :path      "/"
+                  :same-site :strict
+                  :secure    (= (env/environment) :prod)
+                  :value     (str token-name token)}}))
 
 (defn set-authorization-token
   [token request]

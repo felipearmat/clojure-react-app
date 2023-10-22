@@ -49,7 +49,7 @@
                               :from      [:credits]
                               :join      [:users [:= :credits.user_id :users.id]]
                               :where     %
-                              :order-by  [:credits.id]})))))
+                              :order-by  [[:credits.id :desc]]})))))
 
 (defn get-deleted-credits
   "Retrieve deleted credits based on the 'where' conditions. Returns a collection of retrieved credits."
@@ -63,7 +63,7 @@
                               :from      [:credits]
                               :join      [:users [:= :credits.user_id :users.id]]
                               :where     %
-                              :order-by  [:credits.id]})))))
+                              :order-by  [[:credits.id :desc]]})))))
 
 (defn delete-credit!
   "Delete a credit identified by its ID. Returns 1 on success."

@@ -33,9 +33,9 @@
             email    (:email user)
             response (str "Response " i)]
         (records/create-record!
-          {:operation_id (:id op)
-           :user_id (:id user)
-           :amount (:cost op)
+          {:operation_id       (:id op)
+           :user_id            (:id user)
+           :amount             (:cost op)
            :operation_response response})))))
 
 (defn seeds []

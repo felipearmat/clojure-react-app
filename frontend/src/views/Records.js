@@ -69,6 +69,10 @@ const RecordList = () => {
     }
   };
 
+  const formatDateString = (dateString) => {
+    return new Date(dateString).toISOString().slice(0, 19) + " UTC";
+  };
+
   const headers = [
     {
       field: "created_at",
@@ -76,6 +80,7 @@ const RecordList = () => {
       flex: 1.15,
       headerAlign: "center",
       align: "center",
+      valueFormatter: ({ value }) => formatDateString(value),
     },
     {
       field: "operation_type",
@@ -87,10 +92,18 @@ const RecordList = () => {
     {
       field: "amount",
       headerName: "Amount",
-      flex: 1,
+      type: "number",
+      flex: 0.75,
       headerAlign: "center",
       align: "center",
       valueFormatter: ({ value }) => Number.parseFloat(value).toFixed(2),
+    },
+    {
+      field: "operation_response",
+      headerName: "Response",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
     },
     {
       field: "delete",

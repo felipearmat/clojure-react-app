@@ -36,6 +36,10 @@ const StyledLogoutButton = styled(IconButton)(({ theme }) => ({
   color: "white",
 }));
 
+const userInfo = (email, balance) => {
+  return `${email}   /   Balance: ${Number.parseFloat(balance).toFixed(2)}`;
+};
+
 function Header({ logoutHandler }) {
   const user = useSyncExternalStore(userState.subscribe, userState.get);
 
@@ -60,9 +64,7 @@ function Header({ logoutHandler }) {
         </StyledTypography>
         {user.authenticated && (
           <>
-            {user.email && (
-              <Data>{`${user.email}   /   Balance: ${user.balance}`}</Data>
-            )}
+            {user.email && <Data>{userInfo(user.email, user.balance)}</Data>}
             <StyledLogoutButton onClick={handleLogout}>
               <ExitToApp />
             </StyledLogoutButton>
