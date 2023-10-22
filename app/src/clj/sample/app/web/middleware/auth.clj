@@ -9,7 +9,7 @@
 (defn set-token-from-cookie
   [request]
   (assoc-in request [:headers "authorization"]
-    (get-in request [:cookies "sample.app.token" :value])))
+    (get-in request [:cookies (:cookie-name env/defaults) :value])))
 
 (defn no-authorization?
   [request]

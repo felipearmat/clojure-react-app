@@ -10,14 +10,15 @@
 
 (defn generate-token
   [identificator]
-  (let [claims     {:user (keyword identificator)
-                    :exp  (time/plus (time/now) (time/seconds 3600))}
-        token      (jwt/encrypt claims secret-key {:alg :a256kw :enc :a128gcm})
-        token-name (str (:token-name env/defaults) " ")]
-    {"sample.app.token" {:value (str token-name token)
-                         :path "/api"
-                         :expires (:exp claims)
-                         :http-only true}}))
+  (let [claims      {:user (keyword identificator)
+                     :exp  (time/plus (time/now) (time/seconds 3600))}
+        token       (jwt/encrypt claims secret-key {:alg :a256kw :enc :a128gcm})
+        token-name  (str (:token-name env/defaults) " ")
+        cookie-name (:cookie-name env/defaults)]
+    {cookie-name {:value (str token-name token)
+                  :path "/api"
+                  :expires (:exp claims)
+                  :http-only true}}))
 
 (defn login!
   [request]
@@ -29,7 +30,7 @@
 
 (defn logout!
   [request]
-  (assoc (ok) :cookies {"sample.app.token" {:value ""}}))
+  (assoc (ok) :cookies {(:cookie-name env/defaults) {:value ""}}))
 
 (defn data
   [{:keys [identity]}]
