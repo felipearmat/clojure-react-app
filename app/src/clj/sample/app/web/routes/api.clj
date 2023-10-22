@@ -11,7 +11,7 @@
     [sample.app.web.controllers.calculator :as calculator]
     [sample.app.web.controllers.health :as health]
     [sample.app.web.controllers.record :as record]
-    [sample.app.web.middleware.auth :refer [authentication-middleware]]
+    [sample.app.web.middleware.auth :as middleware]
     [sample.app.web.middleware.exception :as exception]
     [sample.app.web.middleware.formats :as formats]))
 
@@ -19,7 +19,8 @@
   {:coercion   malli/coercion
    :muuntaja   formats/instance
    :swagger    {:id ::api}
-   :middleware [;; query-params & form-params
+   :middleware [middleware/renew-token-middleware
+                ;; query-params & form-params
                 parameters/parameters-middleware
                   ;; content-negotiation
                 muuntaja/format-negotiate-middleware
@@ -53,7 +54,7 @@
         {:post auth/logout!}]
       ["/data"
         {:get auth/data}]
-      ["/v1" {:middleware [authentication-middleware]}
+      ["/v1" {:middleware [middleware/authentication-middleware]}
         ["/record" {}
           [["/" {:get record/get-records}]
            ["/delete" {:post record/delete-records!}]]]

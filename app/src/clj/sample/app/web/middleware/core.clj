@@ -9,7 +9,7 @@
     [ring.middleware.session.cookie :as cookie]
     [sample.app.config :refer [secret-key]]
     [sample.app.env :as env]
-    [sample.app.web.middleware.auth :refer [wrap-ensure-token-middleware]]))
+    [sample.app.web.middleware.auth :refer [wrap-token-from-cookie]]))
 
 ;; Create jwe based backend manager
 (def auth-backend (jwe-backend {:secret secret-key
@@ -19,16 +19,16 @@
 (defn log-request
   [request & vars]
   (when (= :dev (env/environment))
-    (log/info (apply str vars) request))
+    (log/info "\n\n" (apply str vars) request "\n\n"))
   request)
 
 (defn wrap-logger
   [handler]
   (fn [request]
     (-> request
-      (log-request)
+      (log-request "Logging Request:")
       (handler)
-      (log-request))))
+      (log-request "Logging Response:"))))
 
 ;; Get the allowed regex for CORS by ENV
 (def allowed-cors-regex
@@ -42,7 +42,7 @@
           (wrap-logger)
           (wrap-authorization auth-backend)
           (wrap-authentication auth-backend)
-          (wrap-ensure-token-middleware)
+          (wrap-token-from-cookie)
           ;; Should put anything that uses session above wrap-defaults
           (defaults/wrap-defaults
             (assoc-in site-defaults-config [:session :store] cookie-store))

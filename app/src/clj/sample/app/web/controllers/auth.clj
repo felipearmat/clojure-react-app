@@ -1,36 +1,22 @@
 (ns sample.app.web.controllers.auth
   (:require
-    [buddy.sign.jwt :as jwt]
-    [clj-time.core :as time]
-    [ring.util.http-response :refer [ok unauthorized]]
+    [ring.util.http-response :refer [found ok unauthorized]]
     [sample.app.calculator.core :as calculator]
     [sample.app.env :as env]
     [sample.app.models.users :as users]
-    [sample.app.config :refer [secret-key]]))
-
-(defn generate-token
-  [identificator]
-  (let [claims      {:user (keyword identificator)
-                     :exp  (time/plus (time/now) (time/seconds 3600))}
-        token       (jwt/encrypt claims secret-key {:alg :a256kw :enc :a128gcm})
-        token-name  (str (:token-name env/defaults) " ")
-        cookie-name (:cookie-name env/defaults)]
-    {cookie-name {:value (str token-name token)
-                  :path "/api"
-                  :expires (:exp claims)
-                  :http-only true}}))
+    [sample.app.auth.core :refer [generate-cookie]]))
 
 (defn login!
   [request]
   (let [email  (get-in request [:body-params :username])
         attemp (get-in request [:body-params :password])]
     (if (users/verify-password attemp email)
-      (assoc (ok) :cookies (generate-token email))
+      (assoc (ok) :cookies (generate-cookie email))
       (unauthorized))))
 
 (defn logout!
   [request]
-  (assoc (ok) :cookies {(:cookie-name env/defaults) {:value ""}}))
+  (assoc (found "/") :cookies {(:cookie-name env/defaults) {:value "" :path "/"}}))
 
 (defn data
   [{:keys [identity]}]
