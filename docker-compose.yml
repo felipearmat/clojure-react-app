@@ -28,8 +28,8 @@ services:
   app:
     container_name: app
     build:
-      context: ./
-      dockerfile: ./Dockerfile.app
+      context: ./app
+      dockerfile: Dockerfile
     hostname: app
     networks:
       default:
@@ -52,8 +52,8 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./
-      dockerfile: ./Dockerfile.frontend
+      context: ./frontend
+      dockerfile: Dockerfile
     hostname: frontend
     networks:
       default:

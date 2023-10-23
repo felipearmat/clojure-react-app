@@ -7,10 +7,10 @@ import {
   ListItemButton,
   ListItemText,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import { Link } from "react-router-dom";
+import { styled } from "@mui/system";
 
-function SideBar({ open, onClose, routes, width = 160 }) {
+const SideBar = ({ open, onClose, routes, width = 160 }) => {
   const StyledDrawer = styled(Drawer)(() => ({
     "& .MuiDrawer-paper": {
       backgroundColor: "#1976d2",
@@ -69,6 +69,6 @@ function SideBar({ open, onClose, routes, width = 160 }) {
       </StyledDrawer>
     </Box>
   );
-}
+};
 
 export default SideBar;

@@ -1,16 +1,16 @@
-import React, { useState } from "react";
 import {
-  Button,
-  TextField,
-  Container,
   Box,
+  Button,
+  Container,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import { useState } from "react";
 
 const SearchFormContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -69,6 +69,7 @@ const SearchForm = ({ searchCallBack, children }) => {
               name="amountValue"
               label="Amount Value"
               fullWidth
+              type="number"
               variant="outlined"
               value={searchParams.amountValue}
               onChange={handleInputChange}
@@ -94,34 +95,6 @@ const SearchForm = ({ searchCallBack, children }) => {
               </Select>
             </FormControl>
           </Grid>
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              name="startDate"
-              label="Start Date"
-              fullWidth
-              variant="outlined"
-              type="date"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={searchParams.startDate}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="endDate"
-              label="End Date"
-              fullWidth
-              variant="outlined"
-              type="date"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              value={searchParams.endDate}
-              onChange={handleInputChange}
-            />
-          </Grid> */}
         </Grid>
         <Box mt={2} textAlign="center">
           <StyledButton

@@ -1,6 +1,6 @@
 import { Backdrop, CircularProgress } from "@mui/material";
 
-function Loading({ children, isLoading, onlyComponent }) {
+const Loading = ({ children, isLoading, onlyComponent }) => {
   const cover = onlyComponent ? (
     <CircularProgress identificator="loading-progress" />
   ) : (
@@ -16,6 +16,6 @@ function Loading({ children, isLoading, onlyComponent }) {
   );
 
   return isLoading ? cover : <>{children}</>;
-}
+};
 
 export default Loading;

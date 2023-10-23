@@ -1,18 +1,18 @@
-import { useSyncExternalStore, useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
+import { navMaker } from "./routes";
+import { Outlet } from "react-router-dom";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { userState } from "./stores/userState";
 import AppLayout from "./layouts/AppLayout";
+import axios from "axios";
+import Footer from "./components/Footer";
 import GlobalCss from "./components/GlobalCss";
+import Header from "./components/Header";
+import Loading from "./components/Loading";
 import LoginForm from "./components/LoginForm";
 import SideBar from "./components/SideBar";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Loading from "./components/Loading";
-import { navMaker } from "./routes";
-import { userState } from "./stores/userState";
-import axios from "axios";
 
-function App() {
+const App = () => {
   const user = useSyncExternalStore(userState.subscribe, userState.get);
   const [loading, setLoading] = useState(true);
   const [drawer, setDrawer] = useState(false);
@@ -82,6 +82,6 @@ function App() {
       />
     </>
   );
-}
+};
 
 export default App;

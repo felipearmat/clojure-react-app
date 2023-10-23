@@ -1,7 +1,7 @@
-import App from "./App";
-import Records from "./views/Records";
 import { Navigate } from "react-router-dom";
+import App from "./App";
 import CalculatorView from "./views/CalculatorView";
+import Records from "./views/Records";
 
 const routes = [
   {

@@ -1,7 +1,7 @@
-import { Global, css } from "@emotion/react";
+import { css, Global } from "@emotion/react";
 import { CssBaseline } from "@mui/material";
 
-function GlobalCss() {
+const GlobalCss = () => {
   return (
     <>
       <CssBaseline />
@@ -31,6 +31,6 @@ function GlobalCss() {
       />
     </>
   );
-}
+};
 
 export default GlobalCss;

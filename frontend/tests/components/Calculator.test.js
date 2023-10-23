@@ -1,5 +1,4 @@
-import React from "react";
-import { render, fireEvent, act, cleanup } from "@testing-library/react";
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import axios from "axios";
 import Calculator from "../../src/components/Calculator";
 

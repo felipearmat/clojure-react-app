@@ -1,8 +1,8 @@
-import { useSyncExternalStore } from "react";
-import { userState } from "../stores/userState";
-import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import { ExitToApp, MenuOpen } from "@mui/icons-material";
 import { styled } from "@mui/system";
+import { userState } from "../stores/userState";
+import { useSyncExternalStore } from "react";
 import axios from "axios";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
@@ -40,7 +40,7 @@ const userInfo = (email, balance) => {
   return `${email}   /   Balance: ${Number.parseFloat(balance).toFixed(2)}`;
 };
 
-function Header({ handleDrawerToggle, logoutHandler }) {
+const Header = ({ handleDrawerToggle, logoutHandler }) => {
   const user = useSyncExternalStore(userState.subscribe, userState.get);
 
   const handleLogout = async () => {
@@ -82,6 +82,6 @@ function Header({ handleDrawerToggle, logoutHandler }) {
       </StyledToolbar>
     </StyledAppBar>
   );
-}
+};
 
 export default Header;

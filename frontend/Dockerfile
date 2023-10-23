@@ -9,13 +9,13 @@ EXPOSE 8080
 ENV PATH /app/node_modules/.bin:$PATH
 
 # Copy json files to prepare the docker container
-COPY ./frontend/package*.json /app/
+COPY ./package*.json /app/
 
 # Install dependencies
 RUN npm install
 
 # Copy project to container
-COPY ./frontend /app
+COPY . /app
 
 # Start the node dev server
 CMD [ "npm", "start" ]

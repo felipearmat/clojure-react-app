@@ -1,7 +1,7 @@
-import PropTypes from "prop-types";
 import { DataGrid } from "@mui/x-data-grid";
-import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { Typography } from "@mui/material";
+import PropTypes from "prop-types";
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   ".MuiDataGrid-columnHeader": {
@@ -18,7 +18,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-function XDataGrid(args) {
+const XDataGrid = (args) => {
   const pageSizeOptions = args.pageSizeOptions;
   const rows = args.rows.map((row, index) => ({ id: index, ...row }));
   const columns = args.columns.map((col) => ({
@@ -48,7 +48,7 @@ function XDataGrid(args) {
       />
     </div>
   );
-}
+};
 
 XDataGrid.propTypes = {
   title: PropTypes.string,

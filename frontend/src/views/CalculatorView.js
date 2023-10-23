@@ -1,6 +1,6 @@
-import Calculator from "../components/Calculator";
-import { styled } from "@mui/material/styles";
 import { Container } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import Calculator from "../components/Calculator";
 
 const StyledContainer = styled(Container)`
   display: flex;

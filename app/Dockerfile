@@ -1,15 +1,21 @@
-# syntax = docker/dockerfile:1.2
-FROM clojure:openjdk-17 AS build
+FROM clojure:temurin-17-tools-deps-alpine
 
-WORKDIR /
-COPY . /
+WORKDIR /app
 
-RUN clj -Sforce -T:build all
+COPY clj-kondo /bin/clj-kondo
 
-FROM azul/zulu-openjdk-alpine:17
+RUN chmod +x /bin/clj-kondo
 
-COPY --from=build /target/app-standalone.jar /app/app-standalone.jar
+RUN apk --no-cache --update add curl ca-certificates tar && \
+  curl -Ls https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk > /tmp/glibc-2.28-r0.apk && \
+  apk add --allow-untrusted --force-overwrite /tmp/glibc-2.28-r0.apk
+RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 
-EXPOSE $PORT
+# EXPOSE is merely a hint that a certain ports are useful
+EXPOSE 3000
 
-ENTRYPOINT exec java $JAVA_OPTS -jar /app/app-standalone.jar
+# Copy project to container
+COPY . /app
+
+# Start the clojure dev server
+CMD ["clojure", "-X:dev"]

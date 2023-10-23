@@ -1,8 +1,7 @@
-import React from "react";
-import { render, cleanup, fireEvent, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import axios from "axios";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import App from "../src/App";
+import axios from "axios";
 
 describe("App Component", () => {
   afterEach(cleanup);

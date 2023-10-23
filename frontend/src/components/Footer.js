@@ -1,5 +1,5 @@
-import { Typography, Container } from "@mui/material";
 import { styled } from "@mui/system";
+import { Container, Typography } from "@mui/material";
 
 const StyledFooter = styled(Container)(({ theme }) => {
   const backgroundColor = theme?.palette?.primary?.main;
@@ -19,12 +19,12 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   margin: 0,
 }));
 
-function Footer() {
+const Footer = () => {
   return (
     <StyledFooter>
       <StyledTypography variant="body2">Nice footer you have!</StyledTypography>
     </StyledFooter>
   );
-}
+};
 
 export default Footer;
