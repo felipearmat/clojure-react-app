@@ -1,6 +1,6 @@
 (ns sample.app.calculator.core-test
   (:require
-    [clojure.test :refer :all]
+    [clojure.test :refer [deftest is testing use-fixtures]]
     [sample.app.calculator.core :as calc]
     [sample.app.models.credits :as credits]
     [sample.app.models.operations :as operations]

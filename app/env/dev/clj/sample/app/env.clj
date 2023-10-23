@@ -4,6 +4,7 @@
     [integrant.repl.state :as state]
     [sample.app.dev-middleware :refer [wrap-dev]]))
 
+#_{:clj-kondo/ignore [:redefined-var]}
 (def defaults
   {:init          (fn []
                     (log/info "\n-=[app starting using the development or test profile]=-"))
@@ -18,4 +19,5 @@
    :opts          {:profile       :dev
                    :persist-data? true}})
 
+#_{:clj-kondo/ignore [:redefined-var]}
 (defn environment [] (:system/env state/config))

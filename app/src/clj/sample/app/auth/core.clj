@@ -1,13 +1,12 @@
 (ns sample.app.auth.core
   (:require
     [buddy.sign.jwt :as jwt]
-    [clj-time.coerce :as ctime]
     [clj-time.core :as time]
     [clojure.string :as str]
+    #_{:clj-kondo/ignore [:unresolved-var]}
     [ring.util.http-response :refer [get-header]]
     [sample.app.config :refer [secret-key]]
-    [sample.app.env :as env]
-    [sample.app.models.users :as users]))
+    [sample.app.env :as env]))
 
 (defn generate-cookie
   [identificator]

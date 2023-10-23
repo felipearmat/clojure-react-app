@@ -1,9 +1,9 @@
 (ns seeds.seed-dev-data
   (:require
-    [sample.app.models.users :as users]
-    [sample.app.models.operations :as operations]
     [sample.app.models.credits :as credits]
-    [sample.app.models.records :as records]))
+    [sample.app.models.operations :as operations]
+    [sample.app.models.records :as records]
+    [sample.app.models.users :as users]))
 
 (def users-data [
   {:status "active"   :deleted false :email "admin@sample.com"}
@@ -28,9 +28,7 @@
         ops   (operations/get-operations)]
     (doseq [i (range num-records)]
       (let [op       (rand-nth ops)
-            type     (:type op)
             user     (rand-nth users)
-            email    (:email user)
             response (str "Response " i)]
         (records/create-record!
           {:operation_id       (:id op)

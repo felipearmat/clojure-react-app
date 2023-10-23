@@ -1,5 +1,7 @@
 (ns sample.app.env
-  (:require [clojure.tools.logging :as log]))
+  (:require
+    [clojure.tools.logging :as log]
+    [integrant.repl.state :as state]))
 
 (def defaults
   {:init          (fn []

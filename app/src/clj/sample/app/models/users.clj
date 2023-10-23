@@ -1,8 +1,8 @@
 (ns sample.app.models.users
   (:require
     [buddy.hashers :as hashers]
-    [clojure.string :as str]
     [clojure.spec.alpha :as spec]
+    [clojure.string :as str]
     [sample.app.utils :as utils]))
 
 (def trusted-algs #{:bcrypt+blake2b-512})

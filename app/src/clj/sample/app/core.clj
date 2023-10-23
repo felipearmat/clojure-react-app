@@ -2,20 +2,15 @@
   (:require
     [clojure.tools.logging :as log]
     [integrant.core :as ig]
-    [sample.app.config :as config]
-    [sample.app.env :refer [defaults]]
-
-    ;; Edges
+    [kit.edge.db.postgres]
     [kit.edge.db.sql.conman]
     [kit.edge.db.sql.migratus]
-    [kit.edge.db.postgres]
-    [kit.edge.db.mysql]
     [kit.edge.scheduling.quartz]
-    [kit.edge.utils.metrics]
     [kit.edge.server.undertow]
+    [kit.edge.utils.metrics]
+    [sample.app.config :as config]
+    [sample.app.env :refer [defaults]]
     [sample.app.web.handler]
-
-    ;; Routes
     [sample.app.web.routes.api])
   (:gen-class))
 

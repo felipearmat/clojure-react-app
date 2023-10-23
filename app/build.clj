@@ -39,4 +39,4 @@
            :basis basis}))
 
 (defn all [_]
-  (do (clean nil) (prep nil) (uber nil)))
+  (clean nil) (prep nil) (uber nil))

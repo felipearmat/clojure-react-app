@@ -16,12 +16,12 @@
 (defn database-rollback
   "Wrap test on a database transaction and rollback it after testing"
   [f]
-  (let [query-fn    (:db.sql/query-fn state/system)
-        data-source (:db.sql/connection state/system)]
+  (let [data-source (:db.sql/connection state/system)]
     (jdbc/with-transaction [conn data-source {:isolation :serializable}]
       (with-redefs [utils/hsql-execute! (partial utils/conn-hsql-execute! conn)]
         (f)
         (.rollback conn)))))
 
+#_{:clj-kondo/ignore [:unresolved-namespace]}
 (do (user/test-prep!) (prep) (user/reset-db)) ; initiate test database
 (user/use-system :db.sql/connection) ; stablish connection with database

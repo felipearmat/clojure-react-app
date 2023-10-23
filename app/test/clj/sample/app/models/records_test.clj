@@ -1,6 +1,6 @@
 (ns sample.app.models.records-test
   (:require
-    [clojure.test :refer :all]
+    [clojure.test :refer [deftest is testing use-fixtures]]
     [sample.app.test-utils :as test-utils]
     [sample.app.models.operations :as operations]
     [sample.app.models.records :as records]

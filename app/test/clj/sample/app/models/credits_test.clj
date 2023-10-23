@@ -1,6 +1,6 @@
 (ns sample.app.models.credits-test
   (:require
-    [clojure.test :refer :all]
+    [clojure.test :refer [deftest is testing use-fixtures]]
     [sample.app.test-utils :as test-utils]
     [sample.app.models.credits :as credits]
     [sample.app.models.users :as users]))

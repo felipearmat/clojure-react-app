@@ -1,6 +1,8 @@
 (ns sample.app.config
   (:require
     [buddy.core.hash :as hash]
+    [clojure.java.io :as io]
+    [clojure.string :as str]
     [kit.config :as kc]
     [sample.app.env :as env]))
 
@@ -15,7 +17,7 @@
 (defn- list-files
   "Returns a seq of java.io.Files inside a path and all of its subfolders"
   [path]
-  (filter #(.isFile %) (file-seq (clojure.java.io/file path))))
+  (filter #(.isFile %) (file-seq (io/file path))))
 
 (defn filenames-by-folder
   "Returns a vector of filename paths relative to 'resources'
@@ -24,7 +26,7 @@
   (let [fullpath  (str resources-path folder)
         all-files (list-files fullpath)
         filenames (filter #(re-find #".sql" (.getPath %)) all-files)]
-    (mapv #(clojure.string/replace (str %) resources-path "") filenames)))
+    (mapv #(str/replace (str %) resources-path "") filenames)))
 
 (defn handle-folder-key-config
   "If system-config has a [:db.sql/query-fn :folder] key, change

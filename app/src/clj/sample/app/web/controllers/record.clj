@@ -20,8 +20,8 @@
                   [:= :operations.type operation-type])
                 (when (seq operation-cost)
                   [:= :operations.cost operation-cost])
-                ;; (when (seq amount-operator)
-                ;;   [(keyword amount-operator) :amount amount-value])
+                (when (seq amount-operator)
+                  [(keyword amount-operator) :amount amount-value])
                 (when (seq start-date)
                   [:>= :records.created_at start-date])
                 (when (seq end-date)
@@ -35,6 +35,6 @@
         records (:records body-params)
         total (records/delete-records! records)
         user-balance (calculator/get-user-balance email)
-        message (str " record" (if (> total 1) "s") " deleted sucessfully!")]
+        message (str " record" (when (> total 1) "s") " deleted sucessfully!")]
         (http-response/ok {:message (str total message)
                            :balance user-balance})))

@@ -125,6 +125,18 @@ For development environment might be a good idea to populate you database with s
 
 OBS\*: This function is only accessible on **dev** repl.
 
+### Linting code
+
+For linting you can run the following command on app terminal
+
+```clojure
+clj-kondo --lint .
+;; linting took 214ms, errors: 0, warnings: 0
+
+```
+
+Some files will keep showing
+
 ## Production workflow
 
 (Instructions for deploying the app will be provided in a future update.)

@@ -40,7 +40,7 @@
 ;; Routes
 (defn api-routes [_opts]
   [
-    (if (= :dev (environment))
+    (when (= :dev (environment))
       ["/swagger.json" {:get {:no-doc  true
                         :swagger {:info {:title "sample.app API"}}
                         :handler (swagger/create-swagger-handler)}}])

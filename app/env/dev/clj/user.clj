@@ -4,15 +4,17 @@
     [clojure.pprint]
     [clojure.spec.alpha :as s]
     [clojure.tools.namespace.repl :as repl]
-    [criterium.core :as c] ;; benchmarking
+    ;; [criterium.core :as c] ;; benchmarking
     [expound.alpha :as expound]
     [integrant.core :as ig]
-    [seeds.seed-dev-data :as seeds]
     [integrant.repl :refer [clear go halt prep init reset reset-all]]
     [integrant.repl.state :as state]
     [lambdaisland.classpath.watch-deps :as watch-deps] ;; hot loading for deps
     [migratus.core :as m]
-    [sample.app.core :refer [start-app]]))
+    [sample.app.config :as config]
+    #_{:clj-kondo/ignore [:unused-namespace :unused-referred-var]}
+    [sample.app.core :refer [start-app]]
+    [seeds.seed-dev-data :as seeds]))
 
 ;; uncomment to enable hot loading for deps
 (watch-deps/start! {:aliases [:dev :test]})
@@ -24,13 +26,13 @@
 (defn dev-prep!
   []
   (integrant.repl/set-prep! (fn []
-                              (-> (sample.app.config/system-config {:profile :dev})
+                              (-> (config/system-config {:profile :dev})
                                   (ig/prep)))))
 
 (defn test-prep!
   []
   (integrant.repl/set-prep! (fn []
-                              (-> (sample.app.config/system-config {:profile :test})
+                              (-> (config/system-config {:profile :test})
                                   (ig/prep)))))
 
 (repl/set-refresh-dirs "src/clj")
@@ -49,7 +51,7 @@
 (defn use-system
   "Starts state/system key if it wasn't started and return its value"
   [key]
-    (if (not-any? #(= key %) (keys state/system)) (reset-with [key]))
+    (when (not-any? #(= key %) (keys state/system)) (reset-with [key]))
     (get state/system key))
 
 (defn reset-db []

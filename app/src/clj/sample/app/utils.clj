@@ -4,7 +4,6 @@
     [clojure.string :as str]
     [clojure.tools.logging :as log]
     [honey.sql :as hsql]
-    [hugsql.parameters :refer [identifier-param-quote]]
     [integrant.repl.state :as state]
     [next.jdbc :as jdbc]
     [next.jdbc.result-set :as rs]
@@ -20,8 +19,8 @@
 (spec/def :general/set map?)
 
 (defn contains-some?
-  [coll1 coll2]
   "Checks if any element in coll2 is present in coll1."
+  [coll1 coll2]
   (some (set coll1) coll2))
 
 (spec/def :general/unpermitted-set

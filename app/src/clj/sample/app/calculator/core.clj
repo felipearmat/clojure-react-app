@@ -91,7 +91,7 @@
       (do
         (doseq [op ops]
           (when-let [times ((keyword (:type op)) times-map)]
-            (dotimes [n times]
+            (dotimes [_ times]
               (record-operation user-id op result))))
         result))))
 
@@ -109,6 +109,6 @@
       (expand-expression-operators)
       (process-expression user-id))
   (catch Exception e
-    (if (= :dev (environment))
+    (when (= :dev (environment))
       (throw e))
     {:msg "Invalid Expression."})))

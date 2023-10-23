@@ -1,18 +1,19 @@
 (ns sample.app.web.handler
   (:require
-    [sample.app.web.middleware.core :as middleware]
     [integrant.core :as ig]
-    [ring.util.http-response :as http-response]
     [reitit.ring :as ring]
-    [reitit.swagger-ui :as swagger-ui]))
+    [reitit.swagger-ui :as swagger-ui]
+    [ring.util.http-response :as http-response]
+    [sample.app.web.middleware.core :as middleware]))
 
+#_{:clj-kondo/ignore [:unresolved-var]}
 (defmethod ig/init-key :handler/ring
   [_ {:keys [router api-path] :as opts}]
   (ring/ring-handler
     router
     (ring/routes
      ;; Handle trailing slash in routes - add it + redirect to it
-     ;; https://github.com/metosin/reitit/blob/master/doc/ring/slash_handler.md 
+     ;; https://github.com/metosin/reitit/blob/master/doc/ring/slash_handler.md
      (ring/redirect-trailing-slash-handler)
      (ring/create-resource-handler {:path "/"})
      (when (some? api-path)
