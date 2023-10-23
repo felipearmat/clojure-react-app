@@ -1,0 +1,6 @@
+[submodule "app"]
+	path = app
+	url = https://github.com/felipearmat/clojure-react-backend
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/felipearmat/clojure-react-frontend
