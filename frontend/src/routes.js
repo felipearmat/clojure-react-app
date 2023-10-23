@@ -1,11 +1,7 @@
 import App from "./App";
 import Records from "./views/Records";
 import { Navigate } from "react-router-dom";
-import Operations from "./views/Operations";
 import CalculatorView from "./views/CalculatorView";
-// import UserProfile from "./views/UserProfile";
-// import IncreaseCredit from "./views/IncreaseCredit";
-// import UserProfile from "./views/UserProfile";
 
 const routes = [
   {
@@ -14,20 +10,14 @@ const routes = [
     children: [
       {
         path: "/",
+        label: "Home",
         element: <CalculatorView />,
       },
       {
         path: "/records",
+        label: "Records",
         element: <Records />,
       },
-      {
-        path: "/operations",
-        element: <Operations />,
-      },
-      // {
-      //   path: "/increase-credit",
-      //   element: <IncreaseCredit />,
-      // },
       {
         path: "*",
         element: <Navigate to="/" />,
@@ -36,4 +26,17 @@ const routes = [
   },
 ];
 
+const navMaker = () => {
+  const result = [];
+  routes[0].children.forEach((route) => {
+    if (route.path && route.path !== "*" && route.label) {
+      result.push({ path: route.path, label: route.label });
+    }
+  });
+
+  return result;
+};
+
 export default routes;
+
+export { navMaker };

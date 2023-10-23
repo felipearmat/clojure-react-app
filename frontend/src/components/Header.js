@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { userState } from "../stores/userState";
 import { AppBar, Toolbar, IconButton, Typography } from "@mui/material";
-import { ExitToApp } from "@mui/icons-material";
+import { ExitToApp, MenuOpen } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import axios from "axios";
 
@@ -40,7 +40,7 @@ const userInfo = (email, balance) => {
   return `${email}   /   Balance: ${Number.parseFloat(balance).toFixed(2)}`;
 };
 
-function Header({ logoutHandler }) {
+function Header({ handleDrawerToggle, logoutHandler }) {
   const user = useSyncExternalStore(userState.subscribe, userState.get);
 
   const handleLogout = async () => {
@@ -59,6 +59,15 @@ function Header({ logoutHandler }) {
   return (
     <StyledAppBar position="static">
       <StyledToolbar>
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ mr: 2, display: { sm: "none" } }}
+        >
+          <MenuOpen />
+        </IconButton>
         <StyledTypography variant="h6">
           ArithmeticCalculatorAPI
         </StyledTypography>

@@ -4,15 +4,18 @@ import { Box } from "@mui/material";
 import AppLayout from "./layouts/AppLayout";
 import GlobalCss from "./components/GlobalCss";
 import LoginForm from "./components/LoginForm";
+import SideBar from "./components/SideBar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Loading from "./components/Loading";
+import { navMaker } from "./routes";
 import { userState } from "./stores/userState";
 import axios from "axios";
 
 function App() {
-  const [loading, setLoading] = useState(true);
   const user = useSyncExternalStore(userState.subscribe, userState.get);
+  const [loading, setLoading] = useState(true);
+  const [drawer, setDrawer] = useState(false);
 
   const fetchUserData = async () => {
     try {
@@ -44,6 +47,10 @@ function App() {
     userState.set({ authenticated: false, balance: null, email: null });
   };
 
+  const toggleDrawer = () => {
+    setDrawer(!drawer);
+  };
+
   const loader = user.authenticated ? (
     <Box width="100%" identificator="app-outlet">
       <Loading isLoading={loading}>
@@ -56,11 +63,20 @@ function App() {
     </Box>
   );
 
+  const routes = navMaker();
   return (
     <>
       <GlobalCss />
       <AppLayout
-        header={<Header logoutHandler={handleLogout} />}
+        sidebar={
+          <SideBar open={drawer} onClose={toggleDrawer} routes={routes} />
+        }
+        header={
+          <Header
+            handleDrawerToggle={toggleDrawer}
+            logoutHandler={handleLogout}
+          />
+        }
         content={loader}
         footer={<Footer />}
       />

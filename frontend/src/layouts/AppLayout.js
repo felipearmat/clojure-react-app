@@ -1,5 +1,5 @@
 import React from "react";
-import { Container } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import { styled } from "@mui/system";
 
 const LayoutContainer = styled(Container)(({ theme }) => ({
@@ -34,10 +34,14 @@ const Content = styled(Container)(({ theme }) => ({
 const AppLayout = ({ sidebar, header, content, footer }) => {
   return (
     <LayoutContainer>
-      {sidebar && <div id="app_sidebar">{sidebar}</div>}
-      {header && <Header id="app_header">{header}</Header>}
-      <Content id="app_content">{content}</Content>
-      {footer && <Footer id="app_footer">{footer}</Footer>}
+      <Box sx={{ display: "flex" }}>
+        {sidebar && <Box id="app_sidebar">{sidebar}</Box>}
+        <LayoutContainer>
+          {header && <Header id="app_header">{header}</Header>}
+          <Content id="app_content">{content}</Content>
+          {footer && <Footer id="app_footer">{footer}</Footer>}
+        </LayoutContainer>
+      </Box>
     </LayoutContainer>
   );
 };
