@@ -11,11 +11,6 @@ RUN apk --no-cache --update add curl ca-certificates tar && \
   apk add --allow-untrusted --force-overwrite /tmp/glibc-2.28-r0.apk
 RUN echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf
 
-# RUN apt update && apt install unzip
-# RUN curl -sLO https://raw.githubusercontent.com/clj-kondo/clj-kondo/master/script/install-clj-kondo
-# RUN chmod +x install-clj-kondo
-# RUN ./install-clj-kondo
-
 # EXPOSE is merely a hint that a certain ports are useful
 EXPOSE 3000
 
