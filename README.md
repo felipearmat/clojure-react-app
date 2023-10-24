@@ -1,46 +1,55 @@
-# clojure-react-app
+# Clojure-React App
 
-A simple project for a back-end Clojure and front-end React app.
+A simple project that combines a Clojure back-end and a React front-end to create a full-stack application.
 
-## Index
+## Table of Contents
 
+- [Introduction](#introduction)
 - [Requirements](#requirements)
-- [App Stack](#app-stack)
+- [Application Stack](#application-stack)
 - [Development Workflow](#development-workflow)
   - [Running the Application](#running-the-application)
-  - [Accessing the REPL](#accessing-the-repl)
+  - [Accessing the Back-End REPL](#accessing-the-back-end-repl)
+  - [Populating the Database](#populating-the-database)
+  - [Accessing the Front-End Container](#accessing-the-front-end-container)
 - [Production Workflow](#production-workflow)
-- [Testing](#testing)
-  - [Backend Testing](#backend-testing)
-  - [Frontend Testing](#frontend-testing)
-- [Good to Know](#good-to-know)
+- [Testing and Linting](#testing-and-linting)
+  - [Back-End Testing](#back-end-testing)
+  - [Back-End Linting](#back-end-linting)
+  - [Front-End Testing](#front-end-testing)
+  - [Front-End Linting](#front-end-linting)
+- [Additional Resources](#additional-resources)
+
+## Introduction
+
+This repository contains a full-stack application that combines a Clojure-based back-end and a React-based front-end. The application is containerized using Docker for easy development and deployment.
 
 ## Requirements
 
-First, make sure to enable the 'recurse-submodules' git tag when cloning this repository:
+Before you begin, ensure you have the following software installed on your computer:
+
+- [Docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+
+To clone this repository with submodules, use the following command:
 
 ```shell
 git clone --recurse-submodules <repo_url> <folder>
 ```
 
-Then you'll need some applications and libs installed on your pc:
-
-- [Docker](https://docs.docker.com/engine/install/)
-- [docker-compose](https://docs.docker.com/compose/install/)
-
-## App Stack
+## Application Stack
 
 This project consists of the following components:
 
-- **app**: A backend application written in Clojure. It's primarily configured using [kit-clj](https://kit-clj.github.io/) with some additional development enhancements. Please ensure you've enabled the submodules cloning, otherwise this folder will be empty.
+- **app**: The Clojure-based back-end application configured using [kit-clj](https://kit-clj.github.io/) with additional development enhancements. Please ensure you've enabled the submodules cloning, otherwise this folder will be empty.
 
-- **frontend**: A frontend application built with React using a functional approach. Ensure you've enabled the submodules cloning, otherwise this folder will be empty.
+- **front-end**: A front-end application built with React using a functional approach. Ensure you've enabled the submodules cloning, otherwise this folder will be empty.
 
-- **postgres**: This folder contains a shell script that is responsible for setting up the database and executes the first time you start the postgres container.
+- **postgres**: A shell script for setting up the database container.
 
-- **proxy**: A simple Nginx configuration for creating a reverse-proxy server that makes backend and frontend act as a single application.
+- **proxy**: An Nginx configuration for creating a reverse-proxy server.
 
-- **.env**: An environment file that configures the docker-compose values for the apps. You can adjust these configurations to better suit your needs.
+- **.env**: An environment file for configuring docker-compose values.
 
 - **docker-compose.yml**: The docker-compose YAML file for orchestrating the containers.
 
@@ -48,7 +57,7 @@ This project consists of the following components:
 
 ### Running the Application
 
-You can start the app using the following docker-compose commands:
+You can start the application using Docker Compose with the following commands:
 
 ```shell
 docker compose up -d # Runs the containers in the background
@@ -62,15 +71,11 @@ docker compose up # Runs the containers with output displayed
 docker compose up app proxy # Starts selected containers and their dependencies. Press Ctrl+C to stop only the specified containers and leave others running in the background.
 ```
 
-After starting the app, access the front-end at [localhost](http://localhost). Backend requests are made to [localhost/api/v1](http://localhost/api/v1) endpoints. You can access the Swagger interface at [localhost/api/](http://localhost/api/) to explore the available endpoints, parameters, and methods.
+After starting the app, access the front-end at [localhost](http://localhost). Back-end requests are made to [localhost/api/v1](http://localhost/api/v1) endpoints. YExplore the available endpoints, parameters, and methods using the Swagger interface at [localhost/api/](http://localhost/api/).
 
-### Database values
+### Accessing the Back-End REPL
 
-You might want to create some default data for development. You can do this by running the (seeds) command on REPL on user namespace. This function will create some data for easy of development.
-
-### Accessing the REPL
-
-To access a REPL interface, follow these steps:
+To access a Clojure REPL for the back-end, follow these steps:
 
 1. Access the app container's shell:
 
@@ -78,7 +83,7 @@ To access a REPL interface, follow these steps:
 docker compose exec app /bin/sh
 ```
 
-2. Start a REPL by running the following command:
+2. Start a REPL:
 
 ```sh
 clojure -M:dev
@@ -86,7 +91,7 @@ clojure -M:dev
 # user=>
 ```
 
-Now you have a Clojure REPL for interacting with the app. You'll need to stablish database connection so you can make some queries:
+Now you have a Clojure REPL for interacting with the app. The REPL starts without a database connection, to initiate it run:
 
 ```clojure
 (dev-prep!)
@@ -111,11 +116,11 @@ Since it might look boring having to activate those commands everytime you start
 
 ```
 
-For more information, refer to [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli) for REPL starting and [Integrant-REPL](https://github.com/weavejester/integrant-repl) for state/config and state/system.
+For more information, refer to [Deps and CLI Guide](https://clojure.org/guides/deps_and_cli) for REPL based development and [Integrant-REPL](https://github.com/weavejester/integrant-repl) for state/config and state/system.
 
-### Populating database
+### Populating the database
 
-For development environment might be a good idea to populate you database with some data, for that you can access the repl and run the command:
+For development, it's a good idea to populate your database with sample data. To do this, access the back-end REPL and run:
 
 ```clojure
 (seeds)
@@ -125,27 +130,25 @@ For development environment might be a good idea to populate you database with s
 
 OBS\*: This function is only accessible on **dev** repl.
 
-### Linting code
+### Accessing the Front-End Container
 
-For linting you can run the following command on app terminal
+To access the front-end container for running tests and linting, use the following command:
 
-```clojure
-clj-kondo --lint .
-;; linting took 214ms, errors: 0, warnings: 0
-
+```bash
+docker compose exec frontend /bin/sh
 ```
 
-Some files will keep showing
+From there, you can run commands specific to the front-end.
 
 ## Production workflow
 
 (Instructions for deploying the app will be provided in a future update.)
 
-## Testing
+## Testing and Linting
 
-### Backend Testing
+### Back-end Testing
 
-You can test the application's backend by accessing the app container and running the REPL in the test alias:
+To test the application's back-end, access the app container and run the REPL in the test alias:
 
 ```bash
 docker compose exec app /bin/sh
@@ -154,11 +157,42 @@ docker compose exec app /bin/sh
 clojure -X:test
 ```
 
-### Frontend Testing
+### Back-End Linting
 
-(Instructions for frontend testing will be provided in a future update.)
+For linting the back-end, use the following command in the app terminal:
 
-## Good to know
+```clojure
+clj-kondo --lint .
+;; linting took 214ms, errors: 0, warnings: 0
+
+```
+
+### Front-end Testing
+
+To run front-end tests, follow these steps:
+
+1. [Access the front-end container](#accessing-the-front-end-container)
+2. Run the test command:
+
+```bash
+npm test
+# Test Suites: 0 failed, 7 passed, 7 total
+# Tests:       0 failed, 53 passed, 53 total
+# Snapshots:   0 total
+# Time:        12.117 s
+```
+
+### Front-end Linting
+
+Linting for the front-end is performed during each build in development environments. To run linting manually, use the following command:
+
+```bash
+npm run lint
+# > front-end@0.1.0 lint
+# > eslint ./src
+```
+
+## Additional Resources
 
 Here are some additional resources and information to help you get the most out of this project:
 

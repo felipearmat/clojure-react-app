@@ -1,0 +1,85 @@
+version: "3.5"
+
+volumes:
+  postgresdata:
+  mavencache:
+
+networks:
+  default:
+    name: appnetwork
+    ipam:
+      config:
+        - subnet: ${SUBNET}
+
+services:
+  postgres:
+    container_name: postgres
+    restart: unless-stopped
+    image: postgres:16.0-alpine
+    hostname: postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:${DB_PORT}"
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+
+  app:
+    container_name: app
+    restart: unless-stopped
+    build:
+      context: ./app
+      dockerfile: Dockerfile.build
+    hostname: app
+    networks:
+      default:
+        ipv4_address: ${BACKEND_ADDRESS}
+    volumes:
+      - ./app:/app
+      - mavencache:/root/.m2/repository
+    ports:
+      - "3000:${BACKEND_PORT}"
+    depends_on:
+      - postgres
+    environment:
+      COOKIE_SECRET: "jR2vTn85Xc7FpUKe"
+      SECRET_KEY: "jR2vTn85Xc7FpUKe"
+      FRONTEND_HOST: ${FRONTEND_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JDBC_URL: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_TABLE}"
+      JDBC_DEV_URL: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_TABLE}_dev"
+      JDBC_TEST_URL: "jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_TABLE}_test"
+
+  frontend:
+    container_name: frontend
+    restart: unless-stopped
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.build
+    hostname: frontend
+    networks:
+      default:
+        ipv4_address: ${FRONTEND_ADDRESS}
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8080:${FRONTEND_PORT}"
+    environment:
+      BACKEND_HOST: ${BACKEND_HOST}
+      PORT: ${FRONTEND_PORT}
+
+  proxy:
+    container_name: proxy
+    restart: unless-stopped
+    image: nginx:1.25-alpine
+    hostname: localhost
+    volumes:
+      - ./proxy:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - app
