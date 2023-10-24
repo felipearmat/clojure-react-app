@@ -44,8 +44,8 @@ services:
     depends_on:
       - postgres
     environment:
-      COOKIE_SECRET: "jR2vTn85Xc7FpUKe"
-      SECRET_KEY: "jR2vTn85Xc7FpUKe"
+      COOKIE_SECRET: "${COOKIE_SECRET}"
+      SECRET_KEY: "${SECRET_KEY}"
       FRONTEND_HOST: ${FRONTEND_HOST}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
