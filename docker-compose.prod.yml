@@ -18,10 +18,12 @@ services:
     image: postgres:16.0-alpine
     hostname: postgres
     environment:
+      POSTGRES_DB: ${DB_USER}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - cra_postgresdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
 
   app:
     container_name: app
