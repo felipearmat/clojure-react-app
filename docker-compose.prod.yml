@@ -67,3 +67,14 @@ services:
     environment:
       BACKEND_HOST: ${BACKEND_HOST}
       PORT: ${FRONTEND_PORT}
+
+  proxy:
+    container_name: proxy
+    image: nginx:1.25-alpine
+    volumes:
+      - ./proxy:/etc/nginx/conf.d
+    ports:
+      - "30030:80"
+    depends_on:
+      - frontend
+      - app
