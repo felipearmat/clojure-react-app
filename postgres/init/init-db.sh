@@ -3,9 +3,9 @@ set -e
 
 # Creating databases for dev and test anvironments
 USER="$POSTGRES_USER"
-DB="$POSTGRES_DB"
-DEV_DB="$POSTGRES_DB"_dev
-TEST_DB="$POSTGRES_DB"_test
+DB="$POSTGRES_USER"
+DEV_DB="$POSTGRES_USER"_dev
+TEST_DB="$POSTGRES_USER"_test
 
 psql -v ON_ERROR_STOP=1 --username "$USER" --dbname "$DB" <<-EOSQL
   SELECT 'CREATE DATABASE $DB'
