@@ -143,7 +143,7 @@ From there, you can run commands specific to the front-end.
 
 This project includes a docker-compose.prod.yml file that can be used to run the stack in a production environment. To achieve this, you'll need a server running [Apache](https://httpd.apache.org/) or [NGINX](https://www.nginx.com/) that is configured to work as a [reverse proxy](https://en.wikipedia.org/wiki/Reverse_proxy) so you can connect directly to your containers. The setup and configuration for any of these servers are beyond the scope of this README.
 
-Once you've downloaded the repository to your server, create a new .env file (e.g., .prod.env) with the configuration specific to your production environment. In this file, set any variables used in the docker-compose.prod.yml configuration, like this:
+Once you've downloaded the repository to your server, create a new .env file (e.g., .env.prod) with the configuration specific to your production environment. In this file, set any variables used in the docker-compose.prod.yml configuration, like this:
 
 ```raw
 DOCKER_ENV="true"
@@ -169,7 +169,7 @@ SECRET_KEY: "16charstring****"
 You can then start the containers using the following command:
 
 ```shell
-docker compose -f docker-file.prod.yml --env .prod.env up -d
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
 ```
 
 Once the containers are started, you can access your configured server to verify that everything is working as expected.
@@ -179,7 +179,7 @@ Once the containers are started, you can access your configured server to verify
 To access the back-end REPL in a production environment, you'll need a secure connection to your server. Once you have a secure connection (e.g., through [SSH](https://www.digitalocean.com/community/tutorials/how-to-use-ssh-to-connect-to-a-remote-server)), you can access the container as follows:
 
 ```shell
-docker compose -f docker-file.prod.yml --env .prod.env exec app /bin/sh
+docker compose -f docker-compose.prod.yml --env-file .env.prod exec app /bin/sh
 ```
 
 Once you're inside the container's terminal, you can use telnet to connect into the REPL service:
